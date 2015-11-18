@@ -31,11 +31,11 @@ export const casinotheaterReader: JsonReader<Items, Item> = {
       "itemSelector",
       flatten(listItems.map(i => i.performances)).filter(i => {
         topic("item", i);
-        return i.displayTicketButton;
+        return !i.displayTicketButton;
       })
     );
     return flatten(listItems.map(i => i.performances)).filter(i => {
-      return i.displayTicketButton;
+      return !i.displayTicketButton;
     });
   },
   sourceDetailUrl: (item: Item) => {

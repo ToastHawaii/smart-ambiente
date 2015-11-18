@@ -72,15 +72,15 @@ export function getIcal(kategorie: string = "") {
 }
 // dav.debug.enabled = true;
 
-if (args["--RELEASE"]) {
-  init();
-}
+ if (args["--RELEASE"]) {
+init();
+ }
 
 async function init() {
   await delay(30 * 1000);
 
   try {
-    // topic("Crawel");
+    topic("Crawel");
     Crawler.crawel(async event => {
       if (shouldBeIgnored(event)) {
         topic("filtered " + event.titel);
@@ -88,7 +88,7 @@ async function init() {
       }
 
       const existings = events.filter(e => textIsEquals(e.titel, event.titel));
-      //  topic("existings: ", existings.map(e => e.titel));
+      topic("existings: ", existings.map(e => e.titel));
       if (existings.length === 0) {
         await persist(event);
         return;
@@ -99,7 +99,7 @@ async function init() {
       }
 
       const same = existings.filter(e => isBetween(event, e));
-      // topic("same: ", same.map(e => e.titel));
+      topic("same: ", same.map(e => e.titel));
       for (const e of same) {
         e.start = event.start;
         e.ende = event.ende;

@@ -12,16 +12,18 @@ channel = ref muted
 output.icecast(%mp3,mount="smart-ambiente/weather",mksafe(source.dynamic(fun ()->[!channel])))
 	
 def update_scene(~protocol,~data,~headers,uri) =
-
+	
 	def sources_of_scene(entry) =
-	    if entry["typ"] == "file"
-			source = ref single(entry["source"])
+		source = ref muted
+
+	    if entry["typ"] == "file" then
+			source := single(entry["source"])
 		else
-			source = ref playlist(mode="normal",entry["source"])
+			source := input.http(entry["source"])
 		end
 		
 		pan = entry["pan"]
-		if pan != "" and pan != "none" then
+		if pan != "" then
 			if pan == "random" then
 			    source := stereo.pan(pan=fun()->random.float(min=-1.,max=1.),!source)
 			else
@@ -39,19 +41,17 @@ def update_scene(~protocol,~data,~headers,uri) =
           source := random(weights=[rand-1,1],[blank(duration=1.),!source])
 		end
 		
+ 		source := amplify(float_of_string(default=1.0,entry["volume"]),!source)
+
 		!source
 	end
 	
-	def weights_of_scene(entry) =
-		int_of_float(float_of_string(entry["volume"])*100.)
-	end
-
 	scene = of_json(default=[[("typ",""),("source",""),("volume",""),("pan",""),("crossfade",""),("random","")]],data)
 
 	if list.length(scene) == 0 then
 		channel := muted
 	else
-		channel := amplify(8.,add(weights=list.map(weights_of_scene,scene),list.map(sources_of_scene,scene)))
+		channel := amplify(8.,add(list.map(sources_of_scene,scene)))
 	end
 	
     http_response(

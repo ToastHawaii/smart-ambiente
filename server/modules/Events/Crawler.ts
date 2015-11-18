@@ -1,4 +1,4 @@
-//import { zuerichUnbezahlbarReader } from "./ZuerichUnbezahlbarReader";
+import { zuerichUnbezahlbarReader } from "./ZuerichUnbezahlbarReader";
 import { stadtZuerichChReader } from "./StadtZuerichChReader";
 import { eventsChReader } from "./EventsChReader";
 import { tagesanzeigerChReader } from "./TagesanzeigerReader";
@@ -45,7 +45,7 @@ export interface JsonReader<A, I> {
 
 const readers: Reader[] = [
   stadtZuerichChReader,
-  //zuerichUnbezahlbarReader,
+  zuerichUnbezahlbarReader,
   eventsChReader,
   tagesanzeigerChReader,
   zuriNetReader,
