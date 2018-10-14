@@ -1,0 +1,34 @@
+﻿<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Smart Ambiente</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <link rel="apple-touch-icon" href="img/icon.png">
+</head>
+
+<body>
+    <script type="text/javascript">
+        window.onerror = function (msg, url, line, col, error) {
+            // Note that col & error are new to the HTML 5 spec and may not be
+            // supported in every browser.  It worked for me in Chrome.
+            var extra = !col ? '' : '\ncolumn: ' + col;
+            extra += !error ? '' : '\nerror: ' + error;
+
+            // You can view the information in an alert to see things working like this:
+            alert("Error: " + msg + "\nurl: " + url + "\nline: " + line + extra);
+
+            var suppressErrorAlert = true;
+            // If you return true, then error alerts (like in older versions of
+            // Internet Explorer) will be suppressed.
+            return suppressErrorAlert;
+        };
+    </script>
+    <div id="app"></div>
+</body>
+
+</html>
