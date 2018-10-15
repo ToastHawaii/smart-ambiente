@@ -1,3 +1,5 @@
+import "sonos-http-api/server";
+
 import * as express from "express";
 import * as bodyParser from "body-parser";
 
@@ -15,9 +17,7 @@ for (const arg of process.argv.slice(2)) {
   args[arg.toUpperCase()] = true;
 }
 
-const sonosHttp = SonosHttp.createSonosService(
-  args["--MODE RELEASE"] ? "http://localhost:5010" : "http://192.168.1.100:5010"
-);
+const sonosHttp = SonosHttp.createSonosService("http://localhost:5005");
 
 const hueHttp = HueHttp.createHueService(
   "http://192.168.1.101/api/p5u0Ki9EwbUQ330gcMA9-gK3qBKhYWCWJ1NmkNVs"

@@ -84,9 +84,7 @@ function toArray<O extends { [index: string]: T }, T>(o: O) {
   return a;
 }
 
-const sonosHttp = SonosHttp.createSonosService(
-  args["--MODE RELEASE"] ? "http://localhost:5010" : "http://192.168.1.100:5010"
-);
+const sonosHttp = SonosHttp.createSonosService("http://localhost:5005");
 
 function checkWeather(weather: SimpleWeather.Forecast, callback?: () => void) {
   let searchTerm = "Wetter - ";
