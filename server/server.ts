@@ -1,5 +1,3 @@
-import "sonos-http-api/server";
-
 import * as express from "express";
 import * as bodyParser from "body-parser";
 
@@ -8,6 +6,7 @@ import * as HueHttp from "./modules/philips-hue-api";
 import { Group } from "./modules/philips-hue-api";
 import * as SimpleWeather from "./modules/SimpleWeather";
 import * as Events from "./modules/Events/Calendar";
+import { toArray } from "./utils";
 
 import "./modules/alarm";
 import "./modules/hue-sonos-link";
@@ -141,57 +140,13 @@ function controlTon() {
     data.sinn["ton"].lautstaerke !== "bild"
   ) {
     if (data.sinn["ton"].lautstaerke === "leise") {
-      sonosHttp
-        .room("Wohnzimmer")
-        .volume(8)
-        .do();
-      sonosHttp
-        .room("Bad")
-        .volume(calcRelativeVolume(8, 25, 15))
-        .do();
-      sonosHttp
-        .room("Schlafzimmer")
-        .volume(calcRelativeVolume(8, 25, 80))
-        .do();
+      setLautstaerke(8);
     } else if (data.sinn["ton"].lautstaerke === "normal") {
-      sonosHttp
-        .room("Wohnzimmer")
-        .volume(15)
-        .do();
-      sonosHttp
-        .room("Bad")
-        .volume(calcRelativeVolume(15, 25, 15))
-        .do();
-      sonosHttp
-        .room("Schlafzimmer")
-        .volume(calcRelativeVolume(15, 25, 80))
-        .do();
+      setLautstaerke(15);
     } else if (data.sinn["ton"].lautstaerke === "laut") {
-      sonosHttp
-        .room("Wohnzimmer")
-        .volume(25)
-        .do();
-      sonosHttp
-        .room("Bad")
-        .volume(15)
-        .do();
-      sonosHttp
-        .room("Schlafzimmer")
-        .volume(70)
-        .do();
+      setLautstaerke(25);
     } else if (data.sinn["ton"].lautstaerke === "sehrLaut") {
-      sonosHttp
-        .room("Wohnzimmer")
-        .volume(35)
-        .do();
-      sonosHttp
-        .room("Bad")
-        .volume(calcRelativeVolume(35, 25, 15))
-        .do();
-      sonosHttp
-        .room("Schlafzimmer")
-        .volume(calcRelativeVolume(35, 25, 80))
-        .do();
+      setLautstaerke(35);
     }
 
     if (data.sinn["ton"].kanal === "musik") {
@@ -225,6 +180,21 @@ function controlTon() {
       .pause()
       .do();
   }
+}
+
+function setLautstaerke(volume: number) {
+  sonosHttp
+    .room("Wohnzimmer")
+    .volume(volume)
+    .do();
+  sonosHttp
+    .room("Bad")
+    .volume(calcRelativeVolume(volume, 25, 15))
+    .do();
+  sonosHttp
+    .room("Schlafzimmer")
+    .volume(calcRelativeVolume(volume, 25, 80))
+    .do();
 }
 
 function playPlaylist(name: string) {
@@ -320,16 +290,6 @@ function controlLicht() {
   } else {
     hueHttp.updateSensorsState("38", { status: 1 });
   }
-}
-
-function toArray<O extends { [index: string]: T }, T>(o: O) {
-  const a: (T & { id: string })[] = [];
-  for (const p in o) {
-    const i = o[p] as T & { id: string };
-    i.id = p;
-    a.push(i);
-  }
-  return a;
 }
 
 process.on("uncaughtException", function(err) {

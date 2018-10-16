@@ -2,6 +2,7 @@ import * as webpackDevServer from "webpack-dev-server";
 import * as webpack from "webpack";
 import * as config from "../client/webpack.development.config";
 import "./server";
+import "sonos-http-api/server";
 
 const options = {
   contentBase: "../smart-ambiente-media",

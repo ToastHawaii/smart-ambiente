@@ -81,7 +81,7 @@ class Menu extends React.Component<
     //  if (navigator.userAgent.indexOf("SMART-TV") === -1) {
     this.setState({ menu: !this.state.menu });
     //}
-  };
+  }
 
   public render() {
     const { classes } = this.props;
@@ -92,7 +92,7 @@ class Menu extends React.Component<
       !menu &&
       !this.first
     ) {
-      document.location.reload();
+      if (document.location) document.location.reload();
     }
     this.first = false;
 
