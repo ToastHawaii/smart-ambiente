@@ -14,9 +14,9 @@ const hue = Hue.createHueService(
 );
 const sonosHttp = SonosHttp.createSonosService("http://localhost:5005");
 
-if (args["--MODE RELEASE"])
+if (args["--RELEASE"])
   SimpleWeather.createSimpleWeatherService().query(weather => {
-    if (!args["--WAKEUPROUTINE OFF"]) {
+    if (!args["--NOALARM"]) {
       setTon(weather);
       setLicht(weather);
     } else {

@@ -73,7 +73,7 @@ export function getIcal() {
 }
 // dav.debug.enabled = true;
 
-if (args["--MODE RELEASE"]) init();
+if (args["--RELEASE"]) init();
 
 function init() {
   try {
