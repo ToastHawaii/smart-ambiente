@@ -45,7 +45,7 @@ export function get() {
 
 export function getIcal() {
   const cal = icalGenerator();
-  cal.domain("smart-home");
+  cal.domain("smart-ambiente");
   cal.prodId("//davical.org//NONSGML AWL Calendar//EN");
 
   for (const e of events) {
@@ -73,7 +73,11 @@ export function getIcal() {
 }
 // dav.debug.enabled = true;
 
-if (args["--RELEASE"]) init();
+if (args["--RELEASE"]) {
+  setTimeout(() => {
+    init();
+  }, 30 * 1000);
+}
 
 function init() {
   try {
