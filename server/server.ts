@@ -182,21 +182,6 @@ function controlTon() {
   }
 }
 
-function setLautstaerke(volume: number) {
-  sonosHttp
-    .room("Wohnzimmer")
-    .volume(volume)
-    .do();
-  sonosHttp
-    .room("Bad")
-    .volume(calcRelativeVolume(volume, 25, 15))
-    .do();
-  sonosHttp
-    .room("Schlafzimmer")
-    .volume(calcRelativeVolume(volume, 25, 80))
-    .do();
-}
-
 function playPlaylist(name: string) {
   sonosHttp
     .room("wohnzimmer")
@@ -340,6 +325,21 @@ function playWetter(weather: SimpleWeather.Forecast, callback?: () => void) {
     .crossfade("on")
     .repeat("on")
     .do(callback);
+}
+
+function setLautstaerke(volume: number) {
+  sonosHttp
+    .room("Wohnzimmer")
+    .volume(volume)
+    .do();
+  sonosHttp
+    .room("Bad")
+    .volume(calcRelativeVolume(volume, 25, 15))
+    .do();
+  sonosHttp
+    .room("Schlafzimmer")
+    .volume(calcRelativeVolume(volume, 25, 80))
+    .do();
 }
 
 function calcRelativeVolume(

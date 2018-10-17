@@ -129,44 +129,68 @@ function setTon(weather: SimpleWeather.Forecast) {
     .do();
 }
 
+function setLautstaerke(volume: number) {
+  sonosHttp
+    .room("Wohnzimmer")
+    .volume(volume)
+    .do();
+  sonosHttp
+    .room("Bad")
+    .volume(calcRelativeVolume(volume, 25, 15))
+    .do();
+  sonosHttp
+    .room("Schlafzimmer")
+    .volume(calcRelativeVolume(volume, 25, 80))
+    .do();
+}
+
+function calcRelativeVolume(
+  value: number,
+  refRoomVolume: number,
+  roomVolume: number
+) {
+  if (value >= refRoomVolume)
+    return Math.round(
+      (100 - roomVolume) *
+        (1 / (100 - refRoomVolume)) *
+        (value - refRoomVolume) +
+        roomVolume
+    );
+  else
+    return Math.round(
+      roomVolume * (1 / refRoomVolume) * (value - refRoomVolume) + roomVolume
+    );
+}
+
 cron
   .schedule("0 8 7 * * 1-5", function() {
+    setLautstaerke(1);
     sonosHttp
       .room("wohnzimmer")
-      .volume(1)
       .play()
       .do();
   })
   .start();
 cron
   .schedule("0 13 7 * * 1-5", function() {
-    sonosHttp
-      .room("wohnzimmer")
-      .volume(2)
-      .do();
+    setLautstaerke(2);
   })
   .start();
 cron
   .schedule("0 18 7 * * 1-5", function() {
-    sonosHttp
-      .room("wohnzimmer")
-      .volume(4)
-      .do();
+    setLautstaerke(4);
   })
   .start();
 cron
   .schedule("0 23 7 * * 1-5", function() {
-    sonosHttp
-      .room("wohnzimmer")
-      .volume(8)
-      .do();
+    setLautstaerke(8);
   })
   .start();
 cron
   .schedule("0 28 7 * * 1-5", function() {
+    setLautstaerke(10);
     sonosHttp
       .room("wohnzimmer")
-      .volume(10)
       .favorite("SRF 4 News (Nachrichten)")
       .play()
       .do();
@@ -174,9 +198,6 @@ cron
   .start();
 cron
   .schedule("0 33 7 * * 1-5", function() {
-    sonosHttp
-      .room("wohnzimmer")
-      .volume(15)
-      .do();
+    setLautstaerke(13);
   })
   .start();
