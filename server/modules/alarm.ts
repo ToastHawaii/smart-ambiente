@@ -3,6 +3,7 @@ import * as SimpleWeather from "./SimpleWeather";
 import * as SonosHttp from "./node-sonos-http-api";
 import * as cron from "node-cron";
 import { toArray } from "../utils";
+import moment = require("moment");
 
 const args: { [arg: string]: boolean } = {};
 for (const arg of process.argv.slice(2)) {
@@ -120,12 +121,12 @@ function setTon(weather: SimpleWeather.Forecast) {
     .room("wohnzimmer")
     .groupMute()
     .pause()
-    .shuffle("on")
     .playlist(searchTerm)
     .pause()
     .groupUnmute()
     .crossfade("on")
     .repeat("on")
+    .shuffle("on")
     .do();
 }
 
@@ -162,42 +163,47 @@ function calcRelativeVolume(
     );
 }
 
-cron
-  .schedule("0 8 7 * * 1-5", function() {
+function sequenz(
+  start: moment.Duration,
+  days: string,
+  pauseInMinutes: number,
+  functions: (() => void)[]
+) {
+  let next = start;
+  for (const fn of functions) {
+    cron
+      .schedule(`0 ${next.minutes()} ${next.hours()} * * ${days}`, fn)
+      .start();
+    next = next.add(pauseInMinutes, "minutes");
+  }
+}
+
+sequenz(moment.duration("07:08"), "1-5", 5, [
+  () => {
     setLautstaerke(1);
     sonosHttp
       .room("wohnzimmer")
       .play()
       .do();
-  })
-  .start();
-cron
-  .schedule("0 13 7 * * 1-5", function() {
+  },
+  () => {
     setLautstaerke(2);
-  })
-  .start();
-cron
-  .schedule("0 18 7 * * 1-5", function() {
+  },
+  () => {
     setLautstaerke(4);
-  })
-  .start();
-cron
-  .schedule("0 23 7 * * 1-5", function() {
+  },
+  () => {
     setLautstaerke(8);
-  })
-  .start();
-cron
-  .schedule("0 28 7 * * 1-5", function() {
+  },
+  () => {
     setLautstaerke(10);
     sonosHttp
       .room("wohnzimmer")
       .favorite("SRF 4 News (Nachrichten)")
       .play()
       .do();
-  })
-  .start();
-cron
-  .schedule("0 33 7 * * 1-5", function() {
+  },
+  () => {
     setLautstaerke(13);
-  })
-  .start();
+  }
+]);

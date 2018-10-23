@@ -187,11 +187,11 @@ function playPlaylist(name: string) {
     .room("wohnzimmer")
     .groupMute()
     .pause()
-    .shuffle("on")
     .playlist(name)
     .groupUnmute()
     .crossfade("on")
     .repeat("on")
+    .shuffle("on")
     .play()
     .do();
 }
@@ -319,11 +319,11 @@ function playWetter(weather: SimpleWeather.Forecast, callback?: () => void) {
     .room("wohnzimmer")
     .groupMute()
     .pause()
-    .shuffle("on")
     .playlist(searchTerm)
     .groupUnmute()
     .crossfade("on")
     .repeat("on")
+    .shuffle("on")
     .do(callback);
 }
 
