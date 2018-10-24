@@ -15,16 +15,6 @@ const hue = Hue.createHueService(
 );
 const sonosHttp = SonosHttp.createSonosService("http://localhost:5005");
 
-if (args["--RELEASE"])
-  SimpleWeather.createSimpleWeatherService().query(weather => {
-    if (!args["--NOALARM"]) {
-      setTon(weather);
-      setLicht(weather);
-    } else {
-      disableLicht();
-    }
-  });
-
 function setLicht(weather: SimpleWeather.Forecast) {
   hue.querySchedules(result => {
     const schedules = toArray<
@@ -178,32 +168,42 @@ function sequenz(
   }
 }
 
-sequenz(moment.duration("07:08"), "1-5", 5, [
-  () => {
-    setLautstaerke(1);
-    sonosHttp
-      .room("wohnzimmer")
-      .play()
-      .do();
-  },
-  () => {
-    setLautstaerke(2);
-  },
-  () => {
-    setLautstaerke(4);
-  },
-  () => {
-    setLautstaerke(8);
-  },
-  () => {
-    setLautstaerke(10);
-    sonosHttp
-      .room("wohnzimmer")
-      .favorite("SRF 4 News (Nachrichten)")
-      .play()
-      .do();
-  },
-  () => {
-    setLautstaerke(13);
-  }
-]);
+if (!args["--NOALARM"]) {
+  sequenz(moment.duration("07:03"), "1-5", 5, [
+    () => {
+      SimpleWeather.createSimpleWeatherService().query(weather => {
+        setTon(weather);
+        setLicht(weather);
+      });
+    },
+    () => {
+      setLautstaerke(1);
+      sonosHttp
+        .room("wohnzimmer")
+        .play()
+        .do();
+    },
+    () => {
+      setLautstaerke(2);
+    },
+    () => {
+      setLautstaerke(4);
+    },
+    () => {
+      setLautstaerke(8);
+    },
+    () => {
+      setLautstaerke(10);
+      sonosHttp
+        .room("wohnzimmer")
+        .favorite("SRF 4 News (Nachrichten)")
+        .play()
+        .do();
+    },
+    () => {
+      setLautstaerke(13);
+    }
+  ]);
+} else {
+  disableLicht();
+}
