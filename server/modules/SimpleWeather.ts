@@ -120,21 +120,20 @@ export interface Forecast {
 }
 
 class SimpleWeather {
-  public query(callback: (result: Forecast) => void) {
-    Owm.createOwmService("1b7711f9c2aeb2429128f1b33f63219c").queryForecast(
-      forecast => {
-        forecast = forecast || ({} as any);
-        forecast.list = forecast.list || ([] as any);
+  public async query(): Promise<Forecast> {
+    let forecast = await Owm.createOwmService(
+      "1b7711f9c2aeb2429128f1b33f63219c"
+    ).queryForecast();
+    forecast = forecast || ({} as any);
+    forecast.list = forecast.list || ([] as any);
 
-        callback({
-          niederschlag: hasPrecipitation(forecast),
-          wind: hasWind(forecast),
-          wolken: hasClouds(forecast),
-          temperatur: getTemp(forecast),
-          gewitter: isSevere(forecast),
-          nebel: hasFog(forecast)
-        });
-      }
-    );
+    return {
+      niederschlag: hasPrecipitation(forecast),
+      wind: hasWind(forecast),
+      wolken: hasClouds(forecast),
+      temperatur: getTemp(forecast),
+      gewitter: isSevere(forecast),
+      nebel: hasFog(forecast)
+    };
   }
 }

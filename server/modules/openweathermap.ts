@@ -1,4 +1,4 @@
-import * as request from "request";
+import { getJson } from "../utils";
 
 export function createOwmService(appId: string) {
   return new Owm(appId);
@@ -37,15 +37,11 @@ export interface Forecast {
 class Owm {
   public constructor(private appId: string) {}
 
-  public queryForecast(callback: (result: Forecast) => void) {
-    request.get(
+  public async queryForecast() {
+    return await getJson<Forecast>(
       "http://api.openweathermap.org/data/2.5/forecast?q=Zurich,CH&units=metric&lang=de&APPID=" +
         this.appId +
-        "&cnt=5",
-      { json: true },
-      (_err, _res, body) => {
-        callback(body);
-      }
+        "&cnt=5"
     );
   }
 }

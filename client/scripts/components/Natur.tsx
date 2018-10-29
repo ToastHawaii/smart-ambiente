@@ -9,7 +9,7 @@ import {
   NotificationClearAll
 } from "mdi-material-ui";
 import ButtonGroup from "./ButtonGroup";
-import { postJson, getJson } from "../utils";
+import { postJson, getJson, delay } from "../utils";
 import MenuButton from "./MenuButton";
 
 export interface Props {}
@@ -53,18 +53,16 @@ class Aussenansicht extends React.Component<
     super(props);
     this.state = {};
   }
-  public componentDidMount() {
-    getJson("/api/kanal/natur").then((data: any) => {
-      this.setState(data);
-    });
+  public async componentDidMount() {
+    const data = await getJson("/api/kanal/natur");
+    this.setState(data);
   }
 
-  public handleChange = (_event: any, szene: any) => {
+  public handleChange = async (_event: any, szene: any) => {
     this.setState({ szene });
-    setTimeout(() => {
-      postJson("api/kanal/natur", this.state);
-      PubSub.publish("naturStateChange", this.state);
-    }, 0);
+    await delay(0);
+    postJson("api/kanal/natur", this.state);
+    PubSub.publish("naturStateChange", this.state);
   }
 
   public render() {

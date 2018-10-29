@@ -3,7 +3,7 @@ import { StyleRulesCallback, withStyles } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
 import { Earth, Airplane, Circle } from "mdi-material-ui";
 import ButtonGroup from "./ButtonGroup";
-import { postJson, getJson } from "../utils";
+import { postJson, getJson, delay } from "../utils";
 import MenuButton from "./MenuButton";
 
 export interface Props {}
@@ -47,19 +47,18 @@ class Aussenansicht extends React.Component<
     super(props);
     this.state = {};
   }
-  public componentDidMount() {
-    getJson("/api/kanal/tour").then((data: any) => {
-      this.setState(data);
-    });
+  public async componentDidMount() {
+    const data = await getJson("/api/kanal/tour");
+    this.setState(data);
   }
 
-  public handleChange = (_event: any, reise: any) => {
+  public handleChange = async (_event: any, reise: any) => {
     this.setState({ reise });
-    setTimeout(() => {
-      postJson("api/kanal/tour", this.state);
-      PubSub.publish("tourStateChange", this.state);
-    }, 0);
-  };
+
+    await delay(0);
+    postJson("api/kanal/tour", this.state);
+    PubSub.publish("tourStateChange", this.state);
+  }
 
   public render() {
     const { classes } = this.props;

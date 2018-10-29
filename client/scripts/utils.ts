@@ -21,3 +21,7 @@ export async function getJson(url: string) {
 
   return response.json();
 }
+
+export function delay(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}

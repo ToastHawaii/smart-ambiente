@@ -1,4 +1,4 @@
-import * as request from "request";
+import { getJson, putJson, delay } from "../utils";
 
 export function createHueService(baseUrl: string) {
   return new Hue(baseUrl);
@@ -62,134 +62,72 @@ export interface GroupPartial {
 class Hue {
   public constructor(private baseUrl: string) {}
 
-  public querySchedules(
-    callback: (result: { [index: string]: Scheduler }) => void
-  ) {
-    request.get(
-      this.baseUrl + "/schedules",
-      { json: true },
-      (_err, _res, body) => {
-        callback(body);
-      }
+  public async querySchedules() {
+    return await getJson<{ [index: string]: Scheduler }>(
+      this.baseUrl + "/schedules"
     );
   }
 
-  public getSchedules(id: string, callback: (result: Scheduler) => void) {
-    request.get(
-      this.baseUrl + "/schedules/" + id,
-      { json: true },
-      (_err, _res, body) => {
-        callback(body);
+  public async getSchedules(id: string) {
+    return await getJson<Scheduler>(this.baseUrl + "/schedules/" + id);
+  }
+
+  public async updateSchedules(id: string, attributes: SchedulerPartial) {
+    await putJson(this.baseUrl + "/schedules/" + id, attributes);
+  }
+
+  public async updateSchedulesEnabled(id: string, i = 0) {
+    await putJson(this.baseUrl + "/schedules/" + id, { status: "enabled" });
+
+    if (i < 6) {
+      await delay(5);
+      const scheduler = await this.getSchedules(id);
+      if (scheduler && scheduler.status !== "enabled") {
+        // console.log(scheduler.name + " Ein Retry");
+        this.updateSchedulesEnabled(id, i + 1);
       }
+    }
+  }
+
+  public async updateSchedulesDisabled(id: string, i = 0) {
+    await putJson(this.baseUrl + "/schedules/" + id, { status: "disabled" });
+    if (i < 6) {
+      await delay(5);
+      const scheduler = await this.getSchedules(id);
+      if (scheduler && scheduler.status !== "disabled") {
+        // console.log(scheduler.name + " Aus Retry");
+        this.updateSchedulesDisabled(id, i + 1);
+      }
+    }
+  }
+
+  public async updateSensorsState(id: string, state: any) {
+    await putJson(this.baseUrl + "/sensors/" + id + "/state", state);
+  }
+
+  public async querySensors() {
+    return await getJson<{ [index: string]: Sensor }>(
+      this.baseUrl + "/sensors"
     );
   }
 
-  public updateSchedules(id: string, attributes: SchedulerPartial) {
-    request.put(this.baseUrl + "/schedules/" + id, {
-      json: true,
-      body: attributes
-    });
+  public async getSensors(id: string) {
+    return await getJson<Sensor>(this.baseUrl + "/sensors/" + id);
   }
 
-  public updateSchedulesEnabled(id: string, i = 0) {
-    request.put(
-      this.baseUrl + "/schedules/" + id,
-      { json: true, body: { status: "enabled" } },
-      () => {
-        if (i < 6) {
-          setTimeout(() => {
-            this.getSchedules(id, scheduler => {
-              if (scheduler && scheduler.status !== "enabled") {
-                // console.log(scheduler.name + " Ein Retry");
-                this.updateSchedulesEnabled(id, i + 1);
-              }
-            });
-          }, 5);
-        }
-      }
-    );
+  public async getLights(id: string) {
+    return await getJson<Light>(this.baseUrl + "/lights/" + id);
   }
 
-  public updateSchedulesDisabled(id: string, i = 0) {
-    request.put(
-      this.baseUrl + "/schedules/" + id,
-      { json: true, body: { status: "disabled" } },
-      () => {
-        if (i < 6) {
-          setTimeout(() => {
-            this.getSchedules(id, scheduler => {
-              if (scheduler && scheduler.status !== "disabled") {
-                // console.log(scheduler.name + " Aus Retry");
-                this.updateSchedulesDisabled(id, i + 1);
-              }
-            });
-          }, 5);
-        }
-      }
-    );
+  public async getGroups(id: string) {
+    return await getJson<Group>(this.baseUrl + "/groups/" + id);
   }
 
-  public updateSensorsState(id: string, state: any) {
-    request.put(this.baseUrl + "/sensors/" + id + "/state", {
-      json: true,
-      body: state
-    });
+  public async queryGroups() {
+    return await getJson<{ [index: string]: Group }>(this.baseUrl + "/groups");
   }
 
-  public querySensors(callback: (result: { [index: string]: Sensor }) => void) {
-    request.get(
-      this.baseUrl + "/sensors",
-      { json: true },
-      (_err, _res, body) => {
-        callback(body);
-      }
-    );
-  }
-
-  public getSensors(id: string, callback: (result: Sensor) => void) {
-    request.get(
-      this.baseUrl + "/sensors/" + id,
-      { json: true },
-      (_err, _res, body) => {
-        callback(body);
-      }
-    );
-  }
-
-  public getLights(id: string, callback: (result: Light) => void) {
-    request.get(
-      this.baseUrl + "/lights/" + id,
-      { json: true },
-      (_err, _res, body) => {
-        callback(body);
-      }
-    );
-  }
-
-  public getGroups(id: string, callback: (result: Group) => void) {
-    request.get(
-      this.baseUrl + "/groups/" + id,
-      { json: true },
-      (_err, _res, body) => {
-        callback(body);
-      }
-    );
-  }
-
-  public queryGroups(callback: (result: { [index: string]: Group }) => void) {
-    request.get(
-      this.baseUrl + "/groups",
-      { json: true },
-      (_err, _res, body) => {
-        callback(body);
-      }
-    );
-  }
-
-  public updateGroups(id: string, attributes: GroupPartial) {
-    request.put(this.baseUrl + "/groups/" + id + "/action", {
-      json: true,
-      body: attributes
-    });
+  public async updateGroups(id: string, attributes: GroupPartial) {
+    await putJson(this.baseUrl + "/groups/" + id + "/action", attributes);
   }
 }

@@ -2,7 +2,7 @@ import * as Hue from "./philips-hue-api";
 import * as SimpleWeather from "./SimpleWeather";
 import * as SonosHttp from "./node-sonos-http-api";
 import * as cron from "node-cron";
-import { toArray } from "../utils";
+import { toArray, calcRelativeValue } from "../utils";
 import moment = require("moment");
 
 const args: { [arg: string]: boolean } = {};
@@ -15,61 +15,59 @@ const hue = Hue.createHueService(
 );
 const sonosHttp = SonosHttp.createSonosService("http://localhost:5005");
 
-function setLicht(weather: SimpleWeather.Forecast) {
-  hue.querySchedules(result => {
-    const schedules = toArray<
-      {
-        [index: string]: Hue.Scheduler;
-      },
-      Hue.Scheduler
-    >(result);
-    if (weather.wolken) {
-      // console.log("Bewölkt");
-      for (const s of schedules.filter(
-        s => s.name.indexOf("Sonnenaufgang") !== -1
-      )) {
-        // console.log(s.name + " Ein");
-        hue.updateSchedulesEnabled(s.id);
-      }
-      for (const s of schedules.filter(s => s.name.indexOf("Heiter") !== -1)) {
-        // console.log(s.name + " Aus");
-        hue.updateSchedulesDisabled(s.id);
-      }
-    } else {
-      // console.log("Heiter");
-      for (const s of schedules.filter(
-        s => s.name.indexOf("Sonnenaufgang") !== -1
-      )) {
-        // console.log(s.name + " Aus");
-        hue.updateSchedulesDisabled(s.id);
-      }
-      for (const s of schedules.filter(s => s.name.indexOf("Heiter") !== -1)) {
-        // console.log(s.name + " Ein");
-        hue.updateSchedulesEnabled(s.id);
-      }
-    }
-  });
-}
-
-function disableLicht() {
-  hue.querySchedules(result => {
-    const schedules = toArray<
-      {
-        [index: string]: Hue.Scheduler;
-      },
-      Hue.Scheduler
-    >(result);
+async function setLicht(weather: SimpleWeather.Forecast) {
+  const result = await hue.querySchedules();
+  const schedules = toArray<
+    {
+      [index: string]: Hue.Scheduler;
+    },
+    Hue.Scheduler
+  >(result);
+  if (weather.wolken) {
+    // console.log("Bewölkt");
     for (const s of schedules.filter(
-      s =>
-        s.name.indexOf("Heiter") !== -1 ||
-        s.name.indexOf("Sonnenaufgang") !== -1 ||
-        s.name.indexOf("Morgen") !== -1 ||
-        s.name.indexOf("Ausschalten") !== -1
+      s => s.name.indexOf("Sonnenaufgang") !== -1
+    )) {
+      // console.log(s.name + " Ein");
+      hue.updateSchedulesEnabled(s.id);
+    }
+    for (const s of schedules.filter(s => s.name.indexOf("Heiter") !== -1)) {
+      // console.log(s.name + " Aus");
+      hue.updateSchedulesDisabled(s.id);
+    }
+  } else {
+    // console.log("Heiter");
+    for (const s of schedules.filter(
+      s => s.name.indexOf("Sonnenaufgang") !== -1
     )) {
       // console.log(s.name + " Aus");
       hue.updateSchedulesDisabled(s.id);
     }
-  });
+    for (const s of schedules.filter(s => s.name.indexOf("Heiter") !== -1)) {
+      // console.log(s.name + " Ein");
+      hue.updateSchedulesEnabled(s.id);
+    }
+  }
+}
+
+async function disableLicht() {
+  const result = await hue.querySchedules();
+  const schedules = toArray<
+    {
+      [index: string]: Hue.Scheduler;
+    },
+    Hue.Scheduler
+  >(result);
+  for (const s of schedules.filter(
+    s =>
+      s.name.indexOf("Heiter") !== -1 ||
+      s.name.indexOf("Sonnenaufgang") !== -1 ||
+      s.name.indexOf("Morgen") !== -1 ||
+      s.name.indexOf("Ausschalten") !== -1
+  )) {
+    // console.log(s.name + " Aus");
+    hue.updateSchedulesDisabled(s.id);
+  }
 }
 
 function setTon(weather: SimpleWeather.Forecast) {
@@ -115,8 +113,8 @@ function setTon(weather: SimpleWeather.Forecast) {
     .pause()
     .groupUnmute()
     .crossfade("on")
-    .repeat("on")
     .shuffle("on")
+    .repeat("on")
     .do();
 }
 
@@ -127,30 +125,12 @@ function setLautstaerke(volume: number) {
     .do();
   sonosHttp
     .room("Bad")
-    .volume(calcRelativeVolume(volume, 25, 15))
+    .volume(calcRelativeValue(volume, 25, 15))
     .do();
   sonosHttp
     .room("Schlafzimmer")
-    .volume(calcRelativeVolume(volume, 25, 80))
+    .volume(calcRelativeValue(volume, 25, 80))
     .do();
-}
-
-function calcRelativeVolume(
-  value: number,
-  refRoomVolume: number,
-  roomVolume: number
-) {
-  if (value >= refRoomVolume)
-    return Math.round(
-      (100 - roomVolume) *
-        (1 / (100 - refRoomVolume)) *
-        (value - refRoomVolume) +
-        roomVolume
-    );
-  else
-    return Math.round(
-      roomVolume * (1 / refRoomVolume) * (value - refRoomVolume) + roomVolume
-    );
 }
 
 function sequenz(
@@ -170,11 +150,10 @@ function sequenz(
 
 if (!args["--NOALARM"]) {
   sequenz(moment.duration("07:03"), "1-5", 5, [
-    () => {
-      SimpleWeather.createSimpleWeatherService().query(weather => {
-        setTon(weather);
-        setLicht(weather);
-      });
+    async () => {
+      const weather = await SimpleWeather.createSimpleWeatherService().query();
+      setTon(weather);
+      setLicht(weather);
     },
     () => {
       setLautstaerke(1);

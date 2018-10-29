@@ -2,8 +2,8 @@ import * as React from "react";
 import { StyleRulesCallback, withStyles, Typography } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
 import * as GoogleMapsLoader from "google-maps";
-import { setInterval, setTimeout } from "timers";
-import { getJson } from "../utils";
+import { setInterval } from "timers";
+import { getJson, delay } from "../utils";
 import Marquee from "react-smooth-marquee";
 
 const minZoom = 20;
@@ -266,28 +266,27 @@ class BildHintergrund extends React.Component<
     }, 60000);
   }
 
-  public newRandomPosition() {
-    setTimeout(() => {
-      let center = new this.google.maps.LatLng(
-        Math.random() * 180 - 90,
-        Math.random() * 360 - 180
-      );
+  public async newRandomPosition() {
+    await delay(100);
+    let center = new this.google.maps.LatLng(
+      Math.random() * 180 - 90,
+      Math.random() * 360 - 180
+    );
 
-      loading = true;
-      this.maxZoomService.getMaxZoomAtLatLng(center, response => {
-        if (!loading) return;
-        else loading = false;
+    loading = true;
+    this.maxZoomService.getMaxZoomAtLatLng(center, response => {
+      if (!loading) return;
+      else loading = false;
 
-        if (response.status !== google.maps.MaxZoomStatus.OK)
-          this.newRandomPosition();
+      if (response.status !== google.maps.MaxZoomStatus.OK)
+        this.newRandomPosition();
 
-        if (response.zoom >= minZoom) {
-          this.map.setCenter(center);
-          this.mapSmall.setCenter(center);
-          this.startTour();
-        } else this.newRandomPosition();
-      });
-    }, 100);
+      if (response.zoom >= minZoom) {
+        this.map.setCenter(center);
+        this.mapSmall.setCenter(center);
+        this.startTour();
+      } else this.newRandomPosition();
+    });
   }
 
   public render() {

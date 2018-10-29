@@ -4,6 +4,7 @@ import * as icalGenerator from "ical-generator";
 import * as moment from "moment";
 import * as Crawler from "./Crawler";
 import debug from "../../debug";
+import { delay } from "../../utils";
 const topic = debug("Calendar");
 
 const args: { [arg: string]: boolean } = {};
@@ -74,12 +75,12 @@ export function getIcal() {
 // dav.debug.enabled = true;
 
 if (args["--RELEASE"]) {
-  setTimeout(() => {
-    init();
-  }, 30 * 1000);
+  init();
 }
 
-function init() {
+async function init() {
+  await delay(30 * 1000);
+
   try {
     // topic("Crawel");
     Crawler.crawel(async event => {

@@ -15,7 +15,7 @@ import {
 import Musik from "./Musik";
 import Wetter from "./Wetter";
 import ButtonGroup from "./ButtonGroup";
-import { postJson, getJson } from "../utils";
+import { postJson, getJson, delay } from "../utils";
 import MenuButton from "./MenuButton";
 
 export interface Props {}
@@ -40,28 +40,26 @@ class Ton extends React.Component<
     this.state = {};
   }
 
-  public componentDidMount() {
-    getJson("/api/sinn/ton").then((data: any) => {
-      this.setState(data);
-    });
+  public async componentDidMount() {
+    const data = await getJson("/api/sinn/ton");
+    this.setState(data);
   }
 
-  public handleLautstaerkeChange = (_event: any, lautstaerke: any) => {
+  public handleLautstaerkeChange = async (_event: any, lautstaerke: any) => {
     this.setState({ lautstaerke });
 
-    setTimeout(() => {
-      postJson("api/sinn/ton", this.state).then(state => {
-        PubSub.publish("tonStateChange", state);
-      });
-      PubSub.publish("tonStateChange", this.state);
-    }, 0);
+    await delay(0);
+    postJson("api/sinn/ton", this.state).then(state => {
+      PubSub.publish("tonStateChange", state);
+    });
+    PubSub.publish("tonStateChange", this.state);
   }
-  public handleKanalChange = (_event: any, kanal: any) => {
+
+  public handleKanalChange = async (_event: any, kanal: any) => {
     this.setState({ kanal });
 
-    setTimeout(() => {
-      postJson("api/sinn/ton", this.state);
-    }, 0);
+    await delay(0);
+    postJson("api/sinn/ton", this.state);
   }
 
   public render() {

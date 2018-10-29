@@ -2,6 +2,7 @@ import * as React from "react";
 import { StyleRulesCallback, withStyles } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
 import * as GoogleMapsLoader from "google-maps";
+import { delay } from "../utils";
 
 export interface Props {}
 
@@ -110,7 +111,7 @@ class BildHintergrund extends React.Component<
     this.sv.getPanoramaByLocation(this.center, 500, this.processSVData);
   }
 
-  public processSVData = (data: any, status: any) => {
+  public processSVData = async (data: any, status: any) => {
     if (status === this.google.maps.StreetViewStatus.OK) {
       this.map.setCenter(data.location.latLng);
 
@@ -134,18 +135,16 @@ class BildHintergrund extends React.Component<
       }, 50000);
 
       clearInterval(this.rotating);
-      setTimeout(() => {
-        this.rotating = setInterval(() => {
-          let pov = this.panorama.getPov();
-          if (pov) (pov as any).heading += 0.12;
+      await delay(1000);
+      this.rotating = setInterval(() => {
+        let pov = this.panorama.getPov();
+        if (pov) (pov as any).heading += 0.12;
 
-          this.panorama.setPov(pov);
-        }, 10);
-      }, 1000);
+        this.panorama.setPov(pov);
+      }, 10);
     } else {
-      setTimeout(() => {
-        this.generateRandomPoint();
-      }, 50);
+      await delay(50);
+      this.generateRandomPoint();
     }
   }
 

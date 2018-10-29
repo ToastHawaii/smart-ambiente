@@ -1,7 +1,7 @@
 import * as React from "react";
 import { StyleRulesCallback, withStyles } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
-import { setTimeout } from "timers";
+import { delay } from "../utils";
 
 export interface Props {}
 
@@ -29,7 +29,7 @@ class Schweiz extends React.Component<
     this.nextCam();
   }
 
-  private nextCam() {
+  private async nextCam() {
     const kameras = [
       {
         duration: 53,
@@ -449,9 +449,8 @@ class Schweiz extends React.Component<
       kamera: kamera.source
     });
 
-    setTimeout(() => {
-      this.nextCam();
-    }, kamera.duration * 1000);
+    await delay(kamera.duration * 1000);
+    this.nextCam();
   }
 
   private randomIntFromInterval(min: number, max: number) {

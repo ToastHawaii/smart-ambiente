@@ -9,7 +9,7 @@ import {
   Calendar
 } from "mdi-material-ui";
 import ButtonGroup from "./ButtonGroup";
-import { postJson, getJson } from "../utils";
+import { postJson, getJson, delay } from "../utils";
 import MenuButton from "./MenuButton";
 
 export interface Props {}
@@ -53,19 +53,17 @@ class Aussenansicht extends React.Component<
     super(props);
     this.state = {};
   }
-  public componentDidMount() {
-    getJson("/api/kanal/ansehen").then((data: any) => {
-      this.setState(data);
-    });
+  public async componentDidMount() {
+    const data = await getJson("/api/kanal/ansehen");
+    this.setState(data);
   }
 
-  public handleChange = (_event: any, ort: any) => {
+  public handleChange = async (_event: any, ort: any) => {
     this.setState({ ort });
-    setTimeout(() => {
-      postJson("api/kanal/ansehen", this.state);
-      PubSub.publish("ansehenStateChange", this.state);
-    }, 0);
-  };
+    await delay(0);
+    postJson("api/kanal/ansehen", this.state);
+    PubSub.publish("ansehenStateChange", this.state);
+  }
 
   public render() {
     const { classes } = this.props;

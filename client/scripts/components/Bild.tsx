@@ -16,7 +16,7 @@ import Natur from "./Natur";
 import Tour from "./Tour";
 import Zusehen from "./Zusehen";
 import ButtonGroup from "./ButtonGroup";
-import { postJson, getJson } from "../utils";
+import { postJson, getJson, delay } from "../utils";
 import * as PubSub from "pubsub-js";
 import MenuButton from "./MenuButton";
 
@@ -42,28 +42,26 @@ class Bild extends React.Component<
     this.state = {};
   }
 
-  public componentDidMount() {
-    getJson("/api/sinn/bild").then((data: any) => {
-      this.setState(data);
-    });
+  public async componentDidMount() {
+    const data = await getJson("/api/sinn/bild");
+    this.setState(data);
   }
 
-  public handleBildschirmChange = (_event: any, bildschirm: any) => {
+  public handleBildschirmChange = async (_event: any, bildschirm: any) => {
     this.setState({ bildschirm });
 
-    setTimeout(() => {
-      postJson("api/sinn/bild", this.state);
-      PubSub.publish("bildStateChange", this.state);
-    }, 0);
-  };
-  public handleKanalChange = (_event: any, kanal: any) => {
+    await delay(0);
+    postJson("api/sinn/bild", this.state);
+    PubSub.publish("bildStateChange", this.state);
+  }
+
+  public handleKanalChange = async (_event: any, kanal: any) => {
     this.setState({ kanal });
 
-    setTimeout(() => {
-      postJson("api/sinn/bild", this.state);
-      PubSub.publish("bildStateChange", this.state);
-    }, 0);
-  };
+    await delay(0);
+    postJson("api/sinn/bild", this.state);
+    PubSub.publish("bildStateChange", this.state);
+  }
 
   public render() {
     const { classes } = this.props;

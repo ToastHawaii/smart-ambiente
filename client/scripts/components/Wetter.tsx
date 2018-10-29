@@ -16,7 +16,7 @@ import {
   WhiteBalanceSunny
 } from "mdi-material-ui";
 import ButtonGroup from "./ButtonGroup";
-import { postJson, getJson } from "../utils";
+import { postJson, getJson, delay } from "../utils";
 import MenuButton from "./MenuButton";
 
 export interface Props {}
@@ -77,68 +77,67 @@ class Wetter extends React.Component<
     });
   }
 
-  public handleModeChange = (_event: any, mode: any) => {
+  public handleModeChange = async (_event: any, mode: any) => {
     this.setState({ mode });
 
-    setTimeout(() => {
-      postJson("api/kanal/wetter", this.state).then(state => {
-        PubSub.publish("wetterStateChange", state);
-      });
-      PubSub.publish("wetterStateChange", this.state);
-    }, 0);
+    await delay(0);
+    postJson("api/kanal/wetter", this.state).then(state => {
+      PubSub.publish("wetterStateChange", state);
+    });
+    PubSub.publish("wetterStateChange", this.state);
   }
 
-  public handleWolkenChange = (_event: any, _value: any, wolken: any) => {
+  public handleWolkenChange = async (_event: any, _value: any, wolken: any) => {
     this.setState({ wolken });
 
-    setTimeout(() => {
-      postJson("api/kanal/wetter", this.state);
-      PubSub.publish("wetterStateChange", this.state);
-    }, 0);
+    await delay(0);
+    postJson("api/kanal/wetter", this.state);
+    PubSub.publish("wetterStateChange", this.state);
   }
-  public handleWindChange = (_event: any, _value: any, wind: any) => {
+  public handleWindChange = async (_event: any, _value: any, wind: any) => {
     this.setState({ wind });
 
-    setTimeout(() => {
-      postJson("api/kanal/wetter", this.state);
-      PubSub.publish("wetterStateChange", this.state);
-    }, 0);
+    await delay(0);
+    postJson("api/kanal/wetter", this.state);
+    PubSub.publish("wetterStateChange", this.state);
   }
-  public handleNiederschlagChange = (
+  public handleNiederschlagChange = async (
     _event: any,
     _value: any,
     niederschlag: any
   ) => {
     this.setState({ niederschlag });
 
-    setTimeout(() => {
-      postJson("api/kanal/wetter", this.state);
-      PubSub.publish("wetterStateChange", this.state);
-    }, 0);
+    await delay(0);
+    postJson("api/kanal/wetter", this.state);
+    PubSub.publish("wetterStateChange", this.state);
   }
-  public handleNebelChange = (_event: any, _value: any, nebel: any) => {
+  public handleNebelChange = async (_event: any, _value: any, nebel: any) => {
     this.setState({ nebel });
 
-    setTimeout(() => {
-      postJson("api/kanal/wetter", this.state);
-      PubSub.publish("wetterStateChange", this.state);
-    }, 0);
+    await delay(0);
+    postJson("api/kanal/wetter", this.state);
+    PubSub.publish("wetterStateChange", this.state);
   }
-  public handleGewitterChange = (_event: any, _value: any, gewitter: any) => {
+
+  public handleGewitterChange = async (
+    _event: any,
+    _value: any,
+    gewitter: any
+  ) => {
     this.setState({ gewitter });
 
-    setTimeout(() => {
-      postJson("api/kanal/wetter", this.state);
-      PubSub.publish("wetterStateChange", this.state);
-    }, 0);
+    await delay(0);
+    postJson("api/kanal/wetter", this.state);
+    PubSub.publish("wetterStateChange", this.state);
   }
-  public handleTemperaturChange = (_event: any, temperatur: any) => {
+
+  public handleTemperaturChange = async (_event: any, temperatur: any) => {
     this.setState({ temperatur });
 
-    setTimeout(() => {
-      postJson("api/kanal/wetter", this.state);
-      PubSub.publish("wetterStateChange", this.state);
-    }, 0);
+    await delay(0);
+    postJson("api/kanal/wetter", this.state);
+    PubSub.publish("wetterStateChange", this.state);
   }
 
   public render() {

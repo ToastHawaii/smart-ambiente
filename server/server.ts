@@ -6,7 +6,7 @@ import * as HueHttp from "./modules/philips-hue-api";
 import { Group } from "./modules/philips-hue-api";
 import * as SimpleWeather from "./modules/SimpleWeather";
 import * as Events from "./modules/Events/Calendar";
-import { toArray } from "./utils";
+import { toArray, calcRelativeValue } from "./utils";
 
 import "./modules/alarm";
 import "./modules/hue-sonos-link";
@@ -76,10 +76,12 @@ const data: {
   }
 };
 
-SimpleWeather.createSimpleWeatherService().query(weather => {
-  data.kanal["wetter"] = weather;
-  data.kanal["wetter"].mode = "vorhersage";
-});
+SimpleWeather.createSimpleWeatherService()
+  .query()
+  .then(weather => {
+    data.kanal["wetter"] = weather;
+    data.kanal["wetter"].mode = "vorhersage";
+  });
 
 app.get("/api/sinn/:sinn", function(req, res) {
   if (first) {
@@ -104,7 +106,7 @@ app.post("/api/sinn/:sinn", function(req, res) {
 app.get("/api/kanal/:kanal", function(req, res) {
   res.json(data.kanal[req.params.kanal]);
 });
-app.post("/api/kanal/:kanal", function(req, res) {
+app.post("/api/kanal/:kanal", async function(req, res) {
   console.info("Kanal: " + JSON.stringify(req.body));
 
   data.kanal[req.params.kanal] = req.body;
@@ -113,17 +115,16 @@ app.post("/api/kanal/:kanal", function(req, res) {
     controlTon();
     res.json(data.kanal[req.params.kanal]);
   } else if (req.params.kanal === "wetter") {
-    if (data.kanal["wetter"].mode === "vorhersage")
-      SimpleWeather.createSimpleWeatherService().query(weather => {
-        data.kanal["wetter"] = weather;
-        data.kanal["wetter"].mode = "vorhersage";
+    if (data.kanal["wetter"].mode === "vorhersage") {
+      const weather = await SimpleWeather.createSimpleWeatherService().query();
+      data.kanal["wetter"] = weather;
+      data.kanal["wetter"].mode = "vorhersage";
 
-        controlTon();
-        controlLicht();
+      controlTon();
+      controlLicht();
 
-        res.json(data.kanal[req.params.kanal]);
-      });
-    else {
+      res.json(data.kanal[req.params.kanal]);
+    } else {
       controlTon();
       controlLicht();
 
@@ -190,8 +191,8 @@ function playPlaylist(name: string) {
     .playlist(name)
     .groupUnmute()
     .crossfade("on")
-    .repeat("on")
     .shuffle("on")
+    .repeat("on")
     .play()
     .do();
 }
@@ -204,52 +205,48 @@ function playSender(name: string) {
     .do();
 }
 
-function controlLicht() {
+async function controlLicht() {
   if (data.sinn["licht"].helligkeit === "viel") {
-    hueHttp.queryGroups(result => {
-      const groups = toArray<{ [index: string]: Group }, Group>(result);
+    const result = await hueHttp.queryGroups();
+    const groups = toArray<{ [index: string]: Group }, Group>(result);
 
-      for (const s of groups.filter(
-        g => g.name === "Wohnzimmer" || g.name === "Terrasse"
-      ))
-        hueHttp.updateGroups(s.id, { on: true });
-    });
+    for (const s of groups.filter(
+      g => g.name === "Wohnzimmer" || g.name === "Terrasse"
+    ))
+      hueHttp.updateGroups(s.id, { on: true });
   } else if (data.sinn["licht"].helligkeit === "wenig") {
-    hueHttp.queryGroups(result => {
-      const groups = toArray<{ [index: string]: Group }, Group>(result);
+    const result = await hueHttp.queryGroups();
+    const groups = toArray<{ [index: string]: Group }, Group>(result);
 
-      for (const s of groups.filter(g => g.name === "Wohnzimmer"))
-        hueHttp.updateGroups(s.id, { on: false });
-      for (const s of groups.filter(g => g.name === "Terrasse"))
-        hueHttp.updateGroups(s.id, { on: true });
-    });
+    for (const s of groups.filter(g => g.name === "Wohnzimmer"))
+      hueHttp.updateGroups(s.id, { on: false });
+    for (const s of groups.filter(g => g.name === "Terrasse"))
+      hueHttp.updateGroups(s.id, { on: true });
   } else {
-    hueHttp.queryGroups(result => {
-      const groups = toArray<{ [index: string]: Group }, Group>(result);
+    const result = await hueHttp.queryGroups();
+    const groups = toArray<{ [index: string]: Group }, Group>(result);
 
-      for (const s of groups.filter(
-        g => g.name === "Wohnzimmer" || g.name === "Terrasse"
-      ))
-        hueHttp.updateGroups(s.id, { on: false });
-    });
+    for (const s of groups.filter(
+      g => g.name === "Wohnzimmer" || g.name === "Terrasse"
+    ))
+      hueHttp.updateGroups(s.id, { on: false });
   }
 
   if (
     data.sinn["licht"].kanal === "sonnenaufgang" &&
     data.sinn["licht"].helligkeit !== "aus"
   ) {
-    hueHttp.queryGroups(result => {
-      const groups = toArray<{ [index: string]: Group }, Group>(result);
+    const result = await hueHttp.queryGroups();
+    const groups = toArray<{ [index: string]: Group }, Group>(result);
 
-      for (const s of groups.filter(g => g.name === "Wohnzimmer"))
-        hueHttp.updateGroups(s.id, { scene: "rvryxegf85dNSh4" });
-      for (const s of groups.filter(g => g.name === "Terrasse"))
-        hueHttp.updateGroups(s.id, { scene: "bIt0VNlYGMp9Lz0" });
-      for (const s of groups.filter(g => g.name === "Bad"))
-        hueHttp.updateGroups(s.id, { scene: "YvcDyf-5EkmsWYO" });
-      for (const s of groups.filter(g => g.name === "Schlafzimmer"))
-        hueHttp.updateGroups(s.id, { scene: "wf1qGZeZVO13pcO" });
-    });
+    for (const s of groups.filter(g => g.name === "Wohnzimmer"))
+      await hueHttp.updateGroups(s.id, { scene: "rvryxegf85dNSh4" });
+    for (const s of groups.filter(g => g.name === "Terrasse"))
+      await hueHttp.updateGroups(s.id, { scene: "bIt0VNlYGMp9Lz0" });
+    for (const s of groups.filter(g => g.name === "Bad"))
+      await hueHttp.updateGroups(s.id, { scene: "YvcDyf-5EkmsWYO" });
+    for (const s of groups.filter(g => g.name === "Schlafzimmer"))
+      await hueHttp.updateGroups(s.id, { scene: "wf1qGZeZVO13pcO" });
     hueHttp.updateSensorsState("58", { status: 0 });
   } else {
     hueHttp.updateSensorsState("58", { status: 1 });
@@ -259,18 +256,17 @@ function controlLicht() {
     data.sinn["licht"].kanal === "sonnenuntergang" &&
     data.sinn["licht"].helligkeit !== "aus"
   ) {
-    hueHttp.queryGroups(result => {
-      const groups = toArray<{ [index: string]: Group }, Group>(result);
+    const result = await hueHttp.queryGroups();
+    const groups = toArray<{ [index: string]: Group }, Group>(result);
 
-      for (const s of groups.filter(g => g.name === "Wohnzimmer"))
-        hueHttp.updateGroups(s.id, { scene: "TmGhD5UhpklGlEI" });
-      for (const s of groups.filter(g => g.name === "Terrasse"))
-        hueHttp.updateGroups(s.id, { scene: "96W725qhw8W8wG7" });
-      for (const s of groups.filter(g => g.name === "Bad"))
-        hueHttp.updateGroups(s.id, { scene: "YvcDyf-5EkmsWYO" });
-      for (const s of groups.filter(g => g.name === "Schlafzimmer"))
-        hueHttp.updateGroups(s.id, { scene: "an-71pUpLRiCLNX" });
-    });
+    for (const s of groups.filter(g => g.name === "Wohnzimmer"))
+      await hueHttp.updateGroups(s.id, { scene: "TmGhD5UhpklGlEI" });
+    for (const s of groups.filter(g => g.name === "Terrasse"))
+      await hueHttp.updateGroups(s.id, { scene: "96W725qhw8W8wG7" });
+    for (const s of groups.filter(g => g.name === "Bad"))
+      await hueHttp.updateGroups(s.id, { scene: "YvcDyf-5EkmsWYO" });
+    for (const s of groups.filter(g => g.name === "Schlafzimmer"))
+      await hueHttp.updateGroups(s.id, { scene: "an-71pUpLRiCLNX" });
     hueHttp.updateSensorsState("38", { status: 0 });
   } else {
     hueHttp.updateSensorsState("38", { status: 1 });
@@ -282,7 +278,7 @@ process.on("uncaughtException", function(err) {
   console.log("Node NOT Exiting...");
 });
 
-function playWetter(weather: SimpleWeather.Forecast, callback?: () => void) {
+function playWetter(weather: SimpleWeather.Forecast) {
   let searchTerm = "Wetter - ";
 
   if (weather.gewitter) {
@@ -322,9 +318,9 @@ function playWetter(weather: SimpleWeather.Forecast, callback?: () => void) {
     .playlist(searchTerm)
     .groupUnmute()
     .crossfade("on")
-    .repeat("on")
     .shuffle("on")
-    .do(callback);
+    .repeat("on")
+    .do();
 }
 
 function setLautstaerke(volume: number) {
@@ -334,30 +330,12 @@ function setLautstaerke(volume: number) {
     .do();
   sonosHttp
     .room("Bad")
-    .volume(calcRelativeVolume(volume, 25, 15))
+    .volume(calcRelativeValue(volume, 25, 15))
     .do();
   sonosHttp
     .room("Schlafzimmer")
-    .volume(calcRelativeVolume(volume, 25, 80))
+    .volume(calcRelativeValue(volume, 25, 80))
     .do();
-}
-
-function calcRelativeVolume(
-  value: number,
-  refRoomVolume: number,
-  roomVolume: number
-) {
-  if (value >= refRoomVolume)
-    return Math.round(
-      (100 - roomVolume) *
-        (1 / (100 - refRoomVolume)) *
-        (value - refRoomVolume) +
-        roomVolume
-    );
-  else
-    return Math.round(
-      roomVolume * (1 / refRoomVolume) * (value - refRoomVolume) + roomVolume
-    );
 }
 
 app.get("/api/events/", function(_req, res) {

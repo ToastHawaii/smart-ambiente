@@ -1,4 +1,4 @@
-import * as request from "request";
+import { getJson, delay } from "../utils";
 
 export function createSonosService(baseUrl: string) {
   return new Sonos(baseUrl);
@@ -28,31 +28,19 @@ class Room {
   constructor(private baseUrl: string, private name: string) {}
   private commands: string[] = [];
 
-  public do(callback?: () => void) {
+  public async do() {
     const command = this.commands.shift();
     if (command !== undefined) {
       // console.log(this.baseUrl + "/" + this.name + "/" + command);
-      request.get(
-        this.baseUrl + "/" + this.name + "/" + command,
-        { json: true },
-        () => {
-          setTimeout(() => {
-            this.do(callback);
-          }, 10);
-        }
-      );
+      await getJson(this.baseUrl + "/" + this.name + "/" + command);
+      await delay(10);
+      await this.do();
     }
-
-    if (typeof callback === "function") callback();
   }
 
-  public state(callback?: (state: { volume: number }) => void) {
-    request.get(
-      this.baseUrl + "/" + this.name + "/state",
-      { json: true },
-      (_err, _res, body) => {
-        if (typeof callback === "function") callback(body);
-      }
+  public async state() {
+    return await getJson<{ volume: number }>(
+      this.baseUrl + "/" + this.name + "/state"
     );
   }
 

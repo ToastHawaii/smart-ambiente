@@ -3,7 +3,7 @@ import { StyleRulesCallback, withStyles } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
 import { Airplane, Train, Map, Brush, GamepadVariant } from "mdi-material-ui";
 import ButtonGroup from "./ButtonGroup";
-import { postJson, getJson } from "../utils";
+import { postJson, getJson, delay } from "../utils";
 import MenuButton from "./MenuButton";
 
 export interface Props {}
@@ -47,18 +47,17 @@ class Entspannung extends React.Component<
     super(props);
     this.state = {};
   }
-  public componentDidMount() {
-    getJson("/api/kanal/zusehen").then((data: any) => {
-      this.setState(data);
-    });
+  public async componentDidMount() {
+    const data = await getJson("/api/kanal/zusehen");
+    this.setState(data);
   }
 
-  public handleChange = (_event: any, aktivitaet: any) => {
+  public handleChange = async (_event: any, aktivitaet: any) => {
     this.setState({ aktivitaet });
-    setTimeout(() => {
-      postJson("api/kanal/zusehen", this.state);
-      PubSub.publish("zusehenStateChange", this.state);
-    }, 0);
+
+    await delay(0);
+    postJson("api/kanal/zusehen", this.state);
+    PubSub.publish("zusehenStateChange", this.state);
   }
 
   public render() {

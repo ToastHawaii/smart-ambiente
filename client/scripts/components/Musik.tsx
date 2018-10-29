@@ -12,7 +12,7 @@ import {
   EmoticonCool
 } from "mdi-material-ui";
 import ButtonGroup from "./ButtonGroup";
-import { postJson, getJson } from "../utils";
+import { postJson, getJson, delay } from "../utils";
 import MenuButton from "./MenuButton";
 
 export interface Props {}
@@ -56,20 +56,19 @@ class Musik extends React.Component<
     super(props);
     this.state = {};
   }
-  public componentDidMount() {
-    getJson("/api/kanal/musik").then((data: any) => {
-      this.setState(data);
-    });
+  public async componentDidMount() {
+    const data = await getJson("/api/kanal/musik");
+    this.setState(data);
   }
 
-  public handleChange = (
+  public handleChange = async (
     _event: React.ChangeEvent<{ checked: boolean }>,
     stil: any
   ) => {
     this.setState({ stil });
-    setTimeout(() => {
-      postJson("api/kanal/musik", this.state);
-    }, 0);
+
+    await delay(0);
+    postJson("api/kanal/musik", this.state);
   }
 
   public render() {

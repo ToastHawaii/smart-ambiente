@@ -1,5 +1,6 @@
 import * as Hue from "./philips-hue-api";
 import * as SonosHttp from "./node-sonos-http-api";
+import { calcRelativeValue, delay } from "../utils";
 
 const args: { [arg: string]: boolean } = {};
 for (const arg of process.argv.slice(2)) {
@@ -14,88 +15,72 @@ const sonosHttp = SonosHttp.createSonosService("http://localhost:5005");
 
 let schlafzimmerOn: boolean | undefined = undefined;
 let badOn: boolean | undefined = undefined;
-function roomCheck() {
-  // Schlafzimmer
-  hue.getLights("9", result => {
-    result = result || ({} as any);
-    result.state = result.state || ({} as any);
 
-    if (result.state.on === undefined) return;
+async function schlafzimmerCheck() {
+  let result = await hue.getLights("9");
+  result = result || ({} as any);
+  result.state = result.state || ({} as any);
 
-    if (result.state.on) {
-      if (!schlafzimmerOn || schlafzimmerOn === undefined) {
-        // console.log("Schlafzimmer an");
+  if (result.state.on === undefined) return;
 
-        sonosHttp.room("Wohnzimmer").state(state => {
-          sonosHttp
-            .room("Schlafzimmer")
-            .volume(calcRelativeVolume(state.volume, 25, 70))
-            .join("Wohnzimmer")
-            .do();
-        });
-      }
-    } else {
-      if (schlafzimmerOn || schlafzimmerOn === undefined) {
-        // console.log("Schlafzimmer aus");
-        sonosHttp
-          .room("Schlafzimmer")
-          .leave("Wohnzimmer")
-          .do();
-      }
+  if (result.state.on) {
+    if (!schlafzimmerOn || schlafzimmerOn === undefined) {
+      // console.log("Schlafzimmer an");
+
+      const state = await sonosHttp.room("Wohnzimmer").state();
+      sonosHttp
+        .room("Schlafzimmer")
+        .volume(calcRelativeValue(state.volume, 25, 80))
+        .join("Wohnzimmer")
+        .do();
     }
-    schlafzimmerOn = result.state.on;
-  });
-
-  hue.getLights("4", result => {
-    result = result || ({} as any);
-    result.state = result.state || ({} as any);
-
-    if (result.state.on === undefined) return;
-
-    if (result.state.on) {
-      if (!badOn || badOn === undefined) {
-        // console.log("Bad an");
-
-        sonosHttp.room("Wohnzimmer").state(state => {
-          sonosHttp
-            .room("Bad")
-            .volume(calcRelativeVolume(state.volume, 25, 15))
-            .join("Wohnzimmer")
-            .do();
-        });
-      }
-    } else {
-      if (badOn || badOn === undefined) {
-        // console.log("Bad aus");
-        sonosHttp
-          .room("Bad")
-          .leave("Wohnzimmer")
-          .do();
-      }
+  } else {
+    if (schlafzimmerOn || schlafzimmerOn === undefined) {
+      // console.log("Schlafzimmer aus");
+      sonosHttp
+        .room("Schlafzimmer")
+        .leave("Wohnzimmer")
+        .do();
     }
-    badOn = result.state.on;
-  });
+  }
+  schlafzimmerOn = result.state.on;
+}
 
-  setTimeout(() => {
-    roomCheck();
-  }, 3000);
+async function badCheck() {
+  let result = await hue.getLights("4");
+  result = result || ({} as any);
+  result.state = result.state || ({} as any);
+
+  if (result.state.on === undefined) return;
+
+  if (result.state.on) {
+    if (!badOn || badOn === undefined) {
+      // console.log("Bad an");
+
+      const state = await sonosHttp.room("Wohnzimmer").state();
+      sonosHttp
+        .room("Bad")
+        .volume(calcRelativeValue(state.volume, 25, 15))
+        .join("Wohnzimmer")
+        .do();
+    }
+  } else {
+    if (badOn || badOn === undefined) {
+      // console.log("Bad aus");
+      sonosHttp
+        .room("Bad")
+        .leave("Wohnzimmer")
+        .do();
+    }
+  }
+  badOn = result.state.on;
+}
+
+async function roomCheck() {
+  schlafzimmerCheck();
+  badCheck();
+
+  await delay(3000);
+  roomCheck();
 }
 roomCheck();
-
-function calcRelativeVolume(
-  value: number,
-  refRoomVolume: number,
-  roomVolume: number
-) {
-  if (value >= refRoomVolume)
-    return Math.round(
-      (100 - roomVolume) *
-        (1 / (100 - refRoomVolume)) *
-        (value - refRoomVolume) +
-        roomVolume
-    );
-  else
-    return Math.round(
-      roomVolume * (1 / refRoomVolume) * (value - refRoomVolume) + roomVolume
-    );
-}
