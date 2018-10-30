@@ -73,4 +73,4 @@ class ButtonGroup extends React.Component<
   }
 }
 
-export default withStyles(style)<Props>(ButtonGroup);
+export default withStyles(style)(ButtonGroup);

@@ -391,4 +391,4 @@ class BildHintergrund extends React.Component<
   }
 }
 
-export default withStyles(style)<Props>(BildHintergrund);
+export default withStyles(style)(BildHintergrund);

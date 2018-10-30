@@ -218,4 +218,4 @@ class ComplexButton extends React.Component<
   }
 }
 
-export default withStyles(style)<Props>(ComplexButton);
+export default withStyles(style)(ComplexButton);

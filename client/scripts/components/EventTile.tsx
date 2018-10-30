@@ -347,7 +347,6 @@ class EventTile extends React.Component<
               paddingBottom: "10px",
               msWordBreak: "break-all",
               wordBreak: "break-all",
-              "word-break": "break-word",
               WebkitHyphens: "auto",
               MozHyphens: "auto",
               msHyphens: "auto",
@@ -397,4 +396,4 @@ class EventTile extends React.Component<
   }
 }
 
-export default withStyles(style)<Props>(EventTile);
+export default withStyles(style)(EventTile);

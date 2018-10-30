@@ -154,4 +154,4 @@ class Ton extends React.Component<
   }
 }
 
-export default withStyles(style)<Props>(Ton);
+export default withStyles(style)(Ton);

@@ -153,4 +153,4 @@ class Musik extends React.Component<
   }
 }
 
-export default withStyles(style)<Props>(Musik);
+export default withStyles(style)(Musik);

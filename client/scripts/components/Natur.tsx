@@ -112,4 +112,4 @@ class Aussenansicht extends React.Component<
   }
 }
 
-export default withStyles(style)<Props>(Aussenansicht);
+export default withStyles(style)(Aussenansicht);

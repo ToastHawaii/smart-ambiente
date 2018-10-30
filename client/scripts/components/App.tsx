@@ -71,4 +71,4 @@ class App extends React.Component<
   }
 }
 
-export default hot(module)(withStyles(style)<Props>(App));
+export default hot(module)(withStyles(style)(App));

@@ -52,4 +52,4 @@ class Events extends React.Component<
   }
 }
 
-export default withStyles(style)<Props>(Events);
+export default withStyles(style)(Events);

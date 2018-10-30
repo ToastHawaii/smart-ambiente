@@ -10,7 +10,7 @@ export interface State {}
 
 type ComponentClassNames = "root" | "map" | "pano";
 
-const style: StyleRulesCallback<ComponentClassNames> = () => ({
+const styles: StyleRulesCallback<ComponentClassNames> = () => ({
   root: {},
   map: {
     position: "absolute",
@@ -161,4 +161,4 @@ class BildHintergrund extends React.Component<
   }
 }
 
-export default withStyles(style)<Props>(BildHintergrund);
+export default withStyles(styles)(BildHintergrund);

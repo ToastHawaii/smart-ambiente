@@ -160,4 +160,4 @@ class Bild extends React.Component<
   }
 }
 
-export default withStyles(style)<Props>(Bild);
+export default withStyles(style)(Bild);

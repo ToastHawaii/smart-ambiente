@@ -260,4 +260,4 @@ class Wetter extends React.Component<
   }
 }
 
-export default withStyles(style)<Props>(Wetter);
+export default withStyles(style)(Wetter);

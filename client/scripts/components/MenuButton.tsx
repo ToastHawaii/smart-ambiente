@@ -74,4 +74,4 @@ class MenuButton extends React.Component<
   }
 }
 
-export default withStyles(style)<Props>(MenuButton);
+export default withStyles(style)(MenuButton);

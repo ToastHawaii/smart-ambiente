@@ -133,4 +133,4 @@ class Licht extends React.Component<
   }
 }
 
-export default withStyles(style)<Props>(Licht);
+export default withStyles(style)(Licht);

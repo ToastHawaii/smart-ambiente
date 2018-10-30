@@ -482,4 +482,4 @@ class Schweiz extends React.Component<
   }
 }
 
-export default withStyles(style)<Props>(Schweiz);
+export default withStyles(style)(Schweiz);

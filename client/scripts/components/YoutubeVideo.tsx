@@ -77,4 +77,4 @@ class YoutubeVideo extends React.Component<
   }
 }
 
-export default withStyles(style)<Props>(YoutubeVideo);
+export default withStyles(style)(YoutubeVideo);

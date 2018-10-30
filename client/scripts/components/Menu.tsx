@@ -131,4 +131,4 @@ class Menu extends React.Component<
   }
 }
 
-export default withStyles(style)<Props>(Menu);
+export default withStyles(style)(Menu);

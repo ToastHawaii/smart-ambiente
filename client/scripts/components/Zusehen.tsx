@@ -107,4 +107,4 @@ class Entspannung extends React.Component<
   }
 }
 
-export default withStyles(style)<Props>(Entspannung);
+export default withStyles(style)(Entspannung);
