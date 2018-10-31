@@ -3,7 +3,7 @@ import { StyleRulesCallback, withStyles } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
 import { Earth, Airplane, Circle } from "mdi-material-ui";
 import ButtonGroup from "./ButtonGroup";
-import { postJson, getJson, delay } from "../utils";
+import { Component } from "../utils";
 import MenuButton from "./MenuButton";
 
 export interface Props {}
@@ -39,7 +39,7 @@ const style: StyleRulesCallback<ComponentClassNames> = () => ({
   }
 });
 
-class Aussenansicht extends React.Component<
+class Aussenansicht extends Component<
   Props & WithStyles<ComponentClassNames>,
   State
 > {
@@ -47,18 +47,13 @@ class Aussenansicht extends React.Component<
     super(props);
     this.state = {};
   }
-  public async componentDidMount() {
-    const data = await getJson("/api/kanal/tour");
-    this.setState(data);
+  public componentDidMount() {
+    this.subscribe("kanal/tour");
   }
 
-  public handleChange = async (_event: any, reise: any) => {
-    this.setState({ reise });
-
-    await delay(0);
-    postJson("api/kanal/tour", this.state);
-    PubSub.publish("tourStateChange", this.state);
-  }
+  public handleChange = (_event: any, reise: any) => {
+    this.publish("kanal/tour", { reise });
+  };
 
   public render() {
     const { classes } = this.props;

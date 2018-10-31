@@ -12,7 +12,7 @@ import {
 } from "mdi-material-ui";
 import Wetter from "./Wetter";
 import ButtonGroup from "./ButtonGroup";
-import { postJson, getJson, delay } from "../utils";
+import { Component } from "../utils";
 import MenuButton from "./MenuButton";
 
 export interface Props {}
@@ -28,32 +28,22 @@ const style: StyleRulesCallback<ComponentClassNames> = () => ({
   root: {}
 });
 
-class Licht extends React.Component<
-  Props & WithStyles<ComponentClassNames>,
-  State
-> {
+class Licht extends Component<Props & WithStyles<ComponentClassNames>, State> {
   constructor(props: any) {
     super(props);
     this.state = {};
   }
 
-  public async componentDidMount() {
-    const data = await getJson("/api/sinn/licht");
-    this.setState(data);
+  public componentDidMount() {
+    this.subscribe("sinn/licht");
   }
 
-  public handleHelligkeitChange = async (_event: any, helligkeit: any) => {
-    this.setState({ helligkeit });
-
-    await delay(0);
-    postJson("api/sinn/licht", this.state);
+  public handleHelligkeitChange = (_event: any, helligkeit: any) => {
+    this.publish("sinn/licht", { helligkeit });
   };
 
-  public handleKanalChange = async (_event: any, kanal: any) => {
-    this.setState({ kanal });
-
-    await delay(0);
-    postJson("api/sinn/licht", this.state);
+  public handleKanalChange = (_event: any, kanal: any) => {
+    this.publish("sinn/licht", { kanal });
   };
 
   public render() {

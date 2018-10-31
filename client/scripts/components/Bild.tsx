@@ -16,8 +16,7 @@ import Natur from "./Natur";
 import Tour from "./Tour";
 import Zusehen from "./Zusehen";
 import ButtonGroup from "./ButtonGroup";
-import { postJson, getJson, delay } from "../utils";
-import * as PubSub from "pubsub-js";
+import { Component } from "../utils";
 import MenuButton from "./MenuButton";
 
 export interface Props {}
@@ -33,34 +32,22 @@ const style: StyleRulesCallback<ComponentClassNames> = () => ({
   root: {}
 });
 
-class Bild extends React.Component<
-  Props & WithStyles<ComponentClassNames>,
-  State
-> {
+class Bild extends Component<Props & WithStyles<ComponentClassNames>, State> {
   constructor(props: any) {
     super(props);
     this.state = {};
   }
 
   public async componentDidMount() {
-    const data = await getJson("/api/sinn/bild");
-    this.setState(data);
+    this.subscribe("sinn/bild");
   }
 
-  public handleBildschirmChange = async (_event: any, bildschirm: any) => {
-    this.setState({ bildschirm });
-
-    await delay(0);
-    postJson("api/sinn/bild", this.state);
-    PubSub.publish("bildStateChange", this.state);
+  public handleBildschirmChange = (_event: any, bildschirm: any) => {
+    this.publish("sinn/bild", { bildschirm });
   }
 
-  public handleKanalChange = async (_event: any, kanal: any) => {
-    this.setState({ kanal });
-
-    await delay(0);
-    postJson("api/sinn/bild", this.state);
-    PubSub.publish("bildStateChange", this.state);
+  public handleKanalChange = (_event: any, kanal: any) => {
+    this.publish("sinn/bild", { kanal });
   }
 
   public render() {

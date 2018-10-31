@@ -12,7 +12,7 @@ import {
   EmoticonCool
 } from "mdi-material-ui";
 import ButtonGroup from "./ButtonGroup";
-import { postJson, getJson, delay } from "../utils";
+import { Component } from "../utils";
 import MenuButton from "./MenuButton";
 
 export interface Props {}
@@ -48,28 +48,19 @@ const style: StyleRulesCallback<ComponentClassNames> = () => ({
   }
 });
 
-class Musik extends React.Component<
-  Props & WithStyles<ComponentClassNames>,
-  State
-> {
+class Musik extends Component<Props & WithStyles<ComponentClassNames>, State> {
   constructor(props: any) {
     super(props);
     this.state = {};
   }
-  public async componentDidMount() {
-    const data = await getJson("/api/kanal/musik");
-    this.setState(data);
+
+  public componentDidMount() {
+    this.subscribe("kanal/musik");
   }
 
-  public handleChange = async (
-    _event: React.ChangeEvent<{ checked: boolean }>,
-    stil: any
-  ) => {
-    this.setState({ stil });
-
-    await delay(0);
-    postJson("api/kanal/musik", this.state);
-  }
+  public handleChange = (_event: any, stil: any) => {
+    this.publish("kanal/musik", { stil });
+  };
 
   public render() {
     const { classes } = this.props;

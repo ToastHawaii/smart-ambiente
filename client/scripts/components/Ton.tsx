@@ -15,7 +15,7 @@ import {
 import Musik from "./Musik";
 import Wetter from "./Wetter";
 import ButtonGroup from "./ButtonGroup";
-import { postJson, getJson, delay } from "../utils";
+import { Component } from "../utils";
 import MenuButton from "./MenuButton";
 
 export interface Props {}
@@ -31,36 +31,23 @@ const style: StyleRulesCallback<ComponentClassNames> = () => ({
   root: {}
 });
 
-class Ton extends React.Component<
-  Props & WithStyles<ComponentClassNames>,
-  State
-> {
+class Ton extends Component<Props & WithStyles<ComponentClassNames>, State> {
   constructor(props: any) {
     super(props);
     this.state = {};
   }
 
-  public async componentDidMount() {
-    const data = await getJson("/api/sinn/ton");
-    this.setState(data);
+  public componentDidMount() {
+    this.subscribe("sinn/ton");
   }
 
-  public handleLautstaerkeChange = async (_event: any, lautstaerke: any) => {
-    this.setState({ lautstaerke });
-
-    await delay(0);
-    postJson("api/sinn/ton", this.state).then(state => {
-      PubSub.publish("tonStateChange", state);
-    });
-    PubSub.publish("tonStateChange", this.state);
-  }
+  public handleLautstaerkeChange = (_event: any, lautstaerke: any) => {
+    this.publish("sinn/ton", { lautstaerke });
+  };
 
   public handleKanalChange = async (_event: any, kanal: any) => {
-    this.setState({ kanal });
-
-    await delay(0);
-    postJson("api/sinn/ton", this.state);
-  }
+    this.publish("sinn/ton", { kanal });
+  };
 
   public render() {
     const { classes } = this.props;

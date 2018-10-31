@@ -47,7 +47,7 @@ class App extends React.Component<
   }
 
   public handleClick = () => {
-    PubSub.publish("menuStateChange", {});
+    PubSub.publish("menu", {});
   }
 
   public render() {

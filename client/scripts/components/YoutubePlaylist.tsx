@@ -1,7 +1,7 @@
 import * as React from "react";
 import { StyleRulesCallback, withStyles } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
-import { getJson } from "../utils";
+import { Component } from "../utils";
 
 export interface Props {
   list: string;
@@ -20,7 +20,7 @@ const style: StyleRulesCallback<ComponentClassNames> = () => ({
   }
 });
 
-class YoutubeVideo extends React.Component<
+class YoutubeVideo extends Component<
   Props & WithStyles<ComponentClassNames>,
   State
 > {
@@ -30,13 +30,9 @@ class YoutubeVideo extends React.Component<
   }
 
   public componentDidMount() {
-    getJson("/api/sinn/ton").then((data: any) => {
-      this.setState({ muted: data.lautstaerke !== "bild" });
-    });
-
-    PubSub.subscribe("tonStateChange", (_message: any, data: any) => {
-      this.setState({ muted: data.lautstaerke !== "bild" });
-    });
+    this.subscribe("sinn/ton", data => ({
+      muted: data.lautstaerke !== "bild"
+    }));
   }
 
   public render() {

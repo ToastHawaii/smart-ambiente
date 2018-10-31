@@ -2,11 +2,10 @@ import * as React from "react";
 import { StyleRulesCallback, withStyles } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
 import * as classnames from "classnames";
-import * as PubSub from "pubsub-js";
 import Erde from "./Erde";
 import Schweiz from "./Schweiz";
 import RainEffect from "../raineffect/index";
-import { getJson } from "../utils";
+import { Component, randomIntFromInterval } from "../utils";
 import FlugHintergrund from "./FlugHintergrund";
 import YoutubeVideo from "./YoutubeVideo";
 import YoutubePlaylist from "./YoutubePlaylist";
@@ -73,7 +72,7 @@ const style: StyleRulesCallback<ComponentClassNames> = () => ({
   }
 });
 
-class BildHintergrund extends React.Component<
+class BildHintergrund extends Component<
   Props & WithStyles<ComponentClassNames>,
   State
 > {
@@ -91,57 +90,28 @@ class BildHintergrund extends React.Component<
   }
 
   public componentDidMount() {
-    getJson("/api/sinn/bild").then((data: any) => {
-      this.setState({ bild: data });
-    });
+    this.subscribe("sinn/bild", data => ({
+      bild: data
+    }));
+    this.subscribe("kanal/wetter", data => ({
+      wetter: data
+    }));
 
-    getJson("/api/kanal/wetter").then((data: any) => {
-      this.setState({ wetter: data });
-    });
+    this.subscribe("kanal/ansehen", data => ({
+      ansehen: data
+    }));
 
-    getJson("/api/kanal/ansehen").then((data: any) => {
-      this.setState({ ansehen: data });
-    });
+    this.subscribe("kanal/natur", data => ({
+      natur: data
+    }));
 
-    getJson("/api/kanal/natur").then((data: any) => {
-      this.setState({ natur: data });
-    });
+    this.subscribe("kanal/tour", data => ({
+      tour: data
+    }));
 
-    getJson("/api/kanal/tour").then((data: any) => {
-      this.setState({ tour: data });
-    });
-
-    getJson("/api/kanal/zusehen").then((data: any) => {
-      this.setState({ zusehen: data });
-    });
-
-    PubSub.subscribe("bildStateChange", (_message: any, data: any) => {
-      this.setState({ bild: data });
-    });
-
-    PubSub.subscribe("wetterStateChange", (_message: any, data: any) => {
-      this.setState({ wetter: data });
-    });
-
-    PubSub.subscribe("ansehenStateChange", (_message: any, data: any) => {
-      this.setState({ ansehen: data });
-    });
-
-    PubSub.subscribe("naturStateChange", (_message: any, data: any) => {
-      this.setState({ natur: data });
-    });
-
-    PubSub.subscribe("tourStateChange", (_message: any, data: any) => {
-      this.setState({ tour: data });
-    });
-
-    PubSub.subscribe("zusehenStateChange", (_message: any, data: any) => {
-      this.setState({ zusehen: data });
-    });
-  }
-
-  public randomIntFromInterval(min: number, max: number) {
-    return Math.floor(Math.random() * (max - min + 1) + min);
+    this.subscribe("kanal/zusehen", data => ({
+      zusehen: data
+    }));
   }
 
   public render() {
@@ -185,7 +155,7 @@ class BildHintergrund extends React.Component<
                 break;
             }
 
-          const backgroundNumber = this.randomIntFromInterval(1, max);
+          const backgroundNumber = randomIntFromInterval(1, max);
 
           if (wetter.niederschlag) {
             backgroundElement = (
@@ -281,7 +251,7 @@ class BildHintergrund extends React.Component<
               style={{
                 backgroundImage:
                   "url('/img/spotlight/background (" +
-                  this.randomIntFromInterval(1, 219) +
+                  randomIntFromInterval(1, 219) +
                   ").jpg')"
               }}
             />
@@ -373,14 +343,14 @@ class BildHintergrund extends React.Component<
           backgroundElement = (
             <YoutubePlaylist
               list="PLAEQD0ULngi67rwmhrkNjMZKvyCReqDV4"
-              first={this.randomIntFromInterval(0, 402)}
+              first={randomIntFromInterval(0, 402)}
             />
           );
         } else if (zusehen.aktivitaet === "speedrun") {
           backgroundElement = (
             <YoutubePlaylist
               list="PLraFbwCoisJCmLRBm7XbM8LmxByQAIz1y"
-              first={this.randomIntFromInterval(0, 61)}
+              first={randomIntFromInterval(0, 61)}
             />
           );
         }

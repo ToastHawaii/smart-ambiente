@@ -73,10 +73,11 @@ class Menu extends React.Component<
   private first = true;
 
   public componentDidMount() {
-    PubSub.subscribe("menuStateChange", () => {
+    PubSub.subscribe("menu", () => {
       this.setState({ menu: !this.state.menu });
     });
   }
+
   public handleClick = () => {
     //  if (navigator.userAgent.indexOf("SMART-TV") === -1) {
     this.setState({ menu: !this.state.menu });
