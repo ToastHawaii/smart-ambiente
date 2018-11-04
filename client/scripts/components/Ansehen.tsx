@@ -53,13 +53,14 @@ class Aussenansicht extends Component<
     super(props);
     this.state = {};
   }
-  public async componentDidMount() {
+
+  public componentDidMount() {
     this.subscribe("kanal/ansehen");
   }
 
-  public handleChange = async (_event: any, ort: any) => {
+  public handleChange = (_event: any, ort: any) => {
     this.publish("kanal/ansehen", { ort });
-  };
+  }
 
   public render() {
     const { classes } = this.props;

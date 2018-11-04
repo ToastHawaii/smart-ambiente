@@ -188,10 +188,10 @@ function playPlaylist(name: string) {
     .room("wohnzimmer")
     .groupMute()
     .pause()
+    .shuffle("on")
     .playlist(name)
     .groupUnmute()
     .crossfade("on")
-    .shuffle("on")
     .repeat("on")
     .play()
     .do();
@@ -315,10 +315,10 @@ function playWetter(weather: SimpleWeather.Forecast) {
     .room("wohnzimmer")
     .groupMute()
     .pause()
+    .shuffle("on")
     .playlist(searchTerm)
     .groupUnmute()
     .crossfade("on")
-    .shuffle("on")
     .repeat("on")
     .do();
 }

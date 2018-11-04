@@ -109,11 +109,11 @@ function setTon(weather: SimpleWeather.Forecast) {
     .room("wohnzimmer")
     .groupMute()
     .pause()
+    .shuffle("on")
     .playlist(searchTerm)
     .pause()
     .groupUnmute()
     .crossfade("on")
-    .shuffle("on")
     .repeat("on")
     .do();
 }

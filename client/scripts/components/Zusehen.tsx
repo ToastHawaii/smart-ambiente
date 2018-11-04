@@ -47,6 +47,7 @@ class Entspannung extends Component<
     super(props);
     this.state = {};
   }
+
   public componentDidMount() {
     this.subscribe("kanal/zusehen");
   }

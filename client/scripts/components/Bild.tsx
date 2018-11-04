@@ -38,7 +38,7 @@ class Bild extends Component<Props & WithStyles<ComponentClassNames>, State> {
     this.state = {};
   }
 
-  public async componentDidMount() {
+  public componentDidMount() {
     this.subscribe("sinn/bild");
   }
 
