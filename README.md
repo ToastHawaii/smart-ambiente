@@ -22,8 +22,9 @@ sudo apt-get install -y liquidsoap-plugin-all
 sudo apt-get install -y ladspa-sdk multimedia-audio-plugins
 sudo apt-get install icecast2
 
-sudo apt-get install -y nodejs npm
-cd /home/pi
+curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+sudo apt-get install -y nodejs
+cd /home/pi/smart-ambiente
 npm install ToastHawaii/smart-ambiente --production
 
 cd /etc
