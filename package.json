@@ -48,7 +48,6 @@
     "react-smooth-marquee": "1.0.0",
     "regenerator-runtime": "0.12.1",
     "request": "2.88.0",
-    "sonos-http-api": "github:jishi/node-sonos-http-api",
     "typeface-roboto": "0.0.54",
     "node-cron": "2.0.3"
   },
