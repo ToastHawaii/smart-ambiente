@@ -18,7 +18,8 @@ def update_scene(~protocol,~data,~headers,uri) =
 		
 		rand = float_of_string(entry["random"])
 		if rand > 0. then
-          source := delay(random.float(min=rand/2.,max=rand+rand/2.),!source)
+		  randv = random.float(min=rand/2.,max=rand+rand/2.)
+          source := delay(randv,!source)
 		end
 		
 		crossfade_duration = float_of_string(entry["crossfade"])
@@ -42,13 +43,13 @@ def update_scene(~protocol,~data,~headers,uri) =
 		int_of_float(float_of_string(entry["volume"])*100.)
 	end
 
-	scene = of_json(default=[[("file", ""), ("volume", ""), ("pan", ""), ("crossfade", ""), ("random", "")]],data)
+	scene = of_json(default=[[("file",""),("volume",""),("pan",""),("crossfade",""),("random","")]],data)
 
 	source.shutdown(!output)
 	if list.length(scene) == 0 then
 		output := out(muted)
 	else
-		output := out(mksafe(add(weights=list.map(weights_of_scene, scene),list.map(sources_of_scene, scene))))
+		output := out(mksafe(add(weights=list.map(weights_of_scene,scene),list.map(sources_of_scene,scene))))
 	end
 	
     http_response(

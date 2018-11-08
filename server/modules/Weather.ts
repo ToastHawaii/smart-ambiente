@@ -126,7 +126,7 @@ export class Weather {
       }
     };
 
-    const list = fs.readdirSync("../smart-ambiente-media/natur");
+    const list = fs.readdirSync("../smart-ambiente-media/img/wetter");
 
     const files = shuffle(list)
       .map(i => {

@@ -122,13 +122,13 @@ class Wetter extends Component<Props & WithStyles<ComponentClassNames>, State> {
           <MenuButton
             icon={<Teach />}
             title="Vorhersage"
-            backgroundImage="/img/Vorhersage.png"
+            backgroundImage="/img/button/wetter/Vorhersage.png"
             value="vorhersage"
           />
           <MenuButton
             icon={<ViewModule />}
             title="Manuell"
-            backgroundImage="/img/Manuell.png"
+            backgroundImage="/img/button/wetter/Manuell.png"
             value="manuell"
           />
         </ButtonGroup>
@@ -144,35 +144,35 @@ class Wetter extends Component<Props & WithStyles<ComponentClassNames>, State> {
               selected={wolken}
               icon={<WeatherCloudy />}
               title="Wolken"
-              backgroundImage="/img/Wolken.jpg"
+              backgroundImage="/img/button/wetter/Wolken.jpg"
             />
             <MenuButton
               onChange={this.handleWindChange}
               selected={wind}
               icon={<WeatherWindy />}
               title="Wind"
-              backgroundImage="/img/Wind.gif"
+              backgroundImage="/img/button/wetter/Wind.gif"
             />
             <MenuButton
               onChange={this.handleNiederschlagChange}
               selected={niederschlag}
               icon={<WeatherPouring />}
               title="Niederschlag"
-              backgroundImage="/img/Niederschlag.jpg"
+              backgroundImage="/img/button/wetter/Niederschlag.jpg"
             />
             <MenuButton
               onChange={this.handleNebelChange}
               selected={nebel}
               icon={<WeatherFog />}
               title="Nebel"
-              backgroundImage="/img/Nebel.jpg"
+              backgroundImage="/img/button/wetter/Nebel.jpg"
             />
             <MenuButton
               onChange={this.handleGewitterChange}
               selected={gewitter}
               icon={<WeatherLightning />}
               title="Gewitter"
-              backgroundImage="/img/Gewitter.jpg"
+              backgroundImage="/img/button/wetter/Gewitter.jpg"
             />{" "}
           </ButtonGroup>
           <ButtonGroup
@@ -186,31 +186,31 @@ class Wetter extends Component<Props & WithStyles<ComponentClassNames>, State> {
             <MenuButton
               icon={<Snowflake />}
               title="Eisig"
-              backgroundImage="/img/Eisig.jpg"
+              backgroundImage="/img/button/wetter/Eisig.jpg"
               value="eisig"
             />
             <MenuButton
               icon={<GaugeEmpty />}
               title="Kalt"
-              backgroundImage="/img/Kalt.jpg"
+              backgroundImage="/img/button/wetter/Kalt.jpg"
               value="kalt"
             />
             <MenuButton
               icon={<GaugeLow />}
               title="Mild"
-              backgroundImage="/img/Mild.jpg"
+              backgroundImage="/img/button/wetter/Mild.jpg"
               value="mild"
             />
             <MenuButton
               icon={<Gauge />}
               title="Warm"
-              backgroundImage="/img/Warm.jpg"
+              backgroundImage="/img/button/wetter/Warm.jpg"
               value="warm"
             />
             <MenuButton
               icon={<WhiteBalanceSunny />}
               title="Heiss"
-              backgroundImage="/img/Heiss.jpg"
+              backgroundImage="/img/button/wetter/Heiss.jpg"
               value="heiss"
             />
           </ButtonGroup>

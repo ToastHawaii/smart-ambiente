@@ -12,6 +12,7 @@ import Bild from "./Bild";
 import Licht from "./Licht";
 import { Menu as IconMenu } from "mdi-material-ui";
 import classNames = require("classnames");
+import * as PubSub from "pubsub-js";
 
 export interface Props {}
 

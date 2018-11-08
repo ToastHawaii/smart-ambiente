@@ -70,31 +70,31 @@ class Entspannung extends Component<
           <MenuButton
             title="Bahnverkehr"
             icon={<Train />}
-            backgroundImage="/img/Bahnverkehr.jpg"
+            backgroundImage="/img/button/zusehen/Bahnverkehr.jpg"
             value="bahnverkehr"
           />
           <MenuButton
             title="Flugverkehr"
             icon={<Airplane />}
-            backgroundImage="/img/Flugverkehr.jpg"
+            backgroundImage="/img/button/zusehen/Flugverkehr.jpg"
             value="flugverkehr"
           />
           <MenuButton
             title="Kartierung"
             icon={<Map />}
-            backgroundImage="/img/Kartierung.png"
+            backgroundImage="/img/button/zusehen/Kartierung.png"
             value="kartierung"
           />
           <MenuButton
             title="Malen"
             icon={<Brush />}
-            backgroundImage="/img/Malen.jpg"
+            backgroundImage="/img/button/zusehen/Malen.jpg"
             value="malen"
           />
           <MenuButton
             title="Speedrun"
             icon={<GamepadVariant />}
-            backgroundImage="/img/Speedrun.png"
+            backgroundImage="/img/button/zusehen/Speedrun.png"
             value="speedrun"
           />
         </ButtonGroup>

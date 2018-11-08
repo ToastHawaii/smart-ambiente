@@ -31,7 +31,12 @@ cd /etc
 sudo nano rc.local
 
     cd /home/pi/smart-ambiente/node_modules/sonos-http-api
-    node server.js >>/dev/null 2>>/dev/null &
+    node server.js >>/dev/smart-ambiente-sound.log 2>>/dev/smart-ambiente-sound.err &
 
     cd /home/pi/smart-ambiente/node_modules/smart-ambiente
     node out/server.js --RELEASE >>/dev/smart-ambiente.log 2>>/dev/smart-ambiente.err &
+
+    su - pi -c "
+    cd /home/pi/smart-ambiente/node_modules/smart-ambiente
+    liquidsoap out/smart-ambiente.liq
+    " >>/dev/smart-ambiente-radio.log 2>>/dev/smart-ambiente-radio.err &

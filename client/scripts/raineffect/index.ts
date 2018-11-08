@@ -38,8 +38,8 @@ export default function loadTextures(
   src = s;
   canvas = c;
   (loadImages as any)([
-    { name: "dropAlpha", src: "img/drop-alpha.png" },
-    { name: "dropColor", src: "img/drop-color.png" }
+    { name: "dropAlpha", src: "img/rain/drop-alpha.png" },
+    { name: "dropColor", src: "img/rain/drop-color.png" }
   ]).then((images: any) => {
     if (isHTMLImageElement(src)) {
       textureFgSize.width = src.naturalWidth;

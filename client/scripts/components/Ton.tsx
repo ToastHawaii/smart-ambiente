@@ -115,7 +115,7 @@ class Ton extends Component<Props & WithStyles<ComponentClassNames>, State> {
             <MenuButton
               title="Krimi"
               icon={<Pistol />}
-              backgroundImage="/img/Krimi.png"
+              backgroundImage="/img/button/ton/Krimi.png"
               value="krimi"
             />
             <MenuButton

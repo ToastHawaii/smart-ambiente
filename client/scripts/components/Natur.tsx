@@ -76,31 +76,31 @@ class Aussenansicht extends Component<
           <MenuButton
             title="Wasserfall"
             icon={<NotificationClearAll />}
-            backgroundImage="/img/Wasserfall.jpg"
+            backgroundImage="/img/button/natur/Wasserfall.jpg"
             value="wasserfall"
           />
           <MenuButton
             title="Strand"
             icon={<Beach />}
-            backgroundImage="/img/Strand.jpg"
+            backgroundImage="/img/button/natur/Strand.jpg"
             value="strand"
           />
           <MenuButton
             title="Savanne"
             icon={<Brightness5 />}
-            backgroundImage="/img/Savanne.jpg"
+            backgroundImage="/img/button/natur/Savanne.jpg"
             value="savanne"
           />
           <MenuButton
             title="Aquarium"
             icon={<Blackberry />}
-            backgroundImage="/img/Aquarium.jpg"
+            backgroundImage="/img/button/natur/Aquarium.jpg"
             value="aquarium"
           />
           <MenuButton
             title="Sonne"
             icon={<WeatherSunny />}
-            backgroundImage="/img/Sonne.jpg"
+            backgroundImage="/img/button/natur/Sonne.jpg"
             value="sonne"
           />
         </ButtonGroup>

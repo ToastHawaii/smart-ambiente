@@ -76,20 +76,20 @@ class Musik extends Component<Props & WithStyles<ComponentClassNames>, State> {
           <MenuButton
             title="Interesse"
             icon={<EmoticonHappy />}
-            backgroundImage="/img/musik/Interesse.jpg"
+            backgroundImage="/img/button/musik/Interesse.jpg"
             value="interesse"
             style={{ marginLeft: "21%" }}
           />
           <MenuButton
             title="Gelassenheit"
             icon={<EmoticonNeutral />}
-            backgroundImage="/img/musik/Gelassenheit.jpg"
+            backgroundImage="/img/button/musik/Gelassenheit.jpg"
             value="gelassenheit"
           />
           <MenuButton
             title="Akzeptanz"
             icon={<EmoticonTongue />}
-            backgroundImage="/img/musik/Akzeptanz.jpg"
+            backgroundImage="/img/button/musik/Akzeptanz.jpg"
             value="akzeptanz"
           />
         </ButtonGroup>
@@ -102,19 +102,19 @@ class Musik extends Component<Props & WithStyles<ComponentClassNames>, State> {
           <MenuButton
             title="Groll"
             icon={<EmoticonPoop />}
-            backgroundImage="/img/musik/Groll.jpg"
+            backgroundImage="/img/button/musik/Groll.jpg"
             value="groll"
           />
           <MenuButton
             title="Erwartung"
             icon={<Emoticon />}
-            backgroundImage="/img/musik/Erwartung.png"
+            backgroundImage="/img/button/musik/Erwartung.png"
             value="erwartung"
           />
           <MenuButton
             title="Freude"
             icon={<EmoticonExcited />}
-            backgroundImage="/img/musik/Freude.png"
+            backgroundImage="/img/button/musik/Freude.png"
             value="freude"
           />
         </ButtonGroup>
@@ -129,13 +129,13 @@ class Musik extends Component<Props & WithStyles<ComponentClassNames>, State> {
           <MenuButton
             title="Wut"
             icon={<EmoticonDevil />}
-            backgroundImage="/img/musik/Wut.png"
+            backgroundImage="/img/button/musik/Wut.png"
             value="wut"
           />
           <MenuButton
             title="Umsicht"
             icon={<EmoticonCool />}
-            backgroundImage="/img/musik/Umsicht.jpg"
+            backgroundImage="/img/button/musik/Umsicht.jpg"
             value="umsicht"
           />
         </ButtonGroup>

@@ -7,6 +7,7 @@ import * as classnames from "classnames";
 import HideCursor from "./HideCursor";
 import BildHintergrund from "./BildHintergrund";
 import classNames = require("classnames");
+import * as PubSub from "pubsub-js";
 import Menu from "./Menu";
 
 export interface Props {}

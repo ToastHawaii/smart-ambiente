@@ -70,19 +70,19 @@ class Aussenansicht extends Component<
           <MenuButton
             title="Flug"
             icon={<Airplane />}
-            backgroundImage="/img/Flug.jpg"
+            backgroundImage="/img/button/tour/Flug.jpg"
             value="flug"
           />
           <MenuButton
             title="Erdumrundung"
             icon={<Earth />}
-            backgroundImage="/img/Erdumrundung.jpg"
+            backgroundImage="/img/button/tour/Erdumrundung.jpg"
             value="umrundungErde"
           />
           <MenuButton
             title="Mondumrundung"
             icon={<Circle />}
-            backgroundImage="/img/Mondumrundung.jpg"
+            backgroundImage="/img/button/tour/Mondumrundung.jpg"
             value="umrundungMond"
           />
         </ButtonGroup>
