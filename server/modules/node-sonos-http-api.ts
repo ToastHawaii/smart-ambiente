@@ -1,7 +1,7 @@
 import { getJson, delay } from "../utils";
 
-export function createSonosService(baseUrl: string) {
-  return new Sonos(baseUrl);
+export function createClient() {
+  return new Sonos("http://localhost:5005");
 }
 
 class Room {

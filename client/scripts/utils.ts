@@ -29,7 +29,7 @@ export function delay(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-export function randomIntFromInterval(min: number, max: number) {
+export function getRandomInt(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
@@ -44,13 +44,17 @@ export class Component<P, S> extends React.Component<P, S> {
 
     const state = await getJson("/api/" + topic);
     this.setState(mapping(state));
-  }
+  };
 
-  public publish = async (topic: string, state: any) => {
+  public publish = async (
+    topic: string,
+    state: any,
+    mapping: (data: any) => any = (data: any) => data
+  ) => {
     this.setState(state);
 
     await delay(0);
-    await postJson("/api/" + topic, this.state);
-    PubSub.publish(topic, this.state);
-  }
+    PubSub.publish(topic, mapping(this.state));
+    await postJson("/api/" + topic, mapping(this.state));
+  };
 }

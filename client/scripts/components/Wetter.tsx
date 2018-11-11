@@ -5,8 +5,6 @@ import {
   WeatherCloudy,
   WeatherWindy,
   WeatherPouring,
-  WeatherFog,
-  WeatherLightning,
   ViewModule,
   Teach,
   Gauge,
@@ -19,15 +17,45 @@ import ButtonGroup from "./ButtonGroup";
 import { Component } from "../utils";
 import MenuButton from "./MenuButton";
 
+export function toViewModel(model: {
+  wolken: number;
+  wind: number;
+  niederschlag: number;
+  temperatur: number;
+  mode: "vorhersage" | "manuell";
+}) {
+  return {
+    wolken: model.wolken >= 1 ? true : false,
+    wind: model.wind >= 1 ? true : false,
+    niederschlag: model.niederschlag >= 1 ? true : false,
+    temperatur: model.temperatur,
+    mode: model.mode
+  };
+}
+
+export function fromViewModel(viewModel: {
+  wolken: boolean;
+  wind: boolean;
+  niederschlag: boolean;
+  temperatur: number;
+  mode: "vorhersage" | "manuell";
+}) {
+  return {
+    wolken: viewModel.wolken ? 1 : 0,
+    wind: viewModel.wind ? 1 : 0,
+    niederschlag: viewModel.niederschlag ? 1 : 0,
+    temperatur: viewModel.temperatur,
+    mode: viewModel.mode
+  };
+}
+
 export interface Props {}
 
 export interface State {
   wolken?: boolean;
   wind?: boolean;
   niederschlag?: boolean;
-  nebel?: boolean;
-  gewitter?: boolean;
-  temperatur?: "eisig" | "kalt" | "mild" | "warm" | "heiss";
+  temperatur?: number;
   mode?: "vorhersage" | "manuell";
 }
 
@@ -65,52 +93,40 @@ class Wetter extends Component<Props & WithStyles<ComponentClassNames>, State> {
   }
 
   public componentDidMount() {
-    this.subscribe("kanal/wetter");
+    this.subscribe("kanal/wetter", toViewModel);
   }
 
   public handleModeChange = (_event: any, mode: any) => {
-    this.publish("kanal/wetter", { mode });
+    this.publish("kanal/wetter", { mode }, fromViewModel);
   }
 
-  public handleWolkenChange = (_event: any, _value: any, wolken: any) => {
-    this.publish("kanal/wetter", { wolken });
+  public handleWolkenChange = (_event: any, _value: any, wolken: boolean) => {
+    this.publish("kanal/wetter", { wolken: wolken ? 1 : 0 }, fromViewModel);
   }
 
-  public handleWindChange = (_event: any, _value: any, wind: any) => {
-    this.publish("kanal/wetter", { wind });
+  public handleWindChange = (_event: any, _value: any, wind: boolean) => {
+    this.publish("kanal/wetter", { wind: wind ? 1 : 0 }, fromViewModel);
   }
 
   public handleNiederschlagChange = (
     _event: any,
     _value: any,
-    niederschlag: any
+    niederschlag: boolean
   ) => {
-    this.publish("kanal/wetter", { niederschlag });
+    this.publish(
+      "kanal/wetter",
+      { niederschlag: niederschlag ? 1 : 0 },
+      fromViewModel
+    );
   }
 
-  public handleNebelChange = (_event: any, _value: any, nebel: any) => {
-    this.publish("kanal/wetter", { nebel });
-  }
-
-  public handleGewitterChange = (_event: any, _value: any, gewitter: any) => {
-    this.publish("kanal/wetter", { gewitter });
-  }
-
-  public handleTemperaturChange = (_event: any, temperatur: any) => {
-    this.publish("kanal/wetter", { temperatur });
+  public handleTemperaturChange = (_event: any, temperatur: number) => {
+    this.publish("kanal/wetter", { temperatur }, fromViewModel);
   }
 
   public render() {
     const { classes } = this.props;
-    const {
-      wolken,
-      wind,
-      niederschlag,
-      nebel,
-      gewitter,
-      temperatur,
-      mode
-    } = this.state;
+    const { wolken, wind, niederschlag, temperatur, mode } = this.state;
 
     return (
       <div className={classes.root}>
@@ -160,20 +176,6 @@ class Wetter extends Component<Props & WithStyles<ComponentClassNames>, State> {
               title="Niederschlag"
               backgroundImage="/img/button/wetter/Niederschlag.jpg"
             />
-            <MenuButton
-              onChange={this.handleNebelChange}
-              selected={nebel}
-              icon={<WeatherFog />}
-              title="Nebel"
-              backgroundImage="/img/button/wetter/Nebel.jpg"
-            />
-            <MenuButton
-              onChange={this.handleGewitterChange}
-              selected={gewitter}
-              icon={<WeatherLightning />}
-              title="Gewitter"
-              backgroundImage="/img/button/wetter/Gewitter.jpg"
-            />{" "}
           </ButtonGroup>
           <ButtonGroup
             value={temperatur}
@@ -187,31 +189,31 @@ class Wetter extends Component<Props & WithStyles<ComponentClassNames>, State> {
               icon={<Snowflake />}
               title="Eisig"
               backgroundImage="/img/button/wetter/Eisig.jpg"
-              value="eisig"
+              value={0}
             />
             <MenuButton
               icon={<GaugeEmpty />}
               title="Kalt"
               backgroundImage="/img/button/wetter/Kalt.jpg"
-              value="kalt"
+              value={1}
             />
             <MenuButton
               icon={<GaugeLow />}
               title="Mild"
               backgroundImage="/img/button/wetter/Mild.jpg"
-              value="mild"
+              value={2}
             />
             <MenuButton
               icon={<Gauge />}
               title="Warm"
               backgroundImage="/img/button/wetter/Warm.jpg"
-              value="warm"
+              value={3}
             />
             <MenuButton
               icon={<WhiteBalanceSunny />}
               title="Heiss"
               backgroundImage="/img/button/wetter/Heiss.jpg"
-              value="heiss"
+              value={4}
             />
           </ButtonGroup>
         </Collapse>

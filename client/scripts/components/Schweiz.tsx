@@ -1,7 +1,7 @@
 import * as React from "react";
 import { StyleRulesCallback, withStyles } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
-import { delay, randomIntFromInterval } from "../utils";
+import { delay, getRandomInt } from "../utils";
 
 export interface Props {}
 
@@ -442,7 +442,7 @@ class Schweiz extends React.Component<
       //{ duration: 10, init: 1, source: "http://mdfcam.i-video.biz/webcam-weitwinkel.jpg" }
     ];
 
-    const kamera = kameras[randomIntFromInterval(0, kameras.length - 1)];
+    const kamera = kameras[getRandomInt(0, kameras.length - 1)];
 
     this.setState({
       kamera: kamera.source

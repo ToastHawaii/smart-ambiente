@@ -45,3 +45,22 @@ export function putJson(url: string, body: any) {
 export function delay(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+export function getRandom(min: number, max: number) {
+  return Math.random() * (max - min) + min;
+}
+
+export function shuffle<T>(array: T[]) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+
+  return array;
+}
+
+export function midrange(...values: number[]) {
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  return (min + max) / 2;
+}

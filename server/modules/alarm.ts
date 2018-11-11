@@ -1,5 +1,5 @@
 import * as Hue from "./philips-hue-api";
-import * as SimpleWeather from "./SimpleWeather";
+import * as WeatherForecast from "./Weather/Forecast";
 import * as SonosHttp from "./node-sonos-http-api";
 import * as cron from "node-cron";
 import { toArray, calcRelativeValue } from "../utils";
@@ -13,9 +13,9 @@ for (const arg of process.argv.slice(2)) {
 const hue = Hue.createHueService(
   "http://192.168.1.101/api/p5u0Ki9EwbUQ330gcMA9-gK3qBKhYWCWJ1NmkNVs"
 );
-const sonosHttp = SonosHttp.createSonosService("http://localhost:5005");
+const sonosHttp = SonosHttp.createClient();
 
-async function setLicht(weather: SimpleWeather.Forecast) {
+async function setLicht(weather: WeatherForecast.Forecast) {
   const result = await hue.querySchedules();
   const schedules = toArray<
     {
@@ -23,7 +23,7 @@ async function setLicht(weather: SimpleWeather.Forecast) {
     },
     Hue.Scheduler
   >(result);
-  if (weather.wolken) {
+  if (weather.wolken >= 1) {
     // console.log("Bewölkt");
     for (const s of schedules.filter(
       s => s.name.indexOf("Sonnenaufgang") !== -1
@@ -70,37 +70,31 @@ async function disableLicht() {
   }
 }
 
-function setTon(weather: SimpleWeather.Forecast) {
+function setTon(weather: WeatherForecast.Forecast) {
   let searchTerm = "Wetter - ";
 
-  if (weather.gewitter) {
-    searchTerm += "Unwetter";
-  } else if (weather.nebel) {
-    searchTerm += "Nebel";
-  } else {
-    switch (weather.temperatur) {
-      case "eisig":
-        searchTerm += "Eisig";
-        break;
-      case "kalt":
-        searchTerm += "Kalt";
-        break;
-      case "mild":
-        searchTerm += "Mild";
-        break;
-      case "warm":
-        searchTerm += "Warm";
-        break;
-      case "heiss":
-        searchTerm += "Heiss";
-        break;
-    }
+  switch (weather.temperatur) {
+    case 0:
+      searchTerm += "Eisig";
+      break;
+    case 1:
+      searchTerm += "Kalt";
+      break;
+    case 2:
+      searchTerm += "Mild";
+      break;
+    case 3:
+      searchTerm += "Warm";
+      break;
+    case 4:
+      searchTerm += "Heiss";
+      break;
+  }
 
-    if (weather.niederschlag) {
-      searchTerm += ", Niederschlag";
-    } else if (weather.wind) {
-      searchTerm += ", Wind";
-    }
+  if (weather.niederschlag >= 1) {
+    searchTerm += ", Niederschlag";
+  } else if (weather.wind >= 1) {
+    searchTerm += ", Wind";
   }
 
   console.log(searchTerm);
@@ -151,7 +145,7 @@ function sequenz(
 if (!args["--NOALARM"]) {
   sequenz(moment.duration("07:03"), "1-5", 5, [
     async () => {
-      const weather = await SimpleWeather.createSimpleWeatherService().query();
+      const weather = await WeatherForecast.query();
       setTon(weather);
       setLicht(weather);
     },

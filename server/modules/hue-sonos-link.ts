@@ -11,7 +11,7 @@ const hue = Hue.createHueService(
   "http://192.168.1.101/api/p5u0Ki9EwbUQ330gcMA9-gK3qBKhYWCWJ1NmkNVs"
 );
 
-const sonosHttp = SonosHttp.createSonosService("http://localhost:5005");
+const sonosHttp = SonosHttp.createClient();
 
 let schlafzimmerOn: boolean | undefined = undefined;
 let badOn: boolean | undefined = undefined;

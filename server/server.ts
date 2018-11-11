@@ -4,20 +4,21 @@ import * as bodyParser from "body-parser";
 import * as SonosHttp from "./modules/node-sonos-http-api";
 import * as HueHttp from "./modules/philips-hue-api";
 import { Group } from "./modules/philips-hue-api";
-import * as SimpleWeather from "./modules/SimpleWeather";
 import * as Events from "./modules/Events/Calendar";
 import { toArray, calcRelativeValue } from "./utils";
 
 import "./modules/alarm";
 import "./modules/hue-sonos-link";
 
+import * as WeatherForecast from "./modules/Weather/Forecast";
+import * as WeatherController from "./modules/Weather/Controller";
+
 const args: { [arg: string]: boolean } = {};
 for (const arg of process.argv.slice(2)) {
   args[arg.toUpperCase()] = true;
 }
 
-const sonosHttp = SonosHttp.createSonosService("http://localhost:5005");
-
+const sonosHttp = SonosHttp.createClient();
 const hueHttp = HueHttp.createHueService(
   "http://192.168.1.101/api/p5u0Ki9EwbUQ330gcMA9-gK3qBKhYWCWJ1NmkNVs"
 );
@@ -50,12 +51,10 @@ const data: {
   },
   kanal: {
     wetter: {
-      wolken: false,
-      wind: false,
-      niederschlag: false,
-      nebel: false,
-      gewitter: false,
-      temperatur: "eisig",
+      wolken: 0,
+      wind: 0,
+      niederschlag: 0,
+      temperatur: 0,
       mode: "vorhersage"
     },
     musik: {
@@ -76,12 +75,11 @@ const data: {
   }
 };
 
-SimpleWeather.createSimpleWeatherService()
-  .query()
-  .then(weather => {
-    data.kanal["wetter"] = weather;
-    data.kanal["wetter"].mode = "vorhersage";
-  });
+(async function() {
+  const weather = await WeatherForecast.query();
+  data.kanal["wetter"] = weather;
+  data.kanal["wetter"].mode = "vorhersage";
+})();
 
 app.get("/api/sinn/:sinn", function(req, res) {
   if (first) {
@@ -116,7 +114,7 @@ app.post("/api/kanal/:kanal", async function(req, res) {
     res.json(data.kanal[req.params.kanal]);
   } else if (req.params.kanal === "wetter") {
     if (data.kanal["wetter"].mode === "vorhersage") {
-      const weather = await SimpleWeather.createSimpleWeatherService().query();
+      const weather = await WeatherForecast.query();
       data.kanal["wetter"] = weather;
       data.kanal["wetter"].mode = "vorhersage";
 
@@ -173,7 +171,7 @@ function controlTon() {
     } else if (data.sinn["ton"].kanal === "krimi") {
       playPlaylist("Die haarstraeubenden Faelle des Philip Maloney");
     } else if (data.sinn["ton"].kanal === "wetter") {
-      playWetter(data.kanal["wetter"]);
+      WeatherController.playSound(data.kanal["wetter"]);
     }
   } else {
     sonosHttp
@@ -277,51 +275,6 @@ process.on("uncaughtException", function(err) {
   console.error(err.stack);
   console.log("Node NOT Exiting...");
 });
-
-function playWetter(weather: SimpleWeather.Forecast) {
-  let searchTerm = "Wetter - ";
-
-  if (weather.gewitter) {
-    searchTerm += "Unwetter";
-  } else if (weather.nebel) {
-    searchTerm += "Nebel";
-  } else {
-    switch (weather.temperatur) {
-      case "eisig":
-        searchTerm += "Eisig";
-        break;
-      case "kalt":
-        searchTerm += "Kalt";
-        break;
-      case "mild":
-        searchTerm += "Mild";
-        break;
-      case "warm":
-        searchTerm += "Warm";
-        break;
-      case "heiss":
-        searchTerm += "Heiss";
-        break;
-    }
-
-    if (weather.niederschlag) {
-      searchTerm += ", Niederschlag";
-    } else if (weather.wind) {
-      searchTerm += ", Wind";
-    }
-  }
-
-  sonosHttp
-    .room("wohnzimmer")
-    .groupMute()
-    .pause()
-    .shuffle("on")
-    .playlist(searchTerm)
-    .groupUnmute()
-    .crossfade("on")
-    .repeat("on")
-    .do();
-}
 
 function setLautstaerke(volume: number) {
   sonosHttp

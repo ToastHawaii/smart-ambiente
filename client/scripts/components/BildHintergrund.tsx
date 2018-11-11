@@ -5,11 +5,12 @@ import * as classnames from "classnames";
 import Erde from "./Erde";
 import Schweiz from "./Schweiz";
 import RainEffect from "../raineffect/index";
-import { Component, randomIntFromInterval } from "../utils";
+import { Component, getRandomInt } from "../utils";
 import FlugHintergrund from "./FlugHintergrund";
 import YoutubeVideo from "./YoutubeVideo";
 import YoutubePlaylist from "./YoutubePlaylist";
 import Events from "./Events";
+import { toViewModel } from "./Wetter";
 
 export interface Props {}
 
@@ -20,12 +21,10 @@ export interface State {
   };
 
   wetter: {
-    wolken?: false;
-    wind?: false;
-    niederschlag?: false;
-    nebel?: false;
-    gewitter?: false;
-    temperatur?: "eisig" | "kalt" | "mild" | "warm" | "heiss";
+    wolken?: boolean;
+    wind?: boolean;
+    niederschlag?: boolean;
+    temperatur?: number;
   };
 
   ansehen: {
@@ -37,12 +36,7 @@ export interface State {
   };
 
   tour: {
-    reise?:
-      | "fahrtSommer"
-      | "fahrtWinter"
-      | "flug"
-      | "umrundungErde"
-      | "umrundungMond";
+    reise?: "flug" | "umrundungErde" | "umrundungMond";
   };
 
   zusehen: {
@@ -90,12 +84,19 @@ class BildHintergrund extends Component<
   }
 
   public componentDidMount() {
-    this.subscribe("sinn/bild", data => ({
-      bild: data
-    }));
-    this.subscribe("kanal/wetter", data => ({
-      wetter: data
-    }));
+    this.subscribe("sinn/bild", data => {
+      console.info("sinn/bild" + data);
+      return {
+        bild: data
+      };
+    });
+
+    this.subscribe("kanal/wetter", data => {
+      const vm = toViewModel(data);
+      return {
+        wetter: vm
+      };
+    });
 
     this.subscribe("kanal/ansehen", data => ({
       ansehen: data
@@ -117,7 +118,7 @@ class BildHintergrund extends Component<
   public render() {
     const { classes } = this.props;
     const { bild, wetter, ansehen, natur, tour, zusehen } = this.state;
-
+    console.info("bild:" + bild);
     let backgroundElement: any;
 
     if (bild.bildschirm === "aus")
@@ -126,36 +127,34 @@ class BildHintergrund extends Component<
       );
     else {
       if (bild.kanal === "wetter") {
-        if (wetter.temperatur === "eisig" && !wetter.gewitter && !wetter.nebel)
+        if (wetter.temperatur === 0)
           backgroundElement = (
             <YoutubeVideo video="mWyak0g5LLI" align="bottom" startAt={25} />
           );
         else {
-          let background: string | undefined = wetter.temperatur;
+          let background: string | undefined;
           let max = 0;
 
-          if (wetter.gewitter || wetter.nebel) {
-            background = "severe";
-            max = 3;
-          } else
-            switch (wetter.temperatur) {
-              case "kalt":
-                background = "cold";
-                max = 26;
-                break;
-              case "mild":
-                max = 11;
-                break;
-              case "warm":
-                max = 10;
-                break;
-              case "heiss":
-                background = "hot";
-                max = 6;
-                break;
-            }
+          switch (wetter.temperatur) {
+            case 1:
+              background = "cold";
+              max = 26;
+              break;
+            case 2:
+              background = "mild";
+              max = 11;
+              break;
+            case 3:
+              background = "warm";
+              max = 10;
+              break;
+            case 4:
+              background = "hot";
+              max = 6;
+              break;
+          }
 
-          const backgroundNumber = randomIntFromInterval(1, max);
+          const backgroundNumber = getRandomInt(1, max);
 
           if (wetter.niederschlag) {
             backgroundElement = (
@@ -251,7 +250,7 @@ class BildHintergrund extends Component<
               style={{
                 backgroundImage:
                   "url('/img/spotlight/background (" +
-                  randomIntFromInterval(1, 219) +
+                  getRandomInt(1, 219) +
                   ").jpg')"
               }}
             />
@@ -343,14 +342,14 @@ class BildHintergrund extends Component<
           backgroundElement = (
             <YoutubePlaylist
               list="PLAEQD0ULngi67rwmhrkNjMZKvyCReqDV4"
-              first={randomIntFromInterval(0, 402)}
+              first={getRandomInt(0, 402)}
             />
           );
         } else if (zusehen.aktivitaet === "speedrun") {
           backgroundElement = (
             <YoutubePlaylist
               list="PLraFbwCoisJCmLRBm7XbM8LmxByQAIz1y"
-              first={randomIntFromInterval(0, 61)}
+              first={getRandomInt(0, 61)}
             />
           );
         }

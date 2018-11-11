@@ -1,4 +1,4 @@
-import { getJson } from "../utils";
+import { getJson } from "../../utils";
 
 export function createOwmService(appId: string) {
   return new Owm(appId);

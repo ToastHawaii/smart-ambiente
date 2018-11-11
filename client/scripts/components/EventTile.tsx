@@ -16,7 +16,7 @@ import {
 import { StyleRulesCallback, withStyles, Typography } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
 import { TileEvent, eventsRepository } from "../EventsRepository";
-import { randomIntFromInterval } from "../utils";
+import { getRandomInt } from "../utils";
 
 export interface Props {
   val: TileEvent;
@@ -62,7 +62,7 @@ class EventTile extends React.Component<
 
   public timer() {
     const time =
-      randomIntFromInterval(1, 2) *
+      getRandomInt(1, 2) *
       (this.state.val.groesse === 1 || !!this.state.details ? 10000 : 20000);
 
     let hintergrundPosition: string;
@@ -82,7 +82,7 @@ class EventTile extends React.Component<
     }, time);
 
     this.counter++;
-    if (this.counter % 3 === 0 && randomIntFromInterval(1, 2) === 1) {
+    if (this.counter % 3 === 0 && getRandomInt(1, 2) === 1) {
       this.setState({
         switch: true
       });
@@ -105,7 +105,7 @@ class EventTile extends React.Component<
   }
 
   public componentDidMount() {
-    const time = randomIntFromInterval(1, 2) * 10000;
+    const time = getRandomInt(1, 2) * 10000;
     this.timeoutId = setTimeout(() => {
       this.timer();
     }, time);
