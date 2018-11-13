@@ -5,7 +5,7 @@ import "./server";
 import "sonos-http-api/server";
 
 const options = {
-  contentBase: "../smart-ambiente-media",
+  contentBase: "../../smart-ambiente-media",
   hot: true,
   host: "localhost",
   proxy: {

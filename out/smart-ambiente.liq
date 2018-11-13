@@ -16,7 +16,6 @@ def update_scene(~protocol,~data,~headers,uri) =
 	def sources_of_scene(entry) =
 		source = ref single(entry["file"])
 		
-		
 		pan = entry["pan"]
 		if pan != "" and pan != "none" then
 			if pan == "random" then
@@ -25,7 +24,7 @@ def update_scene(~protocol,~data,~headers,uri) =
 			    source := stereo.pan(pan=float_of_string(pan),!source)
 			end		   
 		end
-		
+
 		crossfade_duration = float_of_string(entry["crossfade"])
 		if crossfade_duration > 0. then
           source := crossfade(start_next=crossfade_duration,fade_in=crossfade_duration,fade_out=crossfade_duration,!source)

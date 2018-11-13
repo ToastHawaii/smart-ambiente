@@ -25,7 +25,7 @@ const hueHttp = HueHttp.createHueService(
 
 const app = express();
 app.use(express.static("out/wwwroot"));
-app.use(express.static("../smart-ambiente-media"));
+app.use(express.static("../../smart-ambiente-media"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -51,6 +51,7 @@ const data: {
   },
   kanal: {
     wetter: {
+      zeit: 0,
       wolken: 0,
       wind: 0,
       niederschlag: 0,
@@ -75,21 +76,20 @@ const data: {
   }
 };
 
-(async function() {
-  const weather = await WeatherForecast.query();
-  data.kanal["wetter"] = weather;
-  data.kanal["wetter"].mode = "vorhersage";
-})();
-
-app.get("/api/sinn/:sinn", function(req, res) {
+app.get("/api/sinn/:sinn", async function(req, res) {
   if (first) {
     first = false;
+    const weather = await WeatherForecast.query();
+    data.kanal["wetter"] = weather;
+    data.kanal["wetter"].mode = "vorhersage";
+
     controlTon();
     controlLicht();
   }
 
   res.json(data.sinn[req.params.sinn]);
 });
+
 app.post("/api/sinn/:sinn", function(req, res) {
   console.info("Sinn: " + JSON.stringify(req.body));
 
@@ -101,9 +101,11 @@ app.post("/api/sinn/:sinn", function(req, res) {
 
   res.sendStatus(200);
 });
+
 app.get("/api/kanal/:kanal", function(req, res) {
   res.json(data.kanal[req.params.kanal]);
 });
+
 app.post("/api/kanal/:kanal", async function(req, res) {
   console.info("Kanal: " + JSON.stringify(req.body));
 
