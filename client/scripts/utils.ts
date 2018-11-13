@@ -1,4 +1,4 @@
-import React = require("react");
+import * as React from "react";
 import * as PubSub from "pubsub-js";
 
 export async function postJson(url: string, data: any) {
@@ -44,7 +44,7 @@ export class Component<P, S> extends React.Component<P, S> {
 
     const state = await getJson("/api/" + topic);
     this.setState(mapping(state));
-  };
+  }
 
   public publish = async (
     topic: string,
@@ -56,5 +56,5 @@ export class Component<P, S> extends React.Component<P, S> {
     await delay(0);
     PubSub.publish(topic, mapping(this.state));
     await postJson("/api/" + topic, mapping(this.state));
-  };
+  }
 }

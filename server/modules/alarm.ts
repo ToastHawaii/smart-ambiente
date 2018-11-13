@@ -3,7 +3,7 @@ import * as WeatherForecast from "./Weather/Forecast";
 import * as SonosHttp from "./node-sonos-http-api";
 import * as cron from "node-cron";
 import { toArray, calcRelativeValue } from "../utils";
-import moment = require("moment");
+import * as moment from "moment";
 
 const args: { [arg: string]: boolean } = {};
 for (const arg of process.argv.slice(2)) {
