@@ -1,9 +1,9 @@
 import * as Hue from "./philips-hue-api";
 import * as WeatherForecast from "./Weather/Forecast";
-import * as SonosHttp from "./node-sonos-http-api";
 import * as cron from "node-cron";
-import { toArray, calcRelativeValue } from "../utils";
+import { toArray } from "../utils";
 import * as moment from "moment";
+import { setKanal, setSinn } from "../server";
 
 const args: { [arg: string]: boolean } = {};
 for (const arg of process.argv.slice(2)) {
@@ -13,7 +13,6 @@ for (const arg of process.argv.slice(2)) {
 const hue = Hue.createHueService(
   "http://192.168.1.101/api/p5u0Ki9EwbUQ330gcMA9-gK3qBKhYWCWJ1NmkNVs"
 );
-const sonosHttp = SonosHttp.createClient();
 
 async function setLicht(weather: WeatherForecast.Forecast) {
   const result = await hue.querySchedules();
@@ -70,63 +69,6 @@ async function disableLicht() {
   }
 }
 
-function setTon(weather: WeatherForecast.Forecast) {
-  let searchTerm = "Wetter - ";
-
-  switch (weather.temperatur) {
-    case 0:
-      searchTerm += "Eisig";
-      break;
-    case 1:
-      searchTerm += "Kalt";
-      break;
-    case 2:
-      searchTerm += "Mild";
-      break;
-    case 3:
-      searchTerm += "Warm";
-      break;
-    case 4:
-      searchTerm += "Heiss";
-      break;
-  }
-
-  if (weather.niederschlag >= 1) {
-    searchTerm += ", Niederschlag";
-  } else if (weather.wind >= 1) {
-    searchTerm += ", Wind";
-  }
-
-  console.log(searchTerm);
-
-  sonosHttp
-    .room("wohnzimmer")
-    .groupMute()
-    .pause()
-    .shuffle("on")
-    .playlist(searchTerm)
-    .pause()
-    .groupUnmute()
-    .crossfade("on")
-    .repeat("on")
-    .do();
-}
-
-function setLautstaerke(volume: number) {
-  sonosHttp
-    .room("Wohnzimmer")
-    .volume(volume)
-    .do();
-  sonosHttp
-    .room("Bad")
-    .volume(calcRelativeValue(volume, 25, 15))
-    .do();
-  sonosHttp
-    .room("Schlafzimmer")
-    .volume(calcRelativeValue(volume, 25, 80))
-    .do();
-}
-
 function sequenz(
   start: moment.Duration,
   days: string,
@@ -145,36 +87,31 @@ function sequenz(
 if (!args["--NOALARM"]) {
   sequenz(moment.duration("07:03"), "1-5", 5, [
     async () => {
+      setSinn("licht", { helligkeit: "aus", kanal: "tageslicht" });
       const weather = await WeatherForecast.query();
-      setTon(weather);
       setLicht(weather);
+
+      setSinn("ton", { lautstaerke: "aus", kanal: "wetter" });
+      setKanal("wetter", { mode: "vorhersage" });
     },
     () => {
-      setLautstaerke(1);
-      sonosHttp
-        .room("wohnzimmer")
-        .play()
-        .do();
+      setSinn("licht", { helligkeit: "viel", kanal: "tageslicht" });
+      setSinn("ton", { lautstaerke: "1", kanal: "wetter" });
     },
     () => {
-      setLautstaerke(2);
+      setSinn("ton", { lautstaerke: "2", kanal: "wetter" });
     },
     () => {
-      setLautstaerke(4);
+      setSinn("ton", { lautstaerke: "4", kanal: "wetter" });
     },
     () => {
-      setLautstaerke(8);
+      setSinn("ton", { lautstaerke: "8", kanal: "wetter" });
     },
     () => {
-      setLautstaerke(10);
-      sonosHttp
-        .room("wohnzimmer")
-        .favorite("SRF 4 News (Nachrichten)")
-        .play()
-        .do();
+      setSinn("ton", { lautstaerke: "10", kanal: "nachrichten" });
     },
     () => {
-      setLautstaerke(13);
+      setSinn("ton", { lautstaerke: "13", kanal: "nachrichten" });
     }
   ]);
 } else {

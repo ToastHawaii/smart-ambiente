@@ -5,7 +5,7 @@ import * as SonosHttp from "./modules/node-sonos-http-api";
 import * as HueHttp from "./modules/philips-hue-api";
 import { Group } from "./modules/philips-hue-api";
 import * as Events from "./modules/Events/Calendar";
-import { toArray, calcRelativeValue } from "./utils";
+import { toArray, calcRelativeValue, postJson } from "./utils";
 
 import "./modules/alarm";
 import "./modules/hue-sonos-link";
@@ -91,30 +91,35 @@ app.get("/api/sinn/:sinn", async function(req, res) {
 });
 
 app.post("/api/sinn/:sinn", function(req, res) {
-  console.info("Sinn: " + JSON.stringify(req.body));
-
-  data.sinn[req.params.sinn] = req.body;
-
-  if (req.params.sinn === "ton") controlTon();
-
-  if (req.params.sinn === "licht") controlLicht();
+  setSinn(req.params.sinn, req.body);
 
   res.sendStatus(200);
 });
+
+export function setSinn(sinn: string, sinnData: any) {
+  console.info("Sinn: " + JSON.stringify(sinnData));
+  data.sinn[sinn] = sinnData;
+
+  if (sinn === "ton") controlTon();
+
+  if (sinn === "licht") controlLicht();
+}
 
 app.get("/api/kanal/:kanal", function(req, res) {
   res.json(data.kanal[req.params.kanal]);
 });
 
 app.post("/api/kanal/:kanal", async function(req, res) {
-  console.info("Kanal: " + JSON.stringify(req.body));
+  res.json(setKanal(req.params.kanal, req.body));
+});
 
-  data.kanal[req.params.kanal] = req.body;
+export async function setKanal(kanal: string, kanalData: any) {
+  console.info("Kanal: " + JSON.stringify(kanalData));
+  data.kanal[kanal] = kanalData;
 
-  if (req.params.kanal === "musik") {
+  if (kanal === "musik") {
     controlTon();
-    res.json(data.kanal[req.params.kanal]);
-  } else if (req.params.kanal === "wetter") {
+  } else if (kanal === "wetter") {
     if (data.kanal["wetter"].mode === "vorhersage") {
       const weather = await WeatherForecast.query();
       data.kanal["wetter"] = weather;
@@ -122,16 +127,14 @@ app.post("/api/kanal/:kanal", async function(req, res) {
 
       controlTon();
       controlLicht();
-
-      res.json(data.kanal[req.params.kanal]);
     } else {
       controlTon();
       controlLicht();
-
-      res.json(data.kanal[req.params.kanal]);
     }
   }
-});
+
+  return data.kanal[kanal];
+}
 
 app.listen(3001);
 
@@ -146,8 +149,17 @@ function controlTon() {
       setLautstaerke(15);
     } else if (data.sinn["ton"].lautstaerke === "laut") {
       setLautstaerke(25);
-    } else if (data.sinn["ton"].lautstaerke === "sehrLaut") {
-      setLautstaerke(35);
+    } else {
+      const lautstaerke = parseInt(data.sinn["ton"].lautstaerke, 10);
+      setLautstaerke(lautstaerke);
+
+      if (lautstaerke <= 8) {
+        data.sinn["ton"].lautstaerke = "leise";
+      } else if (lautstaerke <= 15) {
+        data.sinn["ton"].lautstaerke = "normal";
+      } else if (lautstaerke <= 25) {
+        data.sinn["ton"].lautstaerke = "laut";
+      }
     }
 
     if (data.sinn["ton"].kanal === "musik") {
@@ -176,6 +188,7 @@ function controlTon() {
       WeatherController.playSound(data.kanal["wetter"]);
     }
   } else {
+    postJson("http://192.168.1.112:8003/scene/weather", []);
     sonosHttp
       .room("wohnzimmer")
       .pause()

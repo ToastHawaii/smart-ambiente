@@ -42,6 +42,14 @@ export function putJson(url: string, body: any) {
   });
 }
 
+export function postJson(url: string, body: any) {
+  return new Promise<void>(resolve => {
+    request.post(url, { json: true, body: body }, () => {
+      resolve();
+    });
+  });
+}
+
 export function delay(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }

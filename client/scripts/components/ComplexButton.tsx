@@ -42,12 +42,11 @@ const style: StyleRulesCallback<ComponentClassNames> = (theme: any) => ({
     display: "flex",
     flexWrap: "wrap",
     minWidth: 200,
-    width: "100%",
-    borderRadius: "10px"
+    width: "100%"
   },
   image: {
     position: "relative",
-    height: 130,
+    height: 110,
     width: "100%",
     transition: theme.transitions.create("box-shadow"),
     [theme.breakpoints.down("xs")]: {
@@ -72,8 +71,7 @@ const style: StyleRulesCallback<ComponentClassNames> = (theme: any) => ({
     "&.selected $imageTitle, &:active $imageTitle": {
       border: "4px solid currentColor",
       background: "rgba(0, 0, 0, 0.1)"
-    },
-    borderRadius: "10px"
+    }
   },
   imageButton: {
     position: "absolute",
@@ -84,8 +82,7 @@ const style: StyleRulesCallback<ComponentClassNames> = (theme: any) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    color: theme.palette.common.white,
-    borderRadius: "10px"
+    color: theme.palette.common.white
   },
   imageSrc: {
     position: "absolute",
@@ -94,8 +91,7 @@ const style: StyleRulesCallback<ComponentClassNames> = (theme: any) => ({
     top: 0,
     bottom: 0,
     backgroundSize: "cover",
-    backgroundPosition: "center",
-    borderRadius: "10px"
+    backgroundPosition: "center"
   },
   imageBackdrop: {
     position: "absolute",
@@ -105,13 +101,13 @@ const style: StyleRulesCallback<ComponentClassNames> = (theme: any) => ({
     bottom: 0,
     backgroundColor: theme.palette.common.black,
     opacity: 0.3,
-    transition: theme.transitions.create("opacity"),
-    borderRadius: "10px"
+    transition: theme.transitions.create("opacity")
   },
   imageTitle: {
     position: "relative",
-    padding: `${theme.spacing.unit + 6}px ${theme.spacing.unit * 4}px ${theme
-      .spacing.unit + 6}px`
+    padding: `${theme.spacing.unit + 4}px ${theme.spacing.unit * 2}px ${theme
+      .spacing.unit + 4}px`,
+    minWidth: 58
   },
   imageMarked: {
     height: 3,

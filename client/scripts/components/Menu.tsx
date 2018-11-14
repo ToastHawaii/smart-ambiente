@@ -107,15 +107,15 @@ class Menu extends React.Component<
       <React.Fragment>
         <Collapse in={menu} className={collapseClass}>
           <div className={classes.menu} onClick={this.handleClick}>
-            <Typography variant="display1" style={{ margin: "0 1%" }}>
+            <Typography variant="headline" style={{ margin: "0 1%" }}>
               Ton
             </Typography>
             <Ton />
-            <Typography variant="display1" style={{ margin: "1% 1% 0 1%" }}>
+            <Typography variant="headline" style={{ margin: "0 1%" }}>
               Bild
             </Typography>
             <Bild />
-            <Typography variant="display1" style={{ margin: "1% 1% 0 1%" }}>
+            <Typography variant="headline" style={{ margin: "0 1%" }}>
               Licht
             </Typography>
             <Licht />

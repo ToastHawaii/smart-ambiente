@@ -61,7 +61,7 @@ class MenuButton extends React.Component<
         background={background}
         value={value}
         style={{
-          width: "18%",
+          width: "14.666%",
           margin: "0 1%",
           ...style
         }}
