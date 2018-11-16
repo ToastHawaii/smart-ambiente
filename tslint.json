@@ -11,7 +11,7 @@
 
     // TypeScript Specific
     "member-access": true, // Requires explicit visibility declarations for class members.
-    "no-any": true, // Diallows usages of any as a type declaration.
+    "no-any": false, // Diallows usages of any as a type declaration.
     // Functionality
     "label-position": true, // Only allows labels in sensible locations.
     "no-bitwise": true, // Disallows bitwise operators.

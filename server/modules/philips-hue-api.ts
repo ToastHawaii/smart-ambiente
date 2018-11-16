@@ -1,4 +1,5 @@
-import { getJson, putJson, delay } from "../utils";
+import { getJson, putJson } from "../utils/request";
+import { delay } from "../utils/timer";
 
 export function createHueService(baseUrl: string) {
   return new Hue(baseUrl);

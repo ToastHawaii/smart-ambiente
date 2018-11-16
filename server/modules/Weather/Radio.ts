@@ -1,10 +1,19 @@
 import * as SonosHttp from "../node-sonos-http-api";
 import { Forecast } from "./Forecast";
 import * as fs from "fs";
-import { postJson } from "../../utils";
+import { postJson } from "../../utils/request";
+
+import { delay } from "../../utils/timer";
+import debug from "../../utils/debug";
+const topic = debug("weather/controller", false);
+
+const soundSource = "../../smart-ambiente-media/sound/weather/";
+const channelUrl = "http://192.168.1.112:8003/scene/weather";
 
 function matchOrDefault(value: string, name: string, def: string) {
-  const matches = value.match(new RegExp(`\(.*${name}=([a-z0-9\.]+).*\)`, "i"));
+  const matches = value.match(
+    new RegExp(`\(.*${name}=([a-z0-9\.\-]+).*\)`, "i")
+  );
 
   if (matches && matches.length >= 3) return matches[2];
   else return def;
@@ -21,7 +30,12 @@ function typVolume(typ: string, weather: Forecast) {
   }
 }
 
+export async function stopSound() {
+  await postJson(channelUrl, []);
+}
+
 export async function playSound(weather: Forecast) {
+  topic("playSound", weather);
   if (weather.temperatur === 1) {
     const def = {
       volume: "1",
@@ -30,20 +44,20 @@ export async function playSound(weather: Forecast) {
       random: "0",
       typ: "background"
     };
-    const list = fs
-      .readdirSync("../../smart-ambiente-media/sound/weather/cold")
-      .map(f => ({
-        file: "../../smart-ambiente-media/sound/weather/cold/" + f,
-        volume: (
-          parseFloat(matchOrDefault(f, "volume", def.volume)) *
-          typVolume(matchOrDefault(f, "typ", def.typ), weather)
-        ).toString(),
-        pan: matchOrDefault(f, "pan", def.pan),
-        crossfade: matchOrDefault(f, "crossfade", def.crossfade),
-        random: matchOrDefault(f, "random", def.random)
-      }));
-    console.info("POST: " + JSON.stringify(list));
-    await postJson("http://192.168.1.112:8003/scene/weather", list);
+    const list = fs.readdirSync(soundSource + "cold").map(f => ({
+      file: soundSource + "cold/" + f,
+      volume: (
+        parseFloat(matchOrDefault(f, "volume", def.volume)) *
+        typVolume(matchOrDefault(f, "typ", def.typ), weather)
+      ).toString(),
+      pan: matchOrDefault(f, "pan", def.pan),
+      crossfade: matchOrDefault(f, "crossfade", def.crossfade),
+      random: matchOrDefault(f, "random", def.random)
+    }));
+    topic("POST", list);
+    await postJson(channelUrl, list);
+
+    await delay(1000);
 
     await SonosHttp.createClient()
       .room("wohnzimmer")
@@ -51,7 +65,7 @@ export async function playSound(weather: Forecast) {
       .play()
       .do();
   } else {
-    postJson("http://192.168.1.112:8003/scene/weather", []);
+    await postJson(channelUrl, []);
     let searchTerm = "Wetter - ";
 
     switch (weather.temperatur) {
@@ -90,5 +104,3 @@ export async function playSound(weather: Forecast) {
       .do();
   }
 }
-
-export function getImage() {}

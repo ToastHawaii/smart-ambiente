@@ -1,4 +1,7 @@
-import { getJson, delay } from "../utils";
+import { getJson } from "../utils/request";
+import { delay } from "../utils/timer";
+import debug from "../utils/debug";
+const topic = debug("node-sonos-http-api");
 
 export function createClient() {
   return new Sonos("http://localhost:5005");
@@ -31,7 +34,7 @@ class Room {
   public async do() {
     const command = this.commands.shift();
     if (command !== undefined) {
-      // console.log(this.baseUrl + "/" + this.name + "/" + command);
+      topic(this.baseUrl + "/" + this.name + "/" + command);
       await getJson(this.baseUrl + "/" + this.name + "/" + command);
       await delay(10);
       await this.do();

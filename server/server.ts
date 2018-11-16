@@ -1,17 +1,19 @@
 import * as express from "express";
 import * as bodyParser from "body-parser";
-
+import { toArray } from "./utils/array";
+import { relative } from "./utils/math";
 import * as SonosHttp from "./modules/node-sonos-http-api";
 import * as HueHttp from "./modules/philips-hue-api";
 import { Group } from "./modules/philips-hue-api";
 import * as Events from "./modules/Events/Calendar";
-import { toArray, calcRelativeValue, postJson } from "./utils";
-
+import * as WeatherForecast from "./modules/Weather/Forecast";
+import * as WeatherRadio from "./modules/Weather/Radio";
 import "./modules/alarm";
 import "./modules/hue-sonos-link";
 
-import * as WeatherForecast from "./modules/Weather/Forecast";
-import * as WeatherController from "./modules/Weather/Controller";
+import debug from "./utils/debug";
+debug.enabled = true;
+const topic = debug("server");
 
 const args: { [arg: string]: boolean } = {};
 for (const arg of process.argv.slice(2)) {
@@ -97,7 +99,8 @@ app.post("/api/sinn/:sinn", function(req, res) {
 });
 
 export function setSinn(sinn: string, sinnData: any) {
-  console.info("Sinn: " + JSON.stringify(sinnData));
+  topic("Sinn", sinnData);
+
   data.sinn[sinn] = sinnData;
 
   if (sinn === "ton") controlTon();
@@ -114,7 +117,8 @@ app.post("/api/kanal/:kanal", async function(req, res) {
 });
 
 export async function setKanal(kanal: string, kanalData: any) {
-  console.info("Kanal: " + JSON.stringify(kanalData));
+  topic("Kanal", kanalData);
+
   data.kanal[kanal] = kanalData;
 
   if (kanal === "musik") {
@@ -138,7 +142,7 @@ export async function setKanal(kanal: string, kanalData: any) {
 
 app.listen(3001);
 
-function controlTon() {
+async function controlTon() {
   if (
     data.sinn["ton"].lautstaerke !== "aus" &&
     data.sinn["ton"].lautstaerke !== "bild"
@@ -153,12 +157,14 @@ function controlTon() {
       const lautstaerke = parseInt(data.sinn["ton"].lautstaerke, 10);
       setLautstaerke(lautstaerke);
 
-      if (lautstaerke <= 8) {
-        data.sinn["ton"].lautstaerke = "leise";
-      } else if (lautstaerke <= 15) {
-        data.sinn["ton"].lautstaerke = "normal";
-      } else if (lautstaerke <= 25) {
+      if (lautstaerke >= 25) {
         data.sinn["ton"].lautstaerke = "laut";
+      } else if (lautstaerke >= 15) {
+        data.sinn["ton"].lautstaerke = "normal";
+      } else if (lautstaerke >= 8) {
+        data.sinn["ton"].lautstaerke = "leise";
+      } else {
+        data.sinn["ton"].lautstaerke = "aus";
       }
     }
 
@@ -185,19 +191,20 @@ function controlTon() {
     } else if (data.sinn["ton"].kanal === "krimi") {
       playPlaylist("Die haarstraeubenden Faelle des Philip Maloney");
     } else if (data.sinn["ton"].kanal === "wetter") {
-      WeatherController.playSound(data.kanal["wetter"]);
+      await WeatherRadio.playSound(data.kanal["wetter"]);
     }
   } else {
-    postJson("http://192.168.1.112:8003/scene/weather", []);
-    sonosHttp
+    await sonosHttp
       .room("wohnzimmer")
       .pause()
       .do();
+
+    await WeatherRadio.stopSound();
   }
 }
 
-function playPlaylist(name: string) {
-  sonosHttp
+async function playPlaylist(name: string) {
+  await sonosHttp
     .room("wohnzimmer")
     .groupMute()
     .pause()
@@ -210,8 +217,8 @@ function playPlaylist(name: string) {
     .do();
 }
 
-function playSender(name: string) {
-  sonosHttp
+async function playSender(name: string) {
+  await sonosHttp
     .room("wohnzimmer")
     .favorite(name)
     .play()
@@ -288,21 +295,21 @@ async function controlLicht() {
 
 process.on("uncaughtException", function(err) {
   console.error(err.stack);
-  console.log("Node NOT Exiting...");
+  topic("Node NOT Exiting...");
 });
 
-function setLautstaerke(volume: number) {
-  sonosHttp
+async function setLautstaerke(volume: number) {
+  await sonosHttp
     .room("Wohnzimmer")
     .volume(volume)
     .do();
-  sonosHttp
+  await sonosHttp
     .room("Bad")
-    .volume(calcRelativeValue(volume, 25, 15))
+    .volume(relative(volume, 25, 15))
     .do();
-  sonosHttp
+  await sonosHttp
     .room("Schlafzimmer")
-    .volume(calcRelativeValue(volume, 25, 80))
+    .volume(relative(volume, 25, 80))
     .do();
 }
 

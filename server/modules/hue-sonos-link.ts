@@ -1,6 +1,7 @@
+import { relative } from "../utils/math";
+import { delay } from "../utils/timer";
 import * as Hue from "./philips-hue-api";
 import * as SonosHttp from "./node-sonos-http-api";
-import { calcRelativeValue, delay } from "../utils";
 
 const args: { [arg: string]: boolean } = {};
 for (const arg of process.argv.slice(2)) {
@@ -28,16 +29,16 @@ async function schlafzimmerCheck() {
       // console.log("Schlafzimmer an");
 
       const state = await sonosHttp.room("Wohnzimmer").state();
-      sonosHttp
+      await sonosHttp
         .room("Schlafzimmer")
-        .volume(calcRelativeValue(state.volume, 25, 80))
+        .volume(relative(state.volume, 25, 80))
         .join("Wohnzimmer")
         .do();
     }
   } else {
     if (schlafzimmerOn || schlafzimmerOn === undefined) {
       // console.log("Schlafzimmer aus");
-      sonosHttp
+      await sonosHttp
         .room("Schlafzimmer")
         .leave("Wohnzimmer")
         .do();
@@ -58,16 +59,16 @@ async function badCheck() {
       // console.log("Bad an");
 
       const state = await sonosHttp.room("Wohnzimmer").state();
-      sonosHttp
+      await sonosHttp
         .room("Bad")
-        .volume(calcRelativeValue(state.volume, 25, 15))
+        .volume(relative(state.volume, 25, 15))
         .join("Wohnzimmer")
         .do();
     }
   } else {
     if (badOn || badOn === undefined) {
       // console.log("Bad aus");
-      sonosHttp
+      await sonosHttp
         .room("Bad")
         .leave("Wohnzimmer")
         .do();

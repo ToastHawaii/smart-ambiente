@@ -3,8 +3,8 @@ import * as regeneratorRuntime from "regenerator-runtime";
 import * as icalGenerator from "ical-generator";
 import * as moment from "moment";
 import * as Crawler from "./Crawler";
-import debug from "../../debug";
-import { delay } from "../../utils";
+import { delay } from "../../utils/timer";
+import debug from "../../utils/debug";
 const topic = debug("Calendar");
 
 const args: { [arg: string]: boolean } = {};

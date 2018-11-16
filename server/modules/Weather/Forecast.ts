@@ -1,7 +1,7 @@
 ﻿import * as Owm from "./openweathermap";
 // import * as fs from "fs";
 import * as moment from "moment";
-import { midrange } from "../../utils";
+import { midrange } from "../../utils/math";
 
 export interface Forecast {
   zeit: number;
@@ -199,7 +199,7 @@ export async function query() {
 //       rangedFiles.push({ file: f.file, max: max });
 //     }
 
-//     const next = getRandom(0, max);
+//     const next = random(0, max);
 //     const file = rangedFiles.filter(f => f.max >= next)[0].file;
 
 //     return file;
