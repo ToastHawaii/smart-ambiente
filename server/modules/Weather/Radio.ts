@@ -44,21 +44,21 @@ export async function playSound(weather: Forecast) {
       random: "0",
       typ: "background"
     };
-    const list = fs.readdirSync(soundSource + "cold").map(f => ({
-      file: soundSource + "cold/" + f,
-      volume: (
-        parseFloat(matchOrDefault(f, "volume", def.volume)) *
-        typVolume(matchOrDefault(f, "typ", def.typ), weather)
-      ).toString(),
-      pan: matchOrDefault(f, "pan", def.pan),
-      crossfade: matchOrDefault(f, "crossfade", def.crossfade),
-      random: matchOrDefault(f, "random", def.random)
-    }));
+    const list = fs
+      .readdirSync(soundSource + "cold")
+      .map(f => ({
+        file: soundSource + "cold/" + f,
+        volume: (
+          parseFloat(matchOrDefault(f, "volume", def.volume)) *
+          typVolume(matchOrDefault(f, "typ", def.typ), weather)
+        ).toString(),
+        pan: matchOrDefault(f, "pan", def.pan),
+        crossfade: matchOrDefault(f, "crossfade", def.crossfade),
+        random: matchOrDefault(f, "random", def.random)
+      }))
+      .filter(f => parseFloat(f.volume) > 0.1);
     topic("POST", list);
     await postJson(channelUrl, list);
-
-    await delay(1000);
-
     await SonosHttp.createClient()
       .room("wohnzimmer")
       .favorite("Smart Ambiente - Wetter")
