@@ -5,11 +5,11 @@ set("log.stdout",true)
 
 set("harbor.bind_addr","0.0.0.0")
 
-muted = mksafe(blank())
+muted = blank()
 
-out = output.icecast(%mp3,mount="smart-ambiente/weather")
-	
-output = ref out(muted)
+channel = ref muted
+
+output.icecast(%mp3,mount="smart-ambiente/weather",mksafe(source.dynamic(fun ()->[!channel])))
 	
 def update_scene(~protocol,~data,~headers,uri) =
 
@@ -44,11 +44,10 @@ def update_scene(~protocol,~data,~headers,uri) =
 
 	scene = of_json(default=[[("file",""),("volume",""),("pan",""),("crossfade",""),("random","")]],data)
 
-	source.shutdown(!output)
 	if list.length(scene) == 0 then
-		output := out(muted)
+		channel := muted
 	else
-		output := out(mksafe(add(weights=list.map(weights_of_scene,scene),list.map(sources_of_scene,scene))))
+		channel := amplify(8.,add(weights=list.map(weights_of_scene,scene),list.map(sources_of_scene,scene)))
 	end
 	
     http_response(

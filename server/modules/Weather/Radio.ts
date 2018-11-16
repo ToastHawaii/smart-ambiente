@@ -3,7 +3,6 @@ import { Forecast } from "./Forecast";
 import * as fs from "fs";
 import { postJson } from "../../utils/request";
 
-import { delay } from "../../utils/timer";
 import debug from "../../utils/debug";
 const topic = debug("weather/controller", false);
 
