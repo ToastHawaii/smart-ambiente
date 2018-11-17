@@ -15,11 +15,6 @@ import debug from "./utils/debug";
 debug.enabled = true;
 const topic = debug("server");
 
-const args: { [arg: string]: boolean } = {};
-for (const arg of process.argv.slice(2)) {
-  args[arg.toUpperCase()] = true;
-}
-
 const sonosHttp = SonosHttp.createClient();
 const hueHttp = HueHttp.createHueService(
   "http://192.168.1.101/api/p5u0Ki9EwbUQ330gcMA9-gK3qBKhYWCWJ1NmkNVs"
@@ -319,4 +314,8 @@ app.get("/api/events/", function(_req, res) {
 
 app.get("/api/events.ics", function(_req, res) {
   res.end(Events.getIcal());
+});
+
+app.get("/api/events/:kategorie.ics", function(req, res) {
+  res.end(Events.getIcal(req.params.kategorie));
 });

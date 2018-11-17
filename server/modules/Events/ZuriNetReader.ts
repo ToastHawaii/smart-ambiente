@@ -1,7 +1,8 @@
-import { Reader, Event } from "./Crawler";
+import { HtmlReader, Event } from "./Crawler";
 import * as moment from "moment";
 
-export const zuriNetReader: Reader = {
+export const zuriNetReader: HtmlReader = {
+  typ:"html",
   sourceName: "zuri.net",
   sourceUrl: ["[https://zuri.net/agenda/alles/]DD.MM.YYYY"],
   itemSelector: '[itemtype="http://data-vocabulary.org/Event"]',

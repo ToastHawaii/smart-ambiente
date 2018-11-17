@@ -4,15 +4,9 @@ import * as icalGenerator from "ical-generator";
 import * as moment from "moment";
 import * as Crawler from "./Crawler";
 import { delay } from "../../utils/timer";
+import { args } from "../../utils/arguments";
 import debug from "../../utils/debug";
-const topic = debug("Calendar");
-
-const args: { [arg: string]: boolean } = {};
-for (const arg of process.argv.slice(2)) {
-  args[arg.toUpperCase()] = true;
-}
-
-debug.enabled = true;
+const topic = debug("Calendar", false);
 
 export interface Event {
   basisKategorie?: string;
@@ -44,7 +38,7 @@ export function get() {
   return uniqueEvents;
 }
 
-export function getIcal() {
+export function getIcal(kategorie: string = "") {
   const cal = icalGenerator();
   cal.domain("smart-ambiente");
   cal.prodId("//davical.org//NONSGML AWL Calendar//EN");
@@ -52,6 +46,10 @@ export function getIcal() {
   for (const e of events) {
     const id = (e.titel + e.start.toISOString()).replace(/[^a-z0-9]/g, "");
     e.basisKategorie = extractBaseKategorie(e);
+
+    if (!e.basisKategorie.toUpperCase().includes(kategorie.toUpperCase()))
+      continue;
+
     const calEvent = cal.createEvent({
       uid: id,
       summary: e.titel,

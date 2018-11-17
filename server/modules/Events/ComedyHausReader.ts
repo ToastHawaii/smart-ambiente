@@ -1,8 +1,9 @@
-import { Reader, Event } from "./Crawler";
+import { HtmlReader, Event } from "./Crawler";
 import * as moment from "moment";
 import * as $ from "cheerio";
 
-export const comedyHausReader: Reader = {
+export const comedyHausReader: HtmlReader = {
+  typ:"html",
   sourceName: "ComedyHaus",
   sourceUrl: ["https://comedyhaus.ch/shows.html"],
   itemSelector: ".item",

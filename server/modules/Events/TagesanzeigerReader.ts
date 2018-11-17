@@ -1,8 +1,9 @@
-import { Reader, Event } from "./Crawler";
+import { HtmlReader, Event } from "./Crawler";
 import * as moment from "moment";
 import * as $ from "cheerio";
 
-export const tagesanzeigerChReader: Reader = {
+export const tagesanzeigerChReader: HtmlReader = {
+  typ:"html",
   sourceName: "tagesanzeiger.ch",
   sourceUrl: [
     "[https://agenda.tagesanzeiger.ch/veranstaltungen/suche/neu/?postcode=ZH&search_from=]DD.MM.YYYY[&search_to=]DD.MM.YYYY"

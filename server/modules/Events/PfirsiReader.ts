@@ -1,9 +1,10 @@
-import { Reader } from "./Crawler";
+import { HtmlReader } from "./Crawler";
 import * as moment from "moment";
 
 moment.locale("de");
 
-export const pfirsiReader: Reader = {
+export const pfirsiReader: HtmlReader = {
+  typ:"html",
   sourceName: "pfirsi",
   sourceUrl: ["https://www.pfirsi.ch/events/anundpfirsich/"],
   itemSelector: ".et_pb_row a.et_pb_button",

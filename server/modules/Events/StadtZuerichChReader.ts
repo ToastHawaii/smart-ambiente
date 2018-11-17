@@ -1,7 +1,8 @@
-import { Reader, Event } from "./Crawler";
+import { HtmlReader, Event } from "./Crawler";
 import * as moment from "moment";
 
-export const stadtZuerichChReader: Reader = {
+export const stadtZuerichChReader: HtmlReader = {
+  typ:"html",
   sourceName: "stadt-zuerich.ch",
   sourceUrl: [
     "[https://www.stadt-zuerich.ch/portal/de/index/aktuelles/agenda/veranstaltungen_suche_archiv.html?q=&q_category=&q_date=]DD.MM.YYYY[&q_type=event&limit=100]"

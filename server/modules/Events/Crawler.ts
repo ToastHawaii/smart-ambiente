@@ -1,4 +1,3 @@
-import * as request from "request";
 import { zuerichUnbezahlbarReader } from "./ZuerichUnbezahlbarReader";
 import { stadtZuerichChReader } from "./StadtZuerichChReader";
 import { eventsChReader } from "./EventsChReader";
@@ -9,6 +8,10 @@ import { pfirsiReader } from "./PfirsiReader";
 import * as Calendar from "./Calendar";
 import * as moment from "moment";
 import * as cheerio from "cheerio";
+import { getHtml, getJson } from "../../utils/request";
+import { casinotheaterReader } from "./CasinotheaterReader";
+import debug from "../../utils/debug";
+const topic = debug("Events/Crawler", false);
 
 export interface Event {
   kategorie?: string;
@@ -20,12 +23,24 @@ export interface Event {
   ort?: string;
 }
 
-export interface Reader {
+type Reader = HtmlReader | JsonReader<any, any>;
+
+export interface HtmlReader {
+  typ: "html";
   sourceName: string;
   sourceUrl: string[];
   itemSelector: string;
   sourceDetailUrl?: ($listItem: Cheerio) => string;
   mapper: ($listItem: Cheerio, $detailItem?: Cheerio) => Event[];
+}
+
+export interface JsonReader<A, I> {
+  typ: "json";
+  sourceName: string;
+  sourceUrl: string[];
+  itemSelector: (listItems: A) => I[];
+  sourceDetailUrl?: (listItem: I) => string;
+  mapper: (listItem: I, $detailItem?: Cheerio) => Event[];
 }
 
 const readers: Reader[] = [
@@ -35,7 +50,8 @@ const readers: Reader[] = [
   tagesanzeigerChReader,
   zuriNetReader,
   comedyHausReader,
-  pfirsiReader
+  pfirsiReader,
+  casinotheaterReader
 ];
 
 function urls(url: string): string[] {
@@ -57,98 +73,99 @@ function selectMany(f: any) {
   };
 }
 
-function httpGet(sourceUrl: string) {
-  return new Promise<string>(resolve =>
-    request.get(
-      {
-        url: sourceUrl,
-        headers: { "User-Agent": "request" }
-      },
-      (err, _res, body) => {
-        if (err) console.info("error on request: " + err);
-        resolve(body);
-      }
-    )
-  );
-}
-
 export async function crawel(
   persist: (event: Calendar.Event) => Promise<void>
 ) {
   for (const reader of readers) {
-    // console.info(reader.sourceName);
-    const sourceUrls = reader.sourceUrl
-      .map(u => urls(u))
-      .reduce(selectMany((x: any) => x), []);
+    if (reader.typ === "html") await crawelHtml(reader, persist);
+    else await crawelJson(reader, persist);
+  }
+}
 
-    for (const sourceUrl of sourceUrls) {
-      // console.info("GET " + sourceUrl);
+async function crawelHtml(
+  reader: HtmlReader,
+  persist: (event: Calendar.Event) => Promise<void>
+) {
+  topic(reader.sourceName);
+  const sourceUrls = reader.sourceUrl
+    .map(u => urls(u))
+    .reduce(selectMany((x: any) => x), []);
 
-      let body = await httpGet(sourceUrl);
+  for (const sourceUrl of sourceUrls) {
+    topic("GET " + sourceUrl);
+    let body = await getHtml(sourceUrl);
 
-      // console.info(body);
-      const $ = cheerio.load(body);
+    topic(body);
+    const $ = cheerio.load(body);
 
-      const elements: Cheerio[] = [];
-      $(reader.itemSelector).each((_i, e) => {
-        elements.push($(e));
-      });
+    const elements: Cheerio[] = [];
+    $(reader.itemSelector).each((_i, e) => {
+      elements.push($(e));
+    });
 
-      for (const $e of elements) {
-        if (!reader.sourceDetailUrl)
-          await transformPersist(persist, reader, $e);
-        else {
-          const detailUrl = reader.sourceDetailUrl($e);
+    for (const $e of elements) {
+      if (!reader.sourceDetailUrl)
+        await transformPersist(persist, reader, reader.mapper($e));
+      else {
+        const detailUrl = reader.sourceDetailUrl($e);
 
-          // console.info("GET " + detailUrl);
-          body = await httpGet(detailUrl);
+        topic("GET " + detailUrl);
+        body = await getHtml(detailUrl);
 
-          if (!body) {
-            console.info("body is null on GET " + detailUrl);
-            return;
-          }
-          //    console.info(body);
-          const $ = cheerio.load(body);
-          await transformPersist(persist, reader, $e, $("body"));
+        if (!body) {
+          console.error("body is null on GET " + detailUrl);
+          return;
         }
+
+        topic(body);
+        const $ = cheerio.load(body);
+        await transformPersist(persist, reader, reader.mapper($e, $("body")));
       }
     }
   }
 }
 
-// function sub(beschreibung: string) {
-//   beschreibung = beschreibung.replace(/\s\s+/g, " ").trim();
-//   return beschreibung.length > 35
-//     ? beschreibung.substring(0, 32) + "..."
-//     : beschreibung;
-// }
+async function crawelJson<T>(
+  reader: JsonReader<any, any>,
+  persist: (event: Calendar.Event) => Promise<void>
+) {
+  topic(reader.sourceName);
+  const sourceUrls = reader.sourceUrl
+    .map(u => urls(u))
+    .reduce(selectMany((x: any) => x), []);
+
+  for (const sourceUrl of sourceUrls) {
+    topic("GET " + sourceUrl);
+    const elements = reader.itemSelector(await getJson<T[]>(sourceUrl));
+
+    for (const e of elements) {
+      if (!reader.sourceDetailUrl)
+        await transformPersist(persist, reader, reader.mapper(e));
+      else {
+        const detailUrl = reader.sourceDetailUrl(e);
+
+        topic("GET " + detailUrl);
+        const body = await getHtml(detailUrl);
+
+        if (!body) {
+          console.error("body is null on GET " + detailUrl);
+          return;
+        }
+
+        topic(body);
+        const $ = cheerio.load(body);
+        await transformPersist(persist, reader, reader.mapper(e, $("body")));
+      }
+    }
+  }
+}
 
 async function transformPersist(
   persist: (event: Calendar.Event) => Promise<void>,
   reader: Reader,
-  $listItem: Cheerio,
-  $detailItem?: Cheerio
+  readerEvents: Event[]
 ) {
   try {
-    // transform
-    const readerEvents = reader.mapper($listItem, $detailItem);
-
-    // for (const readerEvent of readerEvents) {
-    // console.info(
-    //   [
-    //     readerEvent.titel,
-    //     readerEvent.beschreibung,
-    //     readerEvent.kategorie,
-    //     readerEvent.ort,
-    //     readerEvent.bild,
-    //     readerEvent.start.format(),
-    //     readerEvent.ende ? readerEvent.ende.format() : ""
-    //   ]
-    //     .map(f => sub(f + "").replace(/(?:\r\n|\r|\n)/g, ""))
-    //     .join(";")
-    // );
-    //}
-
     for (const readerEvent of readerEvents) {
       const now = moment();
       const inAWeek = moment().add(7, "days");
@@ -206,6 +223,6 @@ async function transformPersist(
       await persist(calenderEvent);
     }
   } catch (err) {
-    console.info("error: " + err);
+    console.error("error: " + err);
   }
 }

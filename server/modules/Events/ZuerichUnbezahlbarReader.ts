@@ -1,7 +1,8 @@
-import { Reader } from "./Crawler";
+import { HtmlReader } from "./Crawler";
 import * as moment from "moment";
 
-export const zuerichUnbezahlbarReader: Reader = {
+export const zuerichUnbezahlbarReader: HtmlReader = {
+  typ:"html",
   sourceName: "Zürich unbezahlbar",
   sourceUrl: ["[http://www.zuerichunbezahlbar.ch/events/?date=]DD-MM-YYYY"],
   itemSelector: "article",

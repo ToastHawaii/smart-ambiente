@@ -1,7 +1,8 @@
-import { Reader, Event } from "./Crawler";
+import { HtmlReader, Event } from "./Crawler";
 import * as moment from "moment";
 
-export const eventsChReader: Reader = {
+export const eventsChReader: HtmlReader = {
+  typ:"html",
   sourceName: "events.ch",
   sourceUrl: [
     "[https://events.ch/de/events/pager?filter=eventData.venueFloor.venue.city.zip%3E%3D8000%2CeventData.venueFloor.venue.city.zip%3C8600%2Cstartdate%3E%3D]YYYY-MM-DD[%2000%3A00%3A00&range=0-99]"

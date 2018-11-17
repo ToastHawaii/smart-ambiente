@@ -23,3 +23,18 @@ export function postJson(url: string, body: any) {
     });
   });
 }
+
+export function getHtml(sourceUrl: string) {
+  return new Promise<string>(resolve =>
+    request.get(
+      {
+        url: sourceUrl,
+        headers: { "User-Agent": "request" }
+      },
+      (err, _res, body) => {
+        if (err) console.error("error on request: " + err);
+        resolve(body);
+      }
+    )
+  );
+}
