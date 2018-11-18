@@ -46,7 +46,7 @@ def update_scene(~protocol,~data,~headers,uri) =
 		int_of_float(float_of_string(entry["volume"])*100.)
 	end
 
-	scene = of_json(default=[[("file",""),("volume",""),("pan",""),("crossfade",""),("random","")]],data)
+	scene = of_json(default=[[("typ",""),("source",""),("volume",""),("pan",""),("crossfade",""),("random","")]],data)
 
 	if list.length(scene) == 0 then
 		channel := muted
