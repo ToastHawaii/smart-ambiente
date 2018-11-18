@@ -60,7 +60,7 @@ class Musik extends Component<Props & WithStyles<ComponentClassNames>, State> {
 
   public handleChange = (_event: any, stil: any) => {
     this.publish("kanal/musik", { stil });
-  };
+  }
 
   public render() {
     const { classes } = this.props;
@@ -78,7 +78,7 @@ class Musik extends Component<Props & WithStyles<ComponentClassNames>, State> {
             icon={<EmoticonHappy />}
             backgroundImage="/img/button/musik/Interesse.jpg"
             value="interesse"
-            style={{ marginLeft: "21%" }}
+            style={{ marginLeft: "17.666%" }}
           />
           <MenuButton
             title="Gelassenheit"

@@ -33,7 +33,8 @@ let parallax = { x: 0, y: 0 };
 
 export default function loadTextures(
   s: HTMLImageElement | HTMLVideoElement,
-  c: HTMLCanvasElement
+  c: HTMLCanvasElement,
+  level = 1
 ) {
   src = s;
   canvas = c;
@@ -56,7 +57,7 @@ export default function loadTextures(
     dropColor = images.dropColor.img;
     dropAlpha = images.dropAlpha.img;
 
-    init();
+    init(level);
   });
 }
 
@@ -69,7 +70,7 @@ function isHTMLImageElement(
   );
 }
 
-function init() {
+function init(level: number) {
   let dpi = window.devicePixelRatio;
   canvas.width = window.innerWidth * dpi;
   canvas.height = window.innerHeight * dpi;
@@ -86,7 +87,10 @@ function init() {
       trailRate: 1,
       trailScaleRange: [0.2, 0.45],
       collisionRadius: 0.45,
-      dropletsCleaningRadiusMultiplier: 0.28
+      dropletsCleaningRadiusMultiplier: 0.28,
+
+      maxDrops: 900 * level,
+      rainChance: 0.3 * level
     }
   );
 
