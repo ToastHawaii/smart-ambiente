@@ -14,7 +14,11 @@ output.icecast(%mp3,mount="smart-ambiente/weather",mksafe(source.dynamic(fun ()-
 def update_scene(~protocol,~data,~headers,uri) =
 
 	def sources_of_scene(entry) =
-		source = ref single(entry["file"])
+	    if entry["typ"] == "file"
+			source = ref single(entry["source"])
+		else
+			source = ref playlist(mode="normal",entry["source"])
+		end
 		
 		pan = entry["pan"]
 		if pan != "" and pan != "none" then

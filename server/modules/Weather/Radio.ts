@@ -1,7 +1,7 @@
 import * as SonosHttp from "../node-sonos-http-api";
 import { Forecast } from "./Forecast";
 import * as fs from "fs";
-import { postJson } from "../../utils/request";
+import { postJson, readFile } from "../../utils/request";
 
 import debug from "../../utils/debug";
 const topic = debug("weather/controller", false);
@@ -35,7 +35,17 @@ export async function stopSound() {
 
 export async function playSound(weather: Forecast) {
   topic("playSound", weather);
-  if (weather.temperatur === 1) {
+  if (weather.temperatur === 0 || weather.temperatur === 1) {
+    let source = "";
+
+    switch (weather.temperatur) {
+      case 0:
+        source += "icy";
+        break;
+      case 1:
+        source += "cold";
+        break;
+    }
     const def = {
       volume: "1",
       pan: "none",
@@ -43,10 +53,9 @@ export async function playSound(weather: Forecast) {
       random: "0",
       typ: "background"
     };
-    const list = fs
-      .readdirSync(soundSource + "cold")
-      .map(f => ({
-        file: soundSource + "cold/" + f,
+    const list = (await Promise.all(
+      fs.readdirSync(soundSource + source).map(async f => ({
+        ...(await getSource(soundSource + source, f)),
         volume: (
           parseFloat(matchOrDefault(f, "volume", def.volume)) *
           typVolume(matchOrDefault(f, "typ", def.typ), weather)
@@ -55,7 +64,7 @@ export async function playSound(weather: Forecast) {
         crossfade: matchOrDefault(f, "crossfade", def.crossfade),
         random: matchOrDefault(f, "random", def.random)
       }))
-      .filter(f => parseFloat(f.volume) > 0.1);
+    )).filter(f => parseFloat(f.volume) > 0.1);
     topic("POST", list);
     await postJson(channelUrl, list);
     await SonosHttp.createClient()
@@ -102,4 +111,17 @@ export async function playSound(weather: Forecast) {
       .repeat("on")
       .do();
   }
+}
+
+async function getSource(source: string, file: string) {
+  if (!file.toUpperCase().endsWith(".TXT"))
+    return {
+      typ: "file",
+      source: source + "/" + file
+    };
+  else
+    return {
+      typ: "url",
+      source: await readFile(source + "/" + file)
+    };
 }

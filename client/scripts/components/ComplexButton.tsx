@@ -59,6 +59,11 @@ const style: StyleRulesCallback<ComponentClassNames> = (theme: any) => ({
     [theme.breakpoints.down("xs")]: {
       height: 55
     },
+    "&.selected": {
+      [theme.breakpoints.down("xs")]: {
+        border: "2px solid white"
+      }
+    },
     "&.selected, &:hover": {
       zIndex: 1,
       transform: "scale(1.08)",
@@ -140,12 +145,12 @@ const style: StyleRulesCallback<ComponentClassNames> = (theme: any) => ({
     height: 3,
     width: 18,
     backgroundColor: theme.palette.common.white,
-    position: "sticky",
     bottom: -2,
-    left: "calc(50% - 9px)",
     transition: theme.transitions.create("opacity"),
     borderRadius: "4px",
     display: "block",
+    marginLeft: "auto",
+    marginRight: "auto",
     [theme.breakpoints.down("xs")]: {
       height: 2
     }

@@ -3,7 +3,7 @@ import * as moment from "moment";
 import * as $ from "cheerio";
 
 export const comedyHausReader: HtmlReader = {
-  typ:"html",
+  typ: "html",
   sourceName: "ComedyHaus",
   sourceUrl: ["https://comedyhaus.ch/shows.html"],
   itemSelector: ".item",

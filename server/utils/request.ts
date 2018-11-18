@@ -1,4 +1,5 @@
 import * as request from "request";
+import * as fs from "fs";
 
 export function getJson<T>(url: string) {
   return new Promise<T>(resolve => {
@@ -37,4 +38,12 @@ export function getHtml(sourceUrl: string) {
       }
     )
   );
+}
+
+export function readFile(path: string) {
+  return new Promise<string>(resolve => {
+    fs.readFile(path, "utf8", function(_err, data) {
+      resolve(data);
+    });
+  });
 }
