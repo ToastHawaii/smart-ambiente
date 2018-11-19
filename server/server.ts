@@ -88,9 +88,7 @@ app.get("/api/sinn/:sinn", async function(req, res) {
 });
 
 app.post("/api/sinn/:sinn", function(req, res) {
-  setSinn(req.params.sinn, req.body);
-
-  res.sendStatus(200);
+  res.json(setSinn(req.params.sinn, req.body));
 });
 
 export function setSinn(sinn: string, sinnData: any) {
@@ -101,6 +99,8 @@ export function setSinn(sinn: string, sinnData: any) {
   if (sinn === "ton") controlTon();
 
   if (sinn === "licht") controlLicht();
+
+  return data.sinn[sinn];
 }
 
 app.get("/api/kanal/:kanal", function(req, res) {
