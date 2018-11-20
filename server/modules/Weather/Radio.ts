@@ -35,82 +35,54 @@ export async function stopSound() {
 
 export async function playSound(weather: Forecast) {
   topic("playSound", weather);
-  if (weather.temperatur === 0 || weather.temperatur === 1) {
-    let source = "";
+  let source = "";
 
-    switch (weather.temperatur) {
-      case 0:
-        source += "icy";
-        break;
-      case 1:
-        source += "cold";
-        break;
-    }
-    const def = {
-      volume: "1",
-      pan: "none",
-      crossfade: "0",
-      random: "0",
-      typ: "background"
-    };
-    const list = (await Promise.all(
-      fs.readdirSync(soundSource + source).map(async f => ({
-        ...(await getSource(soundSource + source, f)),
-        volume: (
-          parseFloat(matchOrDefault(f, "volume", def.volume)) *
-          typVolume(matchOrDefault(f, "typ", def.typ), weather)
-        ).toString(),
-        pan: matchOrDefault(f, "pan", def.pan),
-        crossfade: matchOrDefault(f, "crossfade", def.crossfade),
-        random: matchOrDefault(f, "random", def.random)
-      }))
-    )).filter(f => parseFloat(f.volume) > 0.1);
-    topic("POST", list);
-    await postJson(channelUrl, list);
-    await SonosHttp.createClient()
-      .room("wohnzimmer")
-      .favorite("Smart Ambiente - Wetter")
-      .play()
-      .do();
-  } else {
-    await postJson(channelUrl, []);
-    let searchTerm = "Wetter - ";
-
-    switch (weather.temperatur) {
-      case 0:
-        searchTerm += "Eisig";
-        break;
-      case 1:
-        searchTerm += "Kalt";
-        break;
-      case 2:
-        searchTerm += "Mild";
-        break;
-      case 3:
-        searchTerm += "Warm";
-        break;
-      case 4:
-        searchTerm += "Heiss";
-        break;
-    }
-
-    if (weather.niederschlag >= 1) {
-      searchTerm += ", Niederschlag";
-    } else if (weather.wind >= 1) {
-      searchTerm += ", Wind";
-    }
-
-    await SonosHttp.createClient()
-      .room("wohnzimmer")
-      .groupMute()
-      .pause()
-      .shuffle("on")
-      .playlist(searchTerm)
-      .groupUnmute()
-      .crossfade("on")
-      .repeat("on")
-      .do();
+  switch (weather.temperatur) {
+    case 0:
+      source += "icy";
+      break;
+    case 1:
+      source += "cold";
+      break;
+    case 2:
+      source += "mild";
+      break;
+    case 3:
+      source += "warm";
+      break;
+    case 4:
+      source += "hot";
+      break;
+    case 5:
+      source += "very-hot";
+      break;
   }
+  const def = {
+    volume: "1",
+    pan: "none",
+    crossfade: "0",
+    random: "0",
+    typ: "background"
+  };
+  const list = (await Promise.all(
+    fs.readdirSync(soundSource + source).map(async f => ({
+      ...(await getSource(soundSource + source, f)),
+      volume: (
+        parseFloat(matchOrDefault(f, "volume", def.volume)) *
+        typVolume(matchOrDefault(f, "typ", def.typ), weather)
+      ).toString(),
+      pan: matchOrDefault(f, "pan", def.pan),
+      crossfade: matchOrDefault(f, "crossfade", def.crossfade),
+      random: matchOrDefault(f, "random", def.random)
+    }))
+  )).filter(f => parseFloat(f.volume) > 0.1);
+  topic("POST", list);
+  await postJson(channelUrl, list);
+  await SonosHttp.createClient()
+    .room("wohnzimmer")
+    .favorite("Smart Ambiente - Wetter")
+    .play()
+    .do();
 }
 
 async function getSource(source: string, file: string) {

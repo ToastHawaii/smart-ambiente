@@ -49,7 +49,9 @@ function getTemp(forecast: Owm.Forecast): number {
 
   if (temp < 22) return Temperatur.Warm;
 
-  return Temperatur.Heiss;
+  if (temp < 26) return Temperatur.Heiss;
+
+  return Temperatur.SehrHeiss;
 }
 
 export enum Temperatur {
@@ -57,7 +59,8 @@ export enum Temperatur {
   Kalt,
   Mild,
   Warm,
-  Heiss
+  Heiss,
+  SehrHeiss
 }
 
 export enum Zeit {

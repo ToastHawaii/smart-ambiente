@@ -11,7 +11,8 @@ import {
   GaugeLow,
   GaugeEmpty,
   Snowflake,
-  WhiteBalanceSunny
+  WhiteBalanceSunny,
+  Fire
 } from "mdi-material-ui";
 import ButtonGroup from "./ButtonGroup";
 import { Component } from "../utils";
@@ -214,6 +215,12 @@ class Wetter extends Component<Props & WithStyles<ComponentClassNames>, State> {
               title="Heiss"
               backgroundImage="/img/button/wetter/Heiss.jpg"
               value={4}
+            />
+            <MenuButton
+              icon={<Fire />}
+              title="Sehr Heiss"
+              backgroundImage="/img/button/wetter/SehrHeiss.jpg"
+              value={5}
             />
           </ButtonGroup>
         </Collapse>

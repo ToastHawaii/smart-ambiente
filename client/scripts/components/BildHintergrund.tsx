@@ -152,6 +152,10 @@ class BildHintergrund extends Component<
               background = "hot";
               max = 6;
               break;
+            case 5:
+              background = "very-hot";
+              max = 3;
+              break;
           }
 
           const backgroundNumber = getRandomInt(1, max);
