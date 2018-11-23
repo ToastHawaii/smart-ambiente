@@ -162,31 +162,34 @@ async function controlTon() {
         data.sinn["ton"].lautstaerke = "aus";
       }
     }
-
-    if (data.sinn["ton"].kanal === "musik") {
-      if (data.kanal["musik"].stil === "interesse") {
-        playSender("Radio Swiss Jazz (Jazz)");
-      } else if (data.kanal["musik"].stil === "gelassenheit") {
-        playPlaylist("Blues");
-      } else if (data.kanal["musik"].stil === "akzeptanz") {
-        playPlaylist("Reggea");
-      } else if (data.kanal["musik"].stil === "groll") {
-        playPlaylist("Punk");
-      } else if (data.kanal["musik"].stil === "erwartung") {
-        playSender("Ska World");
-      } else if (data.kanal["musik"].stil === "freude") {
-        playSender("Electro Swing Revolution Radio");
-      } else if (data.kanal["musik"].stil === "wut") {
-        playPlaylist("Metal");
-      } else if (data.kanal["musik"].stil === "umsicht") {
-        playPlaylist("Rock");
-      }
-    } else if (data.sinn["ton"].kanal === "nachrichten") {
-      playSender("SRF 4 News (Nachrichten)");
-    } else if (data.sinn["ton"].kanal === "krimi") {
-      playPlaylist("Die haarstraeubenden Faelle des Philip Maloney");
-    } else if (data.sinn["ton"].kanal === "wetter") {
+    if (data.sinn["ton"].kanal === "wetter") {
       await WeatherRadio.playSound(data.kanal["wetter"]);
+    } else {
+      await WeatherRadio.stopSound();
+      
+      if (data.sinn["ton"].kanal === "musik") {
+        if (data.kanal["musik"].stil === "interesse") {
+          playSender("Radio Swiss Jazz (Jazz)");
+        } else if (data.kanal["musik"].stil === "gelassenheit") {
+          playPlaylist("Blues");
+        } else if (data.kanal["musik"].stil === "akzeptanz") {
+          playPlaylist("Reggea");
+        } else if (data.kanal["musik"].stil === "groll") {
+          playPlaylist("Punk");
+        } else if (data.kanal["musik"].stil === "erwartung") {
+          playSender("Ska World");
+        } else if (data.kanal["musik"].stil === "freude") {
+          playSender("Electro Swing Revolution Radio");
+        } else if (data.kanal["musik"].stil === "wut") {
+          playPlaylist("Metal");
+        } else if (data.kanal["musik"].stil === "umsicht") {
+          playPlaylist("Rock");
+        }
+      } else if (data.sinn["ton"].kanal === "nachrichten") {
+        playSender("SRF 4 News (Nachrichten)");
+      } else if (data.sinn["ton"].kanal === "krimi") {
+        playPlaylist("Die haarstraeubenden Faelle des Philip Maloney");
+      }
     }
   } else {
     await sonosHttp
