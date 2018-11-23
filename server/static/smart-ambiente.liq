@@ -9,7 +9,7 @@ muted = blank()
 
 channel = ref muted
 
-output.icecast(%mp3,mount="smart-ambiente/weather",mksafe(source.dynamic(fun ()->[!channel])))
+output.icecast(%vorbis,mount="smart-ambiente/weather",mksafe(source.dynamic(fun ()->[!channel])))
 	
 def update_scene(~protocol,~data,~headers,uri) =
 	
@@ -40,10 +40,12 @@ def update_scene(~protocol,~data,~headers,uri) =
 		if rand > 0 then
           source := random(weights=[rand-1,1],[blank(duration=1.),!source])
 		end
-		
- 		source := amplify(float_of_string(default=1.0,entry["volume"]),!source)
 
 		!source
+	end
+	
+	def weights_of_scene(entry) =
+		int_of_float(float_of_string(entry["volume"])*100.)
 	end
 	
 	scene = of_json(default=[[("typ",""),("source",""),("volume",""),("pan",""),("crossfade",""),("random","")]],data)
@@ -51,7 +53,7 @@ def update_scene(~protocol,~data,~headers,uri) =
 	if list.length(scene) == 0 then
 		channel := muted
 	else
-		channel := amplify(8.,add(list.map(sources_of_scene,scene)))
+		channel := amplify(2.,add(weights=list.map(weights_of_scene,scene),list.map(sources_of_scene,scene)))
 	end
 	
     http_response(
