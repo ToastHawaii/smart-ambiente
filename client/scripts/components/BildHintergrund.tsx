@@ -4,18 +4,18 @@ import { WithStyles } from "@material-ui/core";
 import * as classnames from "classnames";
 import Erde from "./Erde";
 import Schweiz from "./Schweiz";
-import { Component, getRandomInt } from "../utils";
+import { getRandomInt } from "../utils";
+import { Component } from "./Component";
 import FlugHintergrund from "./FlugHintergrund";
 import YoutubeVideo from "./YoutubeVideo";
 import YoutubePlaylist from "./YoutubePlaylist";
 import Events from "./Events";
 import { toViewModel } from "./Wetter";
-import ImageEffect, { CanvasEffect } from "../CanvasEffects/ImageEffect";
+import Screen from "./Screen";
 import FireflyEffect from "../CanvasEffects/FireflyEffect";
-import ReactDOM = require("react-dom");
-import DayForNightEffect from "../CanvasEffects/DayForNightEffect";
-import RainEffect from "../CanvasEffects/raineffect/index";
 import ClearEffect from "../CanvasEffects/ClearEffect";
+import ImageEffect from "../CanvasEffects/ImageEffect";
+import DayForNightEffect from "../CanvasEffects/DayForNightEffect";
 
 export interface Props {}
 
@@ -109,112 +109,6 @@ class BildHintergrund extends Component<
     this.subscribe("kanal/zusehen", data => ({
       zusehen: data
     }));
-
-    const backgroundCanvas = ReactDOM.findDOMNode(
-      this.refs.background
-    ) as HTMLCanvasElement;
-    if (!backgroundCanvas) return;
-    backgroundCanvas.width = backgroundCanvas.scrollWidth;
-    backgroundCanvas.height = backgroundCanvas.scrollHeight;
-
-    const backgroundCanvasContext = backgroundCanvas.getContext("2d", {
-      alpha: false
-    });
-    if (!backgroundCanvasContext) return;
-    this.backgroundCanvasContext = backgroundCanvasContext;
-
-    const foregroundCanvas = ReactDOM.findDOMNode(
-      this.refs.foreground
-    ) as HTMLCanvasElement;
-    if (!foregroundCanvas) return;
-    foregroundCanvas.width = foregroundCanvas.scrollWidth;
-    foregroundCanvas.height = foregroundCanvas.scrollHeight;
-
-    const foregroundCanvasContext = foregroundCanvas.getContext("2d");
-    if (!foregroundCanvasContext) return;
-    this.foregroundCanvasContext = foregroundCanvasContext;
-
-    const img = await this.loadImage("/img/background/cold/cold-22.jpg");
-
-    this.backgroundEffects.push(new ImageEffect(img, backgroundCanvasContext));
-    this.backgroundEffects.push(
-      new DayForNightEffect(backgroundCanvasContext, 0.5)
-    );
-    this.foregroundEffects.push(new ClearEffect(foregroundCanvasContext));
-    this.foregroundEffects.push(new FireflyEffect(foregroundCanvasContext));
-
-    for (const e of this.backgroundEffects) {
-      e.render();
-    }
-    RainEffect(backgroundCanvas, foregroundCanvas);
-    for (const e of this.foregroundEffects) {
-      e.render();
-    }
-
-    window.addEventListener("resize", this.onResize);
-
-    this.animationLoop((delta: number) => {
-      for (const e of this.foregroundEffects) {
-        e.update(delta);
-      }
-      return this.running;
-    });
-  }
-
-  private backgroundCanvasContext: CanvasRenderingContext2D;
-  private foregroundCanvasContext: CanvasRenderingContext2D;
-
-  private running: boolean = true;
-
-  private backgroundEffects: CanvasEffect[] = [];
-  private foregroundEffects: CanvasEffect[] = [];
-
-  public componentWillUnmount() {
-    this.running = false;
-    window.removeEventListener("resize", this.onResize);
-  }
-
-  private onResize = () => {
-    this.backgroundCanvasContext.canvas.width = this.backgroundCanvasContext.canvas.scrollWidth;
-    this.backgroundCanvasContext.canvas.height = this.backgroundCanvasContext.canvas.scrollHeight;
-
-    this.foregroundCanvasContext.canvas.width = this.foregroundCanvasContext.canvas.scrollWidth;
-    this.foregroundCanvasContext.canvas.height = this.foregroundCanvasContext.canvas.scrollHeight;
-    for (const e of this.backgroundEffects) {
-      e.update();
-    }
-  }
-
-  private animationLoop(render: (delta: number) => boolean) {
-    let running: boolean | undefined = undefined;
-    let lastFrame = +new Date();
-    let raf =
-      (window as any).mozRequestAnimationFrame ||
-      window.webkitRequestAnimationFrame ||
-      (window as any).msRequestAnimationFrame ||
-      (window as any).oRequestAnimationFrame;
-    function loop(now: number) {
-      // stop the loop if render returned false
-      if (running !== false) {
-        raf(loop);
-        let deltaT = now - lastFrame;
-        if (deltaT < 160) {
-          running = render(deltaT);
-        }
-        lastFrame = now;
-      }
-    }
-    loop(lastFrame);
-  }
-
-  private loadImage(src: string) {
-    return new Promise<HTMLImageElement>(resolve => {
-      const img = new Image();
-      img.addEventListener("load", _event => {
-        resolve(img);
-      });
-      img.src = src;
-    });
   }
 
   public render() {
@@ -263,89 +157,94 @@ class BildHintergrund extends Component<
           const backgroundNumber = getRandomInt(1, max);
 
           if (wetter.niederschlag) {
+            // const imageEffect = new ImageEffect(
+            //   await imageFromSource(
+            //     "/img/background/" +
+            //       background +
+            //       "/" +
+            //       background +
+            //       "-" +
+            //       backgroundNumber +
+            //       ".jpg"
+            //   )
+            // );
+            // backgroundElement = (
+            //   <div>
+            //     <Layer
+            //       onRender={canvas => {
+            //         imageEffect.render(canvas);
+            //       }}
+            //       onResize={canvas => {
+            //         imageEffect.update(canvas);
+            //       }}
+            //     />
+            //     <Layer
+            //       onRender={canvas => {
+            //         RainEffect(backgroundCanvas, canvas);
+            //       }}
+            //     />
+            //   </div>
+            // );
+            // if (
+            //   navigator.userAgent.indexOf("SMART-TV") !== -1 &&
+            //   !(window as any).rainEffect
+            // ) {
+            //   if ((window as any).rainEffectTimer)
+            //     clearTimeout((window as any).rainEffectTimer);
+            //   (window as any).rainEffectTimer = setTimeout(() => {
+            //     (window as any).rainEffect = true;
+            //     let readyStateCheckInterval = setInterval(function() {
+            //       if (document.readyState === "complete") {
+            //         clearInterval(readyStateCheckInterval);
+            //         console.info("Start RainEffect");
+            //         RainEffect(
+            //           document.querySelector("#src") as any,
+            //           document.getElementsByTagName("canvas")[0]
+            //         );
+            //       }
+            //     }, 10);
+            //   }, 1000);
+            // } else {
+            //   if ((window as any).rainEffectTimer)
+            //     clearTimeout((window as any).rainEffectTimer);
+            //   (window as any).rainEffectTimer = setTimeout(() => {
+            //     let readyStateCheckInterval = setInterval(function() {
+            //       if (document.readyState === "complete") {
+            //         clearInterval(readyStateCheckInterval);
+            //         console.info("Start RainEffect");
+            //         RainEffect(
+            //           document.querySelector("#src") as any,
+            //           document.getElementsByTagName("canvas")[0]
+            //         );
+            //       }
+            //     }, 10);
+            //   }, 1000);
+            // }
+          } else {
             backgroundElement = (
-              <div>
-                <img
-                  id="src"
-                  className={classnames(classes.fill)}
-                  src={
-                    "/img/background/" +
-                    background +
-                    "/" +
-                    background +
-                    "-" +
-                    backgroundNumber +
-                    ".jpg"
+              <Screen
+                layers={[
+                  {
+                    effects: [
+                      new ImageEffect(
+                        "/img/background/" +
+                          background +
+                          "/" +
+                          background +
+                          "-" +
+                          backgroundNumber +
+                          ".jpg"
+                      ),
+                      new DayForNightEffect()
+                    ]
+                  },
+                  {
+                    effects: [new ClearEffect(), new FireflyEffect()]
                   }
-                />
-                <canvas
-                  style={{
-                    top: "0",
-                    left: "0",
-                    right: "0",
-                    width: "100%",
-                    bottom: "0",
-                    height: "100%",
-                    position: "absolute",
-                    objectFit: "cover"
-                  }}
-                />
-              </div>
-            );
-
-            if (
-              navigator.userAgent.indexOf("SMART-TV") !== -1 &&
-              !(window as any).rainEffect
-            ) {
-              if ((window as any).rainEffectTimer)
-                clearTimeout((window as any).rainEffectTimer);
-              (window as any).rainEffectTimer = setTimeout(() => {
-                (window as any).rainEffect = true;
-                let readyStateCheckInterval = setInterval(function() {
-                  if (document.readyState === "complete") {
-                    clearInterval(readyStateCheckInterval);
-
-                    console.info("Start RainEffect");
-                    RainEffect(
-                      document.querySelector("#src") as any,
-                      document.getElementsByTagName("canvas")[0]
-                    );
-                  }
-                }, 10);
-              }, 1000);
-            } else {
-              if ((window as any).rainEffectTimer)
-                clearTimeout((window as any).rainEffectTimer);
-              (window as any).rainEffectTimer = setTimeout(() => {
-                let readyStateCheckInterval = setInterval(function() {
-                  if (document.readyState === "complete") {
-                    clearInterval(readyStateCheckInterval);
-
-                    console.info("Start RainEffect");
-                    RainEffect(
-                      document.querySelector("#src") as any,
-                      document.getElementsByTagName("canvas")[0]
-                    );
-                  }
-                }, 10);
-              }, 1000);
-            }
-          } else
-            backgroundElement = (
-              <img
-                id="src"
-                className={classnames(classes.fill)}
-                src={
-                  "/img/background/" +
-                  background +
-                  "/" +
-                  background +
-                  "-" +
-                  backgroundNumber +
-                  ".jpg"
-                }
+                ]}
               />
             );
+          }
         }
       } else if (bild.kanal === "ansehen") {
         if (ansehen.ort === "schweiz") backgroundElement = <Schweiz />;
@@ -465,12 +364,7 @@ class BildHintergrund extends Component<
       }
     }
 
-    return (
-      <div className={classes.root}>
-        <canvas ref="background" className={classnames(classes.fill)} />
-        <canvas ref="foreground" className={classnames(classes.fill)} />
-      </div>
-    );
+    return <div className={classes.root}>{backgroundElement}</div>;
   }
 }
 

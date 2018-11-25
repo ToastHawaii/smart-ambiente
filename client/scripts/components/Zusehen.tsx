@@ -3,7 +3,7 @@ import { StyleRulesCallback, withStyles } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
 import { Airplane, Train, Map, Brush, GamepadVariant } from "mdi-material-ui";
 import ButtonGroup from "./ButtonGroup";
-import { Component } from "../utils";
+import { Component } from "./Component";
 import MenuButton from "./MenuButton";
 
 export interface Props {}

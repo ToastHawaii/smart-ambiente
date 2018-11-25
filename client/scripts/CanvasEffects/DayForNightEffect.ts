@@ -1,24 +1,28 @@
 import { CanvasEffect } from "./ImageEffect";
 
 export default class DayForNightEffect implements CanvasEffect {
-  constructor(
-    private canvasContext: CanvasRenderingContext2D,
-    private adjustment = 1
-  ) {}
+  constructor(private adjustment = 1) {}
 
-  public render() {
-    this.draw(this.canvasContext, this.adjustment);
+  public async render(canvas: HTMLCanvasElement) {
+    console.info("DayForNight: render");
+    this.draw(canvas, this.adjustment);
   }
 
-  public update() {
-    this.draw(this.canvasContext, this.adjustment);
+  public async resize(canvas: HTMLCanvasElement) {
+    console.info("DayForNight: resize");
+    this.draw(canvas, this.adjustment);
   }
 
-  private draw(canvasContext: CanvasRenderingContext2D, adjustment = 1) {
-    const pixels = this.getPixels(canvasContext);
+  public async update() {}
+
+  private draw(canvas: HTMLCanvasElement, adjustment = 1) {
+    const context = canvas.getContext("2d");
+    if (!context) return;
+
+    const pixels = this.getPixels(context);
     if (!pixels) return;
-    const newPixels = this.dayForNight(pixels, -25 * adjustment);
-    this.putPixels(canvasContext, newPixels);
+    const newPixels = this.dayForNight(pixels, -30 * adjustment);
+    this.putPixels(context, newPixels);
   }
 
   private getPixels(ctx: CanvasRenderingContext2D) {
@@ -29,7 +33,7 @@ export default class DayForNightEffect implements CanvasEffect {
     return ctx.putImageData(imageData, 0, 0);
   }
 
-  private dayForNight(pixels: ImageData, adjustment = -25) {
+  private dayForNight(pixels: ImageData, adjustment = -30) {
     const d = pixels.data;
     // These values serve as thresholds for the darkest and brightest possible values when
     // applying the 'blue-biased' desaturation. In the for loop below, no single RBG value

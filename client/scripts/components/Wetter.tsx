@@ -15,7 +15,7 @@ import {
   Fire
 } from "mdi-material-ui";
 import ButtonGroup from "./ButtonGroup";
-import { Component } from "../utils";
+import { Component } from "./Component";
 import MenuButton from "./MenuButton";
 
 export function toViewModel(model: {

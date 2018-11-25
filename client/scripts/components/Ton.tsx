@@ -15,7 +15,7 @@ import {
 import Musik from "./Musik";
 import Wetter from "./Wetter";
 import ButtonGroup from "./ButtonGroup";
-import { Component } from "../utils";
+import { Component } from "./Component";
 import MenuButton from "./MenuButton";
 
 export interface Props {}

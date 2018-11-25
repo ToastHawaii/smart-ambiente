@@ -1,21 +1,33 @@
+import { imageFromSource } from "../utils";
+
 export interface CanvasEffect {
-  render(): void;
-  update(delta?: number): void;
+  render(
+    canvas: HTMLCanvasElement,
+    underlyingCanvas: HTMLCanvasElement[]
+  ): Promise<void>;
+
+  update(
+    canvas: HTMLCanvasElement,
+    deltaT: number,
+    underlyingCanvas: HTMLCanvasElement[]
+  ): Promise<void>;
+
+  resize(
+    canvas: HTMLCanvasElement,
+    underlyingCanvas: HTMLCanvasElement[]
+  ): Promise<void>;
 }
 
 export default class ImageEffect implements CanvasEffect {
-  constructor(
-    private image: HTMLImageElement,
-    private canvasContext: CanvasRenderingContext2D
-  ) {}
+  constructor(private src: string) {}
 
   private draw(
     image: HTMLImageElement,
-    canvasContext: CanvasRenderingContext2D,
+    canvas: HTMLCanvasElement,
     x = 0,
     y = 0,
-    w = canvasContext.canvas.width,
-    h = canvasContext.canvas.height,
+    w = canvas.width,
+    h = canvas.height,
     offsetX = 0.5,
     offsetY = 0.5
   ) {
@@ -25,9 +37,9 @@ export default class ImageEffect implements CanvasEffect {
     if (offsetX > 1) offsetX = 1;
     if (offsetY > 1) offsetY = 1;
 
-    let iw = image.naturalWidth;
-    let ih = image.naturalHeight;
-    let r = Math.min(w / iw, h / ih);
+    const iw = image.naturalWidth;
+    const ih = image.naturalHeight;
+    const r = Math.min(w / iw, h / ih);
     let nw = iw * r;
     let nh = ih * r;
     let cx;
@@ -55,15 +67,22 @@ export default class ImageEffect implements CanvasEffect {
     if (cw > iw) cw = iw;
     if (ch > ih) ch = ih;
 
+    const canvasContext = canvas.getContext("2d");
+    if (!canvasContext) return;
+
     // fill image in dest. rectangle
     canvasContext.drawImage(image, cx, cy, cw, ch, x, y, w, h);
   }
 
-  public render() {
-    this.draw(this.image, this.canvasContext);
+  public async render(canvas: HTMLCanvasElement) {
+    console.info("Image: resize");
+    const image = await imageFromSource(this.src);
+    this.draw(image, canvas);
   }
 
-  public update() {
-    this.draw(this.image, this.canvasContext);
+  public async update() {}
+
+  public async resize(canvas: HTMLCanvasElement) {
+    await this.render(canvas);
   }
 }

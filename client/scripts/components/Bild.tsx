@@ -16,7 +16,7 @@ import Natur from "./Natur";
 import Tour from "./Tour";
 import Zusehen from "./Zusehen";
 import ButtonGroup from "./ButtonGroup";
-import { Component } from "../utils";
+import { Component } from "./Component";
 import MenuButton from "./MenuButton";
 
 export interface Props {}

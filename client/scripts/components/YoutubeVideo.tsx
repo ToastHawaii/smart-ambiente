@@ -1,7 +1,7 @@
 import * as React from "react";
 import { StyleRulesCallback, withStyles } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
-import { Component } from "../utils";
+import { Component } from "./Component";
 import { CSSProperties } from "react";
 
 export interface Props {

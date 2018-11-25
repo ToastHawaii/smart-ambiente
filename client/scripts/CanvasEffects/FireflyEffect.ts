@@ -4,7 +4,7 @@ const MAX_PARTICLES = 100;
 const DRAW_INTERVAL = 60;
 
 class Circle {
-  constructor(private canvasContext: CanvasRenderingContext2D) {}
+  constructor() {}
 
   private settings = {
     ttl: 8000,
@@ -29,12 +29,12 @@ class Circle {
   private rt: number;
   private stop: number;
 
-  public reset() {
+  public reset(canvas: HTMLCanvasElement) {
     this.x = this.settings.random
-      ? this.canvasContext.canvas.width * Math.random()
+      ? canvas.width * Math.random()
       : this.settings.xdef;
     this.y = this.settings.random
-      ? this.canvasContext.canvas.height * Math.random()
+      ? canvas.height * Math.random()
       : this.settings.ydef;
     this.r = (this.settings.rmax - 1) * Math.random() + 1;
     this.dx =
@@ -54,19 +54,22 @@ class Circle {
     this.rt += this.settings.rt / (DRAW_INTERVAL / delta);
   }
 
-  public move(delta: number) {
+  public move(canvas: HTMLCanvasElement, delta: number) {
     this.x += ((this.rt / this.hl) * this.dx) / (DRAW_INTERVAL / delta);
     this.y += ((this.rt / this.hl) * this.dy) / (DRAW_INTERVAL / delta);
-    if (this.x > this.canvasContext.canvas.width || this.x < 0) this.dx *= -1;
-    if (this.y > this.canvasContext.canvas.height || this.y < 0) this.dy *= -1;
+    if (this.x > canvas.width || this.x < 0) this.dx *= -1;
+    if (this.y > canvas.height || this.y < 0) this.dy *= -1;
   }
 
-  public draw(context: CanvasRenderingContext2D) {
+  public draw(canvas: HTMLCanvasElement) {
     if (this.settings.blink && (this.rt <= 0 || this.rt >= this.hl)) {
       this.settings.rt = this.settings.rt * -1;
     } else if (this.rt >= this.hl) {
-      this.reset();
+      this.reset(canvas);
     }
+
+    const context = canvas.getContext("2d");
+    if (!context) return;
 
     let newo = 1 - this.rt / this.hl;
     context.beginPath();
@@ -100,21 +103,21 @@ class Circle {
 
 export default class FireflyEffect implements CanvasEffect {
   private pixies: Circle[] = [];
-  constructor(private canvasContext: CanvasRenderingContext2D) {}
+  constructor() {}
 
-  public render() {
+  public async render(canvas: HTMLCanvasElement) {
     for (let i = 0; i < MAX_PARTICLES; i++) {
-      this.pixies.push(new Circle(this.canvasContext));
-      this.pixies[i].reset();
+      this.pixies.push(new Circle());
+      this.pixies[i].reset(canvas);
     }
   }
+  public async resize(_canvas: HTMLCanvasElement) {}
 
-  public update(delta: number) {
-    console.info(delta);
+  public async update(canvas: HTMLCanvasElement, deltaT: number) {
     for (let i = 0; i < this.pixies.length; i++) {
-      this.pixies[i].fade(delta);
-      this.pixies[i].move(delta);
-      this.pixies[i].draw(this.canvasContext);
+      this.pixies[i].fade(deltaT);
+      this.pixies[i].move(canvas, deltaT);
+      this.pixies[i].draw(canvas);
     }
   }
 }

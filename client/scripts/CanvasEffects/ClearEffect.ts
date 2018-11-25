@@ -1,16 +1,15 @@
 import { CanvasEffect } from "./ImageEffect";
 
 export default class ClearEffect implements CanvasEffect {
-  constructor(private canvasContext: CanvasRenderingContext2D) {}
+  constructor() {}
 
-  public render() {}
+  public async render() {}
 
-  public update() {
-    this.canvasContext.clearRect(
-      0,
-      0,
-      this.canvasContext.canvas.width,
-      this.canvasContext.canvas.height
-    );
+  public async resize() {}
+
+  public async update(canvas: HTMLCanvasElement) {
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    context.clearRect(0, 0, canvas.width, canvas.height);
   }
 }

@@ -1,6 +1,3 @@
-import * as React from "react";
-import * as PubSub from "pubsub-js";
-
 export async function postJson(url: string, data: any) {
   const response = await fetch(url, {
     method: "post",
@@ -33,28 +30,35 @@ export function getRandomInt(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-export class Component<P, S> extends React.Component<P, S> {
-  public subscribe = async (
-    topic: string,
-    mapping: (data: any) => any = (data: any) => data
-  ) => {
-    PubSub.subscribe(topic, (_message: any, state: any) => {
-      this.setState(mapping(state));
+export function imageFromSource(src: string) {
+  return new Promise<HTMLImageElement>(resolve => {
+    const img = new Image();
+    img.addEventListener("load", _event => {
+      resolve(img);
     });
+    img.src = src;
+  });
+}
 
-    const state = await getJson("/api/" + topic);
-    this.setState(mapping(state));
+export function animate(render: (delta: number) => Promise<boolean>) {
+  let running: boolean | undefined = undefined;
+  let lastFrame = +new Date();
+
+  function loop(now: number) {
+    // stop the loop if render returned false
+    if (running !== false) {
+      let deltaT = now - lastFrame;
+      if (deltaT > 0 && deltaT < 160) {
+        render(deltaT).then(result => {
+          running = result;
+          lastFrame = now;
+          requestAnimationFrame(loop);
+        });
+      } else {
+        lastFrame = now;
+        requestAnimationFrame(loop);
+      }
+    }
   }
-
-  public publish = async (
-    topic: string,
-    state: any,
-    mapping: (data: any) => any = (data: any) => data
-  ) => {
-    this.setState(state);
-
-    await delay(0);
-    PubSub.publish(topic, mapping(this.state));
-    await postJson("/api/" + topic, mapping(this.state));
-  }
+  loop(lastFrame);
 }
