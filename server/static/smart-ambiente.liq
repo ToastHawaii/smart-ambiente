@@ -9,7 +9,7 @@ muted = blank()
 
 channel = ref muted
 
-output.icecast(%vorbis,mount="smart-ambiente/weather",mksafe(source.dynamic(fun ()->[!channel])))
+output.icecast(%mp3,mount="smart-ambiente/weather",mksafe(source.dynamic(fun ()->[!channel])))
 	
 def update_scene(~protocol,~data,~headers,uri) =
 	

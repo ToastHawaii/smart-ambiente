@@ -14,7 +14,7 @@ export interface Props {}
 
 export interface State {}
 
-type ComponentClassNames = "app" | "topLayer" | "fill" | "backgroundImage";
+type ComponentClassNames = "app" | "topLayer" | "fill";
 
 const style: StyleRulesCallback<ComponentClassNames> = () => ({
   app: {
@@ -28,10 +28,6 @@ const style: StyleRulesCallback<ComponentClassNames> = () => ({
     right: "0",
     top: "0",
     bottom: "0"
-  },
-  backgroundImage: {
-    backgroundSize: "cover",
-    backgroundPosition: "center"
   },
   topLayer: {
     zIndex: 10
