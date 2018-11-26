@@ -12,10 +12,8 @@ import YoutubePlaylist from "./YoutubePlaylist";
 import Events from "./Events";
 import { toViewModel } from "./Wetter";
 import Screen from "./Screen";
-import FireflyEffect from "../CanvasEffects/FireflyEffect";
-import ClearEffect from "../CanvasEffects/ClearEffect";
 import ImageEffect from "../CanvasEffects/ImageEffect";
-import DayForNightEffect from "../CanvasEffects/DayForNightEffect";
+import RainEffect from "../CanvasEffects/RainEffect";
 
 export interface Props {}
 
@@ -79,7 +77,7 @@ class BildHintergrund extends Component<
     };
   }
 
-  public async componentDidMount() {
+  public componentDidMount() {
     this.subscribe("sinn/bild", data => {
       console.info("sinn/bild" + data);
       return {
@@ -157,70 +155,6 @@ class BildHintergrund extends Component<
           const backgroundNumber = getRandomInt(1, max);
 
           if (wetter.niederschlag) {
-            // const imageEffect = new ImageEffect(
-            //   await imageFromSource(
-            //     "/img/background/" +
-            //       background +
-            //       "/" +
-            //       background +
-            //       "-" +
-            //       backgroundNumber +
-            //       ".jpg"
-            //   )
-            // );
-            // backgroundElement = (
-            //   <div>
-            //     <Layer
-            //       onRender={canvas => {
-            //         imageEffect.render(canvas);
-            //       }}
-            //       onResize={canvas => {
-            //         imageEffect.update(canvas);
-            //       }}
-            //     />
-            //     <Layer
-            //       onRender={canvas => {
-            //         RainEffect(backgroundCanvas, canvas);
-            //       }}
-            //     />
-            //   </div>
-            // );
-            // if (
-            //   navigator.userAgent.indexOf("SMART-TV") !== -1 &&
-            //   !(window as any).rainEffect
-            // ) {
-            //   if ((window as any).rainEffectTimer)
-            //     clearTimeout((window as any).rainEffectTimer);
-            //   (window as any).rainEffectTimer = setTimeout(() => {
-            //     (window as any).rainEffect = true;
-            //     let readyStateCheckInterval = setInterval(function() {
-            //       if (document.readyState === "complete") {
-            //         clearInterval(readyStateCheckInterval);
-            //         console.info("Start RainEffect");
-            //         RainEffect(
-            //           document.querySelector("#src") as any,
-            //           document.getElementsByTagName("canvas")[0]
-            //         );
-            //       }
-            //     }, 10);
-            //   }, 1000);
-            // } else {
-            //   if ((window as any).rainEffectTimer)
-            //     clearTimeout((window as any).rainEffectTimer);
-            //   (window as any).rainEffectTimer = setTimeout(() => {
-            //     let readyStateCheckInterval = setInterval(function() {
-            //       if (document.readyState === "complete") {
-            //         clearInterval(readyStateCheckInterval);
-            //         console.info("Start RainEffect");
-            //         RainEffect(
-            //           document.querySelector("#src") as any,
-            //           document.getElementsByTagName("canvas")[0]
-            //         );
-            //       }
-            //     }, 10);
-            //   }, 1000);
-            // }
-          } else {
             backgroundElement = (
               <Screen
                 layers={[
@@ -234,17 +168,35 @@ class BildHintergrund extends Component<
                           "-" +
                           backgroundNumber +
                           ".jpg"
-                      ),
-                      new DayForNightEffect()
+                      )
                     ]
                   },
                   {
-                    effects: [new ClearEffect(), new FireflyEffect()]
+                    effects: [new RainEffect()]
                   }
                 ]}
               />
             );
-          }
+          } else
+            backgroundElement = (
+              <Screen
+                layers={[
+                  {
+                    effects: [
+                      new ImageEffect(
+                        "/img/background/" +
+                          background +
+                          "/" +
+                          background +
+                          "-" +
+                          backgroundNumber +
+                          ".jpg"
+                      )
+                    ]
+                  }
+                ]}
+              />
+            );
         }
       } else if (bild.kanal === "ansehen") {
         if (ansehen.ort === "schweiz") backgroundElement = <Schweiz />;

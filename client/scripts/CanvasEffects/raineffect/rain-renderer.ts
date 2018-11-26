@@ -112,8 +112,7 @@ RainRenderer.prototype = {
   updateTexture() {
     this.gl.activeTexture(0);
     this.gl.updateTexture(this.canvasLiquid);
-  },
-  resize() {}
+  }
 };
 
 export default RainRenderer;
