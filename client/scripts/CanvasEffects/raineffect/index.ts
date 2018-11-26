@@ -1,35 +1,19 @@
 import "core-js";
 import RainRenderer from "./rain-renderer";
 import Raindrops from "./raindrops";
-import loadImages from "./image-loader";
+import { imageFromSource } from "../../utils";
 
-let dropColor: HTMLImageElement;
-let dropAlpha: HTMLImageElement;
-
-let raindrops;
-let canvas: HTMLCanvasElement;
-
-export default function loadTextures(
+export default async function init(
   texture: HTMLCanvasElement,
-  c: HTMLCanvasElement,
-  level = 1
+  canvas: HTMLCanvasElement,
+  level: number = 1
 ) {
-  canvas = c;
-  (loadImages as any)([
-    { name: "dropAlpha", src: "img/rain/drop-alpha.png" },
-    { name: "dropColor", src: "img/rain/drop-color.png" }
-  ]).then((images: any) => {
-    dropColor = images.dropColor.img;
-    dropAlpha = images.dropAlpha.img;
+  const dpi = window.devicePixelRatio;
 
-    init(texture, level);
-  });
-}
+  const dropColor = await imageFromSource("img/rain/drop-color.png");
+  const dropAlpha = await imageFromSource("img/rain/drop-alpha.png");
 
-function init(texture: HTMLCanvasElement, level: number) {
-  let dpi = window.devicePixelRatio;
-
-  raindrops = new Raindrops(
+  const raindrops = new Raindrops(
     canvas.width,
     canvas.height,
     dpi,
@@ -46,11 +30,17 @@ function init(texture: HTMLCanvasElement, level: number) {
     }
   );
 
-  new RainRenderer(canvas, raindrops.canvas, texture, undefined, {
-    brightness: 1.04,
-    alphaMultiply: 6,
-    alphaSubtract: 3
-    // minRefraction:256,
-    // maxRefraction:512
-  });
+ new RainRenderer(
+    canvas,
+    raindrops.canvas,
+    texture,
+    undefined,
+    {
+      brightness: 1.04,
+      alphaMultiply: 6,
+      alphaSubtract: 3
+      // minRefraction:256,
+      // maxRefraction:512
+    }
+  );
 }

@@ -23,7 +23,7 @@ const defaultOptions: Options = {
   alphaMultiply: 20,
   alphaSubtract: 5
 };
-class RainRenderer {
+export default class RainRenderer {
   constructor(
     canvas: HTMLCanvasElement,
     canvasLiquid: HTMLCanvasElement,
@@ -39,21 +39,21 @@ class RainRenderer {
     this.init();
   }
 
-  public canvas: HTMLCanvasElement;
-  public gl: GL;
-  public canvasLiquid: HTMLCanvasElement;
-  public width: number;
-  public height: number;
-  public imageShine: HTMLImageElement | HTMLCanvasElement | undefined;
-  public image: HTMLImageElement | HTMLCanvasElement;
-  public textures: {
+  private canvas: HTMLCanvasElement;
+  private gl: GL;
+  private canvasLiquid: HTMLCanvasElement;
+  private width: number;
+  private height: number;
+  private imageShine: HTMLImageElement | HTMLCanvasElement | undefined;
+  private image: HTMLImageElement | HTMLCanvasElement;
+  private textures: {
     name: string;
     img: HTMLImageElement | HTMLCanvasElement;
   }[];
-  public programWater: WebGLProgram;
-  public options: Options;
+  private programWater: WebGLProgram;
+  private options: Options;
 
-  public init() {
+  private init() {
     this.width = this.canvas.width;
     this.height = this.canvas.height;
     this.gl = new GL(this.canvas, { alpha: false }, vertShader, fragShader);
@@ -97,15 +97,11 @@ class RainRenderer {
       gl.createTexture(texture.img, i + 1);
       gl.createUniform("1i", texture.name, i + 1);
     });
-
-    this.draw();
   }
   public draw() {
     this.gl.useProgram(this.programWater);
     this.updateTexture();
     this.gl.draw();
-
-    requestAnimationFrame(this.draw.bind(this));
   }
   public updateTextures() {
     this.textures.forEach((texture, i) => {
@@ -113,10 +109,8 @@ class RainRenderer {
       this.gl.updateTexture(texture.img);
     });
   }
-  public updateTexture() {
+  private updateTexture() {
     this.gl.activeTexture(0);
     this.gl.updateTexture(this.canvasLiquid);
   }
 }
-
-export default RainRenderer;

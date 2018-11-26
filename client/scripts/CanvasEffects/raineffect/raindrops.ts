@@ -96,26 +96,25 @@ export default class Raindrops {
     this.init();
   }
 
-  public dropColor: CanvasImageSource;
-  public dropAlpha: CanvasImageSource;
+  private dropColor: CanvasImageSource;
+  private dropAlpha: CanvasImageSource;
   public canvas: HTMLCanvasElement;
-  public ctx: CanvasRenderingContext2D;
-  public width: number = 0;
-  public height: number = 0;
-  public scale: number = 0;
-  public dropletsPixelDensity: number = 1;
-  public droplets: HTMLCanvasElement;
-  public dropletsCtx: CanvasRenderingContext2D;
-  public dropletsCounter: number = 0;
-  public drops: Drop[];
-  public dropsGfx: HTMLCanvasElement[];
-  public clearDropletsGfx: HTMLCanvasElement;
-  public textureCleaningIterations: number = 0;
-  public lastRender: number;
+  private ctx: CanvasRenderingContext2D;
+  private width: number = 0;
+  private height: number = 0;
+  private scale: number = 0;
+  private dropletsPixelDensity: number = 1;
+  private droplets: HTMLCanvasElement;
+  private dropletsCtx: CanvasRenderingContext2D;
+  private dropletsCounter: number = 0;
+  private drops: Drop[];
+  private dropsGfx: HTMLCanvasElement[];
+  private clearDropletsGfx: HTMLCanvasElement;
+  private textureCleaningIterations: number = 0;
 
-  public options: Options;
+  private options: Options;
 
-  public init() {
+  private init() {
     this.canvas = createCanvas(this.width, this.height);
     const ctx = this.canvas.getContext("2d");
     if (!ctx) throw "canvas context is null";
@@ -133,19 +132,17 @@ export default class Raindrops {
     this.dropsGfx = [];
 
     this.renderDropsGfx();
-
-    this.update();
   }
-  get deltaR() {
+  private get deltaR() {
     return this.options.maxR - this.options.minR;
   }
-  get area() {
+  private get area() {
     return (this.width * this.height) / this.scale;
   }
-  get areaMultiplier() {
+  private get areaMultiplier() {
     return Math.sqrt(this.area / (1024 * 768));
   }
-  public drawDroplet(x: number, y: number, r: number) {
+  private drawDroplet(x: number, y: number, r: number) {
     this.drawDrop(
       this.dropletsCtx,
       Object.assign(Object.create(drop), {
@@ -156,7 +153,7 @@ export default class Raindrops {
     );
   }
 
-  public renderDropsGfx() {
+  private renderDropsGfx() {
     const dropBuffer = createCanvas(dropSize, dropSize);
     const dropBufferCtx = dropBuffer.getContext("2d");
     if (!dropBufferCtx) throw "dropBuffer context is null";
@@ -196,7 +193,7 @@ export default class Raindrops {
     clearDropletsCtx.arc(64, 64, 64, 0, Math.PI * 2);
     clearDropletsCtx.fill();
   }
-  public drawDrop(ctx: CanvasRenderingContext2D, drop: Drop) {
+  private drawDrop(ctx: CanvasRenderingContext2D, drop: Drop) {
     if (this.dropsGfx.length > 0) {
       let x = drop.x;
       let y = drop.y;
@@ -226,7 +223,7 @@ export default class Raindrops {
       );
     }
   }
-  public clearDroplets(x: number, y: number, r = 30) {
+  private clearDroplets(x: number, y: number, r = 30) {
     const ctx = this.dropletsCtx;
     ctx.globalCompositeOperation = "destination-out";
     ctx.drawImage(
@@ -237,26 +234,17 @@ export default class Raindrops {
       r * 2 * this.dropletsPixelDensity * this.scale * 1.5
     );
   }
-  public clearCanvas() {
+  private clearCanvas() {
     this.ctx.clearRect(0, 0, this.width, this.height);
   }
-  public createDrop(options: Partial<Drop>) {
+  private createDrop(options: Partial<Drop>) {
     if (this.drops.length >= this.options.maxDrops * this.areaMultiplier)
       return undefined;
 
     return Object.assign(Object.create(drop), options);
   }
-  public addDrop(drop: Drop) {
-    if (
-      this.drops.length >= this.options.maxDrops * this.areaMultiplier ||
-      drop === undefined
-    )
-      return false;
 
-    this.drops.push(drop);
-    return true;
-  }
-  public updateRain(timeScale: number) {
+  private updateRain(timeScale: number) {
     let rainDrops = [];
     if (this.options.raining) {
       const limit = this.options.rainLimit * timeScale * this.areaMultiplier;
@@ -295,10 +283,10 @@ export default class Raindrops {
     });
     this.clearTexture();
   }
-  public clearTexture() {
+  private clearTexture() {
     this.textureCleaningIterations = 50;
   }
-  public updateDroplets(timeScale: number) {
+  private updateDroplets(timeScale: number) {
     if (this.textureCleaningIterations > 0) {
       this.textureCleaningIterations -= 1 * timeScale;
       this.dropletsCtx.globalCompositeOperation = "destination-out";
@@ -326,7 +314,7 @@ export default class Raindrops {
     }
     this.ctx.drawImage(this.droplets, 0, 0, this.width, this.height);
   }
-  public updateDrops(timeScale: number) {
+  private updateDrops(timeScale: number) {
     let newDrops: Drop[] = [];
 
     this.updateDroplets(timeScale);
@@ -339,7 +327,7 @@ export default class Raindrops {
       return va > vb ? 1 : va === vb ? 0 : -1;
     });
 
-    this.drops.forEach(function(this: any, drop: any, i: any) {
+    this.drops.forEach((drop: any, i: any) => {
       if (!drop.killed) {
         // update gravity
         // (chance of drops "creeping down")
@@ -435,8 +423,8 @@ export default class Raindrops {
                 let a1 = pi * (r1 * r1);
                 let a2 = pi * (r2 * r2);
                 let targetR = Math.sqrt((a1 + a2 * 0.8) / pi);
-                if (targetR > this.maxR) {
-                  targetR = this.maxR;
+                if (targetR > this.options.maxR) {
+                  targetR = this.options.maxR;
                 }
                 drop.r = targetR;
                 drop.momentumX += dx * 0.1;
@@ -480,19 +468,14 @@ export default class Raindrops {
 
     this.drops = newDrops;
   }
-  public update() {
+
+  public update(deltaT: number) {
     this.clearCanvas();
 
-    let now = Date.now();
-    if (this.lastRender === undefined) this.lastRender = now;
-    let deltaT = now - this.lastRender;
     let timeScale = deltaT / ((1 / 60) * 1000);
     if (timeScale > 1.1) timeScale = 1.1;
     timeScale *= this.options.globalTimeScale;
-    this.lastRender = now;
 
     this.updateDrops(timeScale);
-
-    requestAnimationFrame(this.update.bind(this));
   }
 }
