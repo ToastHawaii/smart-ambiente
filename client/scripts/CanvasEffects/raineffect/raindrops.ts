@@ -3,7 +3,22 @@ import createCanvas from "./create-canvas";
 import { random, chance } from "./random";
 
 let dropSize = 64;
-const Drop = {
+interface Drop {
+  x: number;
+  y: number;
+  r: number;
+  spreadX: number;
+  spreadY: number;
+  momentum: number;
+  momentumX: number;
+  lastSpawn: number;
+  nextSpawn: number;
+  parent: Drop | undefined;
+  isNew: boolean;
+  killed: boolean;
+  shrink: number;
+}
+const drop: Drop = {
   x: 0,
   y: 0,
   r: 0,
@@ -18,7 +33,30 @@ const Drop = {
   killed: false,
   shrink: 0
 };
-const defaultOptions = {
+
+interface Options {
+  minR: number;
+  maxR: number;
+  maxDrops: number;
+  rainChance: number;
+  rainLimit: number;
+  dropletsRate: number;
+  dropletsSize: [number, number];
+  dropletsCleaningRadiusMultiplier: number;
+  raining: boolean;
+  globalTimeScale: number;
+  trailRate: number;
+  autoShrink: boolean;
+  spawnArea: [number, number];
+  trailScaleRange: [number, number];
+  collisionRadius: number;
+  collisionRadiusIncrease: number;
+  dropFallMultiplier: number;
+  collisionBoostMultiplier: number;
+  collisionBoost: number;
+}
+
+const defaultOptions: Options = {
   minR: 10,
   maxR: 40,
   maxDrops: 900,
@@ -40,52 +78,56 @@ const defaultOptions = {
   collisionBoost: 1
 };
 
-function Raindrops(
-  this: any,
-  width: number,
-  height: number,
-  scale: number,
-  dropAlpha: any,
-  dropColor: any,
-  options = {}
-) {
-  this.width = width;
-  this.height = height;
-  this.scale = scale;
-  this.dropAlpha = dropAlpha;
-  this.dropColor = dropColor;
-  this.options = (Object as any).assign({}, defaultOptions, options);
-  this.init();
-}
-Raindrops.prototype = {
-  dropColor: undefined,
-  dropAlpha: undefined,
-  canvas: undefined,
-  ctx: undefined,
-  width: 0,
-  height: 0,
-  scale: 0,
-  dropletsPixelDensity: 1,
-  droplets: undefined,
-  dropletsCtx: undefined,
-  dropletsCounter: 0,
-  drops: undefined,
-  dropsGfx: undefined,
-  clearDropletsGfx: undefined,
-  textureCleaningIterations: 0,
-  lastRender: undefined,
+export default class Raindrops {
+  constructor(
+    width: number,
+    height: number,
+    scale: number,
+    dropAlpha: CanvasImageSource,
+    dropColor: CanvasImageSource,
+    options: Partial<Options> = {}
+  ) {
+    this.width = width;
+    this.height = height;
+    this.scale = scale;
+    this.dropAlpha = dropAlpha;
+    this.dropColor = dropColor;
+    this.options = Object.assign({}, defaultOptions, options);
+    this.init();
+  }
 
-  options: undefined,
+  public dropColor: CanvasImageSource;
+  public dropAlpha: CanvasImageSource;
+  public canvas: HTMLCanvasElement;
+  public ctx: CanvasRenderingContext2D;
+  public width: number = 0;
+  public height: number = 0;
+  public scale: number = 0;
+  public dropletsPixelDensity: number = 1;
+  public droplets: HTMLCanvasElement;
+  public dropletsCtx: CanvasRenderingContext2D;
+  public dropletsCounter: number = 0;
+  public drops: Drop[];
+  public dropsGfx: HTMLCanvasElement[];
+  public clearDropletsGfx: HTMLCanvasElement;
+  public textureCleaningIterations: number = 0;
+  public lastRender: number;
 
-  init() {
+  public options: Options;
+
+  public init() {
     this.canvas = createCanvas(this.width, this.height);
-    this.ctx = this.canvas.getContext("2d");
+    const ctx = this.canvas.getContext("2d");
+    if (!ctx) throw "canvas context is null";
+    this.ctx = ctx;
 
     this.droplets = createCanvas(
       this.width * this.dropletsPixelDensity,
       this.height * this.dropletsPixelDensity
     );
-    this.dropletsCtx = this.droplets.getContext("2d");
+    const dropletsCtx = this.droplets.getContext("2d");
+    if (!dropletsCtx) throw "droplets context is null";
+    this.dropletsCtx = dropletsCtx;
 
     this.drops = [];
     this.dropsGfx = [];
@@ -93,34 +135,36 @@ Raindrops.prototype = {
     this.renderDropsGfx();
 
     this.update();
-  },
+  }
   get deltaR() {
     return this.options.maxR - this.options.minR;
-  },
+  }
   get area() {
     return (this.width * this.height) / this.scale;
-  },
+  }
   get areaMultiplier() {
     return Math.sqrt(this.area / (1024 * 768));
-  },
-  drawDroplet(x: number, y: number, r: number) {
+  }
+  public drawDroplet(x: number, y: number, r: number) {
     this.drawDrop(
       this.dropletsCtx,
-      (Object as any).assign(Object.create(Drop), {
+      Object.assign(Object.create(drop), {
         x: x * this.dropletsPixelDensity,
         y: y * this.dropletsPixelDensity,
         r: r * this.dropletsPixelDensity
       })
     );
-  },
+  }
 
-  renderDropsGfx() {
-    let dropBuffer = createCanvas(dropSize, dropSize);
-    let dropBufferCtx: any = dropBuffer.getContext("2d");
-    this.dropsGfx = Array.apply(undefined, Array(255)).map(
-      (_cur: any, i: any) => {
-        let drop = createCanvas(dropSize, dropSize);
-        let dropCtx: any = drop.getContext("2d");
+  public renderDropsGfx() {
+    const dropBuffer = createCanvas(dropSize, dropSize);
+    const dropBufferCtx = dropBuffer.getContext("2d");
+    if (!dropBufferCtx) throw "dropBuffer context is null";
+    this.dropsGfx = (Array.apply(undefined, Array(255)) as undefined[]).map(
+      (_cur, i) => {
+        const drop = createCanvas(dropSize, dropSize);
+        const dropCtx = drop.getContext("2d");
+        if (!dropCtx) throw "drop context is null";
 
         dropBufferCtx.clearRect(0, 0, dropSize, dropSize);
 
@@ -145,13 +189,14 @@ Raindrops.prototype = {
 
     // create circle that will be used as a brush to remove droplets
     this.clearDropletsGfx = createCanvas(128, 128);
-    let clearDropletsCtx = this.clearDropletsGfx.getContext("2d");
+    const clearDropletsCtx = this.clearDropletsGfx.getContext("2d");
+    if (!clearDropletsCtx) throw "clearDopletsGfx context is null";
     clearDropletsCtx.fillStyle = "#000";
     clearDropletsCtx.beginPath();
     clearDropletsCtx.arc(64, 64, 64, 0, Math.PI * 2);
     clearDropletsCtx.fill();
-  },
-  drawDrop(ctx: any, drop: any) {
+  }
+  public drawDrop(ctx: CanvasRenderingContext2D, drop: Drop) {
     if (this.dropsGfx.length > 0) {
       let x = drop.x;
       let y = drop.y;
@@ -180,9 +225,9 @@ Raindrops.prototype = {
         r * 2 * scaleY * (spreadY + 1) * this.scale
       );
     }
-  },
-  clearDroplets(x: number, y: number, r = 30) {
-    let ctx = this.dropletsCtx;
+  }
+  public clearDroplets(x: number, y: number, r = 30) {
+    const ctx = this.dropletsCtx;
     ctx.globalCompositeOperation = "destination-out";
     ctx.drawImage(
       this.clearDropletsGfx,
@@ -191,17 +236,17 @@ Raindrops.prototype = {
       r * 2 * this.dropletsPixelDensity * this.scale,
       r * 2 * this.dropletsPixelDensity * this.scale * 1.5
     );
-  },
-  clearCanvas() {
+  }
+  public clearCanvas() {
     this.ctx.clearRect(0, 0, this.width, this.height);
-  },
-  createDrop(options: any) {
+  }
+  public createDrop(options: Partial<Drop>) {
     if (this.drops.length >= this.options.maxDrops * this.areaMultiplier)
       return undefined;
 
-    return (Object as any).assign(Object.create(Drop), options);
-  },
-  addDrop(drop: any) {
+    return Object.assign(Object.create(drop), options);
+  }
+  public addDrop(drop: Drop) {
     if (
       this.drops.length >= this.options.maxDrops * this.areaMultiplier ||
       drop === undefined
@@ -210,21 +255,21 @@ Raindrops.prototype = {
 
     this.drops.push(drop);
     return true;
-  },
-  updateRain(timeScale: number) {
+  }
+  public updateRain(timeScale: number) {
     let rainDrops = [];
     if (this.options.raining) {
-      let limit = this.options.rainLimit * timeScale * this.areaMultiplier;
+      const limit = this.options.rainLimit * timeScale * this.areaMultiplier;
       let count = 0;
       while (
         chance(this.options.rainChance * timeScale * this.areaMultiplier) &&
         count < limit
       ) {
         count++;
-        let r = random(this.options.minR, this.options.maxR, (n: any) => {
+        const r = random(this.options.minR, this.options.maxR, n => {
           return Math.pow(n, 3);
         });
-        let rainDrop = this.createDrop({
+        const rainDrop = this.createDrop({
           x: random(this.width / this.scale),
           y: random(
             (this.height / this.scale) * this.options.spawnArea[0],
@@ -241,19 +286,19 @@ Raindrops.prototype = {
       }
     }
     return rainDrops;
-  },
-  clearDrops() {
-    this.drops.forEach((drop: any) => {
+  }
+  public clearDrops() {
+    this.drops.forEach(drop => {
       setTimeout(() => {
         drop.shrink = 0.1 + random(0.5);
       }, random(1200));
     });
     this.clearTexture();
-  },
-  clearTexture() {
+  }
+  public clearTexture() {
     this.textureCleaningIterations = 50;
-  },
-  updateDroplets(timeScale: number) {
+  }
+  public updateDroplets(timeScale: number) {
     if (this.textureCleaningIterations > 0) {
       this.textureCleaningIterations -= 1 * timeScale;
       this.dropletsCtx.globalCompositeOperation = "destination-out";
@@ -273,22 +318,22 @@ Raindrops.prototype = {
         this.drawDroplet(
           random(this.width / this.scale),
           random(this.height / this.scale),
-          random(...this.options.dropletsSize, ((n: any) => {
-            return (n * n) as any;
+          random(...this.options.dropletsSize, ((n: number) => {
+            return n * n;
           }) as any)
         );
       });
     }
     this.ctx.drawImage(this.droplets, 0, 0, this.width, this.height);
-  },
-  updateDrops(timeScale: number) {
-    let newDrops: any = [];
+  }
+  public updateDrops(timeScale: number) {
+    let newDrops: Drop[] = [];
 
     this.updateDroplets(timeScale);
     let rainDrops = this.updateRain(timeScale);
     newDrops = newDrops.concat(rainDrops);
 
-    this.drops.sort((a: any, b: any) => {
+    this.drops.sort((a, b) => {
       let va = a.y * (this.width / this.scale) + a.x;
       let vb = b.y * (this.width / this.scale) + b.x;
       return va > vb ? 1 : va === vb ? 0 : -1;
@@ -363,7 +408,7 @@ Raindrops.prototype = {
         drop.isNew = false;
 
         if (checkCollision) {
-          this.drops.slice(i + 1, i + 70).forEach((drop2: any) => {
+          this.drops.slice(i + 1, i + 70).forEach((drop2: Drop) => {
             //basic check
             if (
               drop !== drop2 &&
@@ -434,8 +479,8 @@ Raindrops.prototype = {
     }, this);
 
     this.drops = newDrops;
-  },
-  update() {
+  }
+  public update() {
     this.clearCanvas();
 
     let now = Date.now();
@@ -450,6 +495,4 @@ Raindrops.prototype = {
 
     requestAnimationFrame(this.update.bind(this));
   }
-};
-
-export default Raindrops;
+}

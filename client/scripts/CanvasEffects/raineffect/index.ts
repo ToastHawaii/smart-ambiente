@@ -3,8 +3,8 @@ import RainRenderer from "./rain-renderer";
 import Raindrops from "./raindrops";
 import loadImages from "./image-loader";
 
-let dropColor: any;
-let dropAlpha: any;
+let dropColor: HTMLImageElement;
+let dropAlpha: HTMLImageElement;
 
 let raindrops;
 let canvas: HTMLCanvasElement;
@@ -29,7 +29,7 @@ export default function loadTextures(
 function init(texture: HTMLCanvasElement, level: number) {
   let dpi = window.devicePixelRatio;
 
-  raindrops = new (Raindrops as any)(
+  raindrops = new Raindrops(
     canvas.width,
     canvas.height,
     dpi,
@@ -46,7 +46,7 @@ function init(texture: HTMLCanvasElement, level: number) {
     }
   );
 
-  new (RainRenderer as any)(canvas, raindrops.canvas, texture, undefined, {
+  new RainRenderer(canvas, raindrops.canvas, texture, undefined, {
     brightness: 1.04,
     alphaMultiply: 6,
     alphaSubtract: 3

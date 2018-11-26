@@ -1,51 +1,42 @@
-export function getContext(canvas: HTMLCanvasElement, options = {}) {
-  let contexts = ["webgl", "experimental-webgl"];
-  let context:
-    | CanvasRenderingContext2D
-    | WebGLRenderingContext
-    | null
-    | undefined;
+export function getContext(
+  canvas: HTMLCanvasElement,
+  options: WebGLContextAttributes = {}
+) {
+  const context =
+    canvas.getContext("webgl", options) ||
+    canvas.getContext("experimental-webgl", options);
 
-  contexts.some(name => {
-    try {
-      context = canvas.getContext(name, options);
-    } catch (e) {}
-    return context !== null;
-  });
-
-  if (context === null) {
-    document.body.classList.add("no-webgl");
-  }
+  if (!context) throw "canvas webgl context is null";
 
   return context;
 }
 
 export function createProgram(
-  gl: any,
+  gl: WebGLRenderingContext,
   vertexScript: string,
   fragScript: string
 ) {
-  let vertexShader = createShader(gl, vertexScript, gl.VERTEX_SHADER);
-  let fragShader = createShader(gl, fragScript, gl.FRAGMENT_SHADER);
+  const vertexShader = createShader(gl, vertexScript, gl.VERTEX_SHADER);
+  const fragShader = createShader(gl, fragScript, gl.FRAGMENT_SHADER);
 
-  let program = gl.createProgram();
+  const program = gl.createProgram();
+  if (!program) throw "program is null";
   gl.attachShader(program, vertexShader);
   gl.attachShader(program, fragShader);
 
   gl.linkProgram(program);
 
-  let linked = gl.getProgramParameter(program, gl.LINK_STATUS);
+  const linked = gl.getProgramParameter(program, gl.LINK_STATUS);
   if (!linked) {
-    let lastError = gl.getProgramInfoLog(program);
-    error("Error in program linking: " + lastError);
+    const lastError = gl.getProgramInfoLog(program);
     gl.deleteProgram(program);
-    return undefined;
+    throw "Error in program linking: " + lastError;
   }
 
-  let positionLocation = gl.getAttribLocation(program, "a_position");
-  let texCoordLocation = gl.getAttribLocation(program, "a_texCoord");
+  const positionLocation = gl.getAttribLocation(program, "a_position");
+  const texCoordLocation = gl.getAttribLocation(program, "a_texCoord");
 
-  let texCoordBuffer = gl.createBuffer();
+  const texCoordBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
   gl.bufferData(
     gl.ARRAY_BUFFER,
@@ -69,7 +60,7 @@ export function createProgram(
   gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, 0, 0);
 
   // Create a buffer for the position of the rectangle corners.
-  let buffer = gl.createBuffer();
+  const buffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
   gl.enableVertexAttribArray(positionLocation);
   gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
@@ -77,23 +68,26 @@ export function createProgram(
   return program;
 }
 
-export function createShader(gl: any, script: any, type: any) {
-  let shader = gl.createShader(type);
+function createShader(gl: WebGLRenderingContext, script: string, type: number) {
+  const shader = gl.createShader(type);
+  if (!shader) throw "shader is null";
   gl.shaderSource(shader, script);
   gl.compileShader(shader);
 
-  let compiled = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
+  const compiled = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
 
   if (!compiled) {
-    let lastError = gl.getShaderInfoLog(shader);
-    error("Error compiling shader '" + shader + "':" + lastError);
-    gl.deleteShader(shader);
-    return undefined;
+    const lastError = gl.getShaderInfoLog(shader);
+    throw "Error compiling shader '" + shader + "':" + lastError;
   }
   return shader;
 }
-export function createTexture(gl: any, source: any, i: number) {
-  let texture = gl.createTexture();
+export function createTexture(
+  gl: WebGLRenderingContext,
+  source: TexImageSource | undefined,
+  i: number
+) {
+  const texture = gl.createTexture();
   activeTexture(gl, i);
   gl.bindTexture(gl.TEXTURE_2D, texture);
 
@@ -112,23 +106,26 @@ export function createTexture(gl: any, source: any, i: number) {
   return texture;
 }
 export function createUniform(
-  gl: any,
-  program: any,
-  type: any,
+  gl: WebGLRenderingContext,
+  program: WebGLProgram,
+  type: string,
   name: string,
   ...args: any[]
 ) {
-  let location = gl.getUniformLocation(program, "u_" + name);
-  gl["uniform" + type](location, ...args);
+  const location = gl.getUniformLocation(program, "u_" + name);
+  (gl as any)["uniform" + type](location, ...args);
 }
-export function activeTexture(gl: any, i: number) {
-  gl.activeTexture(gl["TEXTURE" + i]);
+export function activeTexture(gl: WebGLRenderingContext, i: number) {
+  gl.activeTexture((gl as any)["TEXTURE" + i]);
 }
-export function updateTexture(gl: any, source: any) {
+export function updateTexture(
+  gl: WebGLRenderingContext,
+  source: TexImageSource
+) {
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
 }
 export function setRectangle(
-  gl: any,
+  gl: WebGLRenderingContext,
   x: number,
   y: number,
   width: number,
@@ -143,8 +140,4 @@ export function setRectangle(
     new Float32Array([x1, y1, x2, y1, x1, y2, x1, y2, x2, y1, x2, y2]),
     gl.STATIC_DRAW
   );
-}
-
-function error(msg: any) {
-  console.error(msg);
 }
