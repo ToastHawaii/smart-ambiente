@@ -53,7 +53,7 @@ def update_scene(~protocol,~data,~headers,uri) =
 	if list.length(scene) == 0 then
 		channel := muted
 	else
-		channel := amplify(2.,add(weights=list.map(weights_of_scene,scene),list.map(sources_of_scene,scene)))
+		channel := amplify(2.,add(normalize=false,weights=list.map(weights_of_scene,scene),list.map(sources_of_scene,scene)))
 	end
 	
     http_response(
