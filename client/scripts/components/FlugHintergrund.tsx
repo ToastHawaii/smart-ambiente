@@ -193,7 +193,6 @@ class BildHintergrund extends React.Component<
     let counter = 30 * (1000 / 25);
 
     const stepInterval = setInterval(() => {
-      debugger;
       let center: google.maps.LatLng | null = null;
       if (this.direction === 0) {
         center = new this.google.maps.LatLng(

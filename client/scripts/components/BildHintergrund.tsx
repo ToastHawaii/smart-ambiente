@@ -4,7 +4,7 @@ import { WithStyles } from "@material-ui/core";
 import * as classnames from "classnames";
 import Erde from "./Erde";
 import Schweiz from "./Schweiz";
-import { getRandomInt } from "../utils";
+import { getRandomInt, scale } from "../utils";
 import { Component } from "./Component";
 import FlugHintergrund from "./FlugHintergrund";
 import YoutubeVideo from "./YoutubeVideo";
@@ -12,8 +12,11 @@ import YoutubePlaylist from "./YoutubePlaylist";
 import Events from "./Events";
 import { toViewModel } from "./Wetter";
 import Screen from "./Screen";
-import ImageEffect from "../CanvasEffects/ImageEffect";
+import ImageEffect, { CanvasEffect } from "../CanvasEffects/ImageEffect";
 import RainEffect from "../CanvasEffects/RainEffect";
+// import DayForNightEffect from "../CanvasEffects/DayForNightEffect";
+// import FireflyEffect from "../CanvasEffects/FireflyEffect";
+// import ClearEffect from "../CanvasEffects/ClearEffect";
 
 export interface Props {}
 
@@ -24,9 +27,10 @@ export interface State {
   };
 
   wetter: {
+    zeit?: number;
     wolken?: boolean;
     wind?: boolean;
-    niederschlag?: boolean;
+    niederschlag?: number;
     temperatur?: number;
   };
 
@@ -154,49 +158,37 @@ class BildHintergrund extends Component<
 
           const backgroundNumber = getRandomInt(1, max);
 
-          if (wetter.niederschlag) {
-            backgroundElement = (
-              <Screen
-                layers={[
-                  {
-                    effects: [
-                      new ImageEffect(
-                        "/img/background/" +
-                          background +
-                          "/" +
-                          background +
-                          "-" +
-                          backgroundNumber +
-                          ".jpg"
-                      )
-                    ]
-                  },
-                  {
-                    effects: [new RainEffect()]
-                  }
-                ]}
-              />
-            );
-          } else
-            backgroundElement = (
-              <Screen
-                layers={[
-                  {
-                    effects: [
-                      new ImageEffect(
-                        "/img/background/" +
-                          background +
-                          "/" +
-                          background +
-                          "-" +
-                          backgroundNumber +
-                          ".jpg"
-                      )
-                    ]
-                  }
-                ]}
-              />
-            );
+          const layers: { effects: CanvasEffect[] }[] = [
+            {
+              effects: [
+                new ImageEffect(
+                  "/img/background/" +
+                    background +
+                    "/" +
+                    background +
+                    "-" +
+                    backgroundNumber +
+                    ".jpg"
+                )
+              ]
+            }
+          ];
+
+          if (wetter.niederschlag && wetter.niederschlag >= 0.1) {
+            layers.push({
+              effects: [
+                new RainEffect(scale(wetter.niederschlag, 0.1, 1, 0.01, 1))
+              ]
+            });
+          }
+          // if (wetter.zeit && wetter.zeit <= 1) {
+          //   layers[0].effects.push(new DayForNightEffect(1 - wetter.zeit));
+
+          //   layers.push({
+          //     effects: [new ClearEffect(), new FireflyEffect()]
+          //   });
+          // }
+          backgroundElement = <Screen layers={layers} />;
         }
       } else if (bild.kanal === "ansehen") {
         if (ansehen.ort === "schweiz") backgroundElement = <Schweiz />;

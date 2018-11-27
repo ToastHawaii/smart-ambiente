@@ -166,7 +166,7 @@ async function controlTon() {
       await WeatherRadio.playSound(data.kanal["wetter"]);
     } else {
       await WeatherRadio.stopSound();
-      
+
       if (data.sinn["ton"].kanal === "musik") {
         if (data.kanal["musik"].stil === "interesse") {
           playSender("Radio Swiss Jazz (Jazz)");

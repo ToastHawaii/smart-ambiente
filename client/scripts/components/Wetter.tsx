@@ -19,6 +19,7 @@ import { Component } from "./Component";
 import MenuButton from "./MenuButton";
 
 export function toViewModel(model: {
+  zeit: number;
   wolken: number;
   wind: number;
   niederschlag: number;
@@ -26,25 +27,28 @@ export function toViewModel(model: {
   mode: "vorhersage" | "manuell";
 }) {
   return {
+    zeit: model.zeit,
     wolken: model.wolken >= 1 ? true : false,
     wind: model.wind >= 1 ? true : false,
-    niederschlag: model.niederschlag >= 1 ? true : false,
+    niederschlag: model.niederschlag,
     temperatur: model.temperatur,
     mode: model.mode
   };
 }
 
 export function fromViewModel(viewModel: {
+  zeit: number;
   wolken: boolean;
   wind: boolean;
-  niederschlag: boolean;
+  niederschlag: number;
   temperatur: number;
   mode: "vorhersage" | "manuell";
 }) {
   return {
+    zeit: viewModel.zeit,
     wolken: viewModel.wolken ? 1 : 0,
     wind: viewModel.wind ? 1 : 0,
-    niederschlag: viewModel.niederschlag ? 1 : 0,
+    niederschlag: viewModel.niederschlag,
     temperatur: viewModel.temperatur,
     mode: viewModel.mode
   };
@@ -53,9 +57,10 @@ export function fromViewModel(viewModel: {
 export interface Props {}
 
 export interface State {
+  zeit?: number;
   wolken?: boolean;
   wind?: boolean;
-  niederschlag?: boolean;
+  niederschlag?: number;
   temperatur?: number;
   mode?: "vorhersage" | "manuell";
 }
@@ -172,7 +177,7 @@ class Wetter extends Component<Props & WithStyles<ComponentClassNames>, State> {
             />
             <MenuButton
               onChange={this.handleNiederschlagChange}
-              selected={niederschlag}
+              selected={niederschlag && niederschlag >= 0.25}
               icon={<WeatherPouring />}
               title="Niederschlag"
               backgroundImage="/img/button/wetter/Niederschlag.jpg"

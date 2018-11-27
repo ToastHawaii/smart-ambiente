@@ -35,7 +35,9 @@ export default class RainEffect implements CanvasEffect {
         collisionRadius: 0.45,
         dropletsCleaningRadiusMultiplier: 0.28,
         maxDrops: 900 * this.level,
-        rainChance: 0.3 * this.level
+        rainChance: 0.3 * this.level,
+        rainLimit: 3 * this.level,
+        dropletsRate: 50 * this.level
       }
     );
     this.rainRenderer = new RainRenderer(

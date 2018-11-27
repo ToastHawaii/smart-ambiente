@@ -62,3 +62,15 @@ export function animate(render: (delta: number) => Promise<boolean>) {
   }
   loop(lastFrame);
 }
+
+export function scale(
+  unscaled: number,
+  min: number,
+  max: number,
+  scaledMin: number,
+  scaledMax: number,
+) {
+  return (
+    ((scaledMax - scaledMin) * (unscaled - min)) / (max - min) + scaledMin
+  );
+}
