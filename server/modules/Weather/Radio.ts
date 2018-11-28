@@ -1,5 +1,5 @@
 import * as SonosHttp from "../node-sonos-http-api";
-import { Forecast } from "./Forecast";
+import { Forecast, getTempFolder } from "./Forecast";
 import * as fs from "fs";
 import { postJson, readFile } from "../../utils/request";
 
@@ -35,28 +35,8 @@ export async function stopSound() {
 
 export async function playSound(weather: Forecast) {
   topic("playSound", weather);
-  let source = "";
+  let source = getTempFolder(weather.temperatur);
 
-  switch (weather.temperatur) {
-    case 0:
-      source += "icy";
-      break;
-    case 1:
-      source += "cold";
-      break;
-    case 2:
-      source += "mild";
-      break;
-    case 3:
-      source += "warm";
-      break;
-    case 4:
-      source += "hot";
-      break;
-    case 5:
-      source += "very-hot";
-      break;
-  }
   const def = {
     volume: "1",
     pan: "none",

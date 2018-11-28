@@ -4,7 +4,7 @@ import { WithStyles } from "@material-ui/core";
 import * as classnames from "classnames";
 import Erde from "./Erde";
 import Schweiz from "./Schweiz";
-import { getRandomInt, scale } from "../utils";
+import { getRandomInt, scale, getJson } from "../utils";
 import { Component } from "./Component";
 import FlugHintergrund from "./FlugHintergrund";
 import YoutubeVideo from "./YoutubeVideo";
@@ -32,6 +32,7 @@ export interface State {
     wind?: boolean;
     niederschlag?: number;
     temperatur?: number;
+    image?: { src: string };
   };
 
   ansehen: {
@@ -89,8 +90,8 @@ class BildHintergrund extends Component<
       };
     });
 
-    this.subscribe("kanal/wetter", data => {
-      const vm = toViewModel(data);
+    this.subscribe("kanal/wetter", async data => {
+      const vm = toViewModel(data, await getJson("/api/kanal/wetter/image"));
       return {
         wetter: vm
       };
@@ -130,45 +131,11 @@ class BildHintergrund extends Component<
             <YoutubeVideo video="mWyak0g5LLI" align="bottom" startAt={25} />
           );
         else {
-          let background: string | undefined;
-          let max = 0;
-
-          switch (wetter.temperatur) {
-            case 1:
-              background = "cold";
-              max = 26;
-              break;
-            case 2:
-              background = "mild";
-              max = 11;
-              break;
-            case 3:
-              background = "warm";
-              max = 10;
-              break;
-            case 4:
-              background = "hot";
-              max = 6;
-              break;
-            case 5:
-              background = "very-hot";
-              max = 3;
-              break;
-          }
-
-          const backgroundNumber = getRandomInt(1, max);
-
           const layers: { effects: CanvasEffect[] }[] = [
             {
               effects: [
                 new ImageEffect(
-                  "/img/background/" +
-                    background +
-                    "/" +
-                    background +
-                    "-" +
-                    backgroundNumber +
-                    ".jpg"
+                  "/img/weather/" + (wetter.image || { src: "" }).src
                 )
               ]
             }

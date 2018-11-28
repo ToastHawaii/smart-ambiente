@@ -1,5 +1,4 @@
 ﻿import * as Owm from "./openweathermap";
-// import * as fs from "fs";
 import * as moment from "moment";
 import { midrange } from "../../utils/math";
 
@@ -54,6 +53,29 @@ function getTemp(forecast: Owm.Forecast): number {
   return Temperatur.SehrHeiss;
 }
 
+export function getTempFolder(temperatur: number) {
+  switch (temperatur) {
+    case 0:
+      return "icy";
+
+    case 1:
+      return "cold";
+
+    case 2:
+      return "mild";
+
+    case 3:
+      return "warm";
+
+    case 4:
+      return "hot";
+
+    case 5:
+      return "very-hot";
+  }
+  throw "temperatur not known";
+}
+
 export enum Temperatur {
   Eisig,
   Kalt,
@@ -69,7 +91,7 @@ export enum Zeit {
   Tag
 }
 
-export enum Himmel {
+export enum Wolken {
   Klar,
   Bewoelkt
 }
@@ -99,111 +121,4 @@ export async function query() {
     wind: getWind(forecast),
     niederschlag: getPrecipitation(forecast)
   } as Forecast;
-
-  // const kategories: {
-  //   [name: string]: {
-  //     maxDeviation: number;
-  //     current: number;
-  //     weight: number;
-  //     mapping:
-  //       | typeof Temperatur
-  //       | typeof Zeit
-  //       | typeof Himmel
-  //       | typeof Wind
-  //       | typeof Niederschlag;
-  //   };
-  // } = {
-  //   Ort: {
-  //     maxDeviation: 1,
-  //     current: getTemp(forecast),
-  //     weight: 6,
-  //     mapping: Temperatur
-  //   },
-  //   Zeit: {
-  //     maxDeviation: 2,
-  //     current: getTime(),
-  //     weight: 2,
-  //     mapping: Zeit
-  //   },
-  //   Himmel: {
-  //     maxDeviation: 1,
-  //     current: getCloudiness(forecast),
-  //     weight: 2,
-  //     mapping: Himmel
-  //   },
-  //   Wind: {
-  //     maxDeviation: 1,
-  //     current: getWind(forecast),
-  //     weight: 1,
-  //     mapping: Wind
-  //   },
-  //   Niederschlag: {
-  //     maxDeviation: 1,
-  //     current: getPrecipitation(forecast),
-  //     weight: 1,
-  //     mapping: Niederschlag
-  //   }
-  // };
-
-  // return kategories;
 }
-
-// public async chooseBestMatch(){
-
-//     const list = fs.readdirSync("../smart-ambiente-media/img/wetter");
-
-//     const files = shuffle(list)
-//       .map(i => {
-//         return {
-//           file: i,
-//           kategories: i
-//             .replace(/ \([0-9]+\)/g, "")
-//             .replace(/\.[a-z0-9]+/g, "")
-//             .split(" ")
-//             .map(k => {
-//               return {
-//                 key: k.split("=")[0],
-//                 value: k
-//                   .split("=")[1]
-//                   .split(",")
-//                   .map(
-//                     v =>
-//                       (kategories[k.split("=")[0]].mapping[
-//                         v as any
-//                       ] as any) as number
-//                   )
-//               };
-//             })
-//         };
-//       })
-//       .map(f => {
-//         return {
-//           file: f.file,
-//           accuracy: f.kategories
-//             .map(k => {
-//               const kategorie = kategories[k.key];
-//               const minAbstand = Math.min(
-//                 ...k.value.map(v => Math.abs(v - kategorie.current))
-//               );
-//               return (
-//                 (1 - minAbstand / kategorie.maxDeviation) * kategorie.weight
-//               );
-//             })
-//             .reduce((a, b) => a + b, 0)
-//         };
-//       })
-//       .sort((a, b) => b.accuracy - a.accuracy);
-
-//     const rangedFiles: { file: string; max: number }[] = [];
-
-//     let max = 0;
-//     for (const f of files.filter(f => f.accuracy > 0)) {
-//       max += f.accuracy;
-//       rangedFiles.push({ file: f.file, max: max });
-//     }
-
-//     const next = random(0, max);
-//     const file = rangedFiles.filter(f => f.max >= next)[0].file;
-
-//     return file;
-//   }

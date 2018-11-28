@@ -10,7 +10,7 @@ import * as WeatherForecast from "./modules/Weather/Forecast";
 import * as WeatherRadio from "./modules/Weather/Radio";
 import "./modules/alarm";
 import "./modules/hue-sonos-link";
-
+import { chooseGoodMatch } from "./modules/Weather/Image";
 import debug from "./utils/debug";
 debug.enabled = true;
 const topic = debug("server");
@@ -107,8 +107,14 @@ app.get("/api/kanal/:kanal", function(req, res) {
   res.json(data.kanal[req.params.kanal]);
 });
 
+app.get("/api/kanal/wetter/image", function(_req, res) {
+  res.json({
+    src: chooseGoodMatch(data.kanal["wetter"])
+  });
+});
+
 app.post("/api/kanal/:kanal", async function(req, res) {
-  res.json(setKanal(req.params.kanal, req.body));
+  res.json(await setKanal(req.params.kanal, req.body));
 });
 
 export async function setKanal(kanal: string, kanalData: any) {

@@ -17,22 +17,27 @@ import {
 import ButtonGroup from "./ButtonGroup";
 import { Component } from "./Component";
 import MenuButton from "./MenuButton";
+import { getJson } from "../utils";
 
-export function toViewModel(model: {
-  zeit: number;
-  wolken: number;
-  wind: number;
-  niederschlag: number;
-  temperatur: number;
-  mode: "vorhersage" | "manuell";
-}) {
+export function toViewModel(
+  model: {
+    zeit: number;
+    wolken: number;
+    wind: number;
+    niederschlag: number;
+    temperatur: number;
+    mode: "vorhersage" | "manuell";
+  },
+  image?: { src: string }
+) {
   return {
     zeit: model.zeit,
     wolken: model.wolken >= 1 ? true : false,
     wind: model.wind >= 1 ? true : false,
     niederschlag: model.niederschlag,
     temperatur: model.temperatur,
-    mode: model.mode
+    mode: model.mode,
+    image: image
   };
 }
 
@@ -99,7 +104,9 @@ class Wetter extends Component<Props & WithStyles<ComponentClassNames>, State> {
   }
 
   public componentDidMount() {
-    this.subscribe("kanal/wetter", toViewModel);
+    this.subscribe("kanal/wetter", async data => {
+      return toViewModel(data, await getJson("/api/kanal/wetter/image"));
+    });
   }
 
   public handleModeChange = (_event: any, mode: any) => {
@@ -177,7 +184,7 @@ class Wetter extends Component<Props & WithStyles<ComponentClassNames>, State> {
             />
             <MenuButton
               onChange={this.handleNiederschlagChange}
-              selected={niederschlag && niederschlag >= 0.25}
+              selected={niederschlag && niederschlag >= 0.1}
               icon={<WeatherPouring />}
               title="Niederschlag"
               backgroundImage="/img/button/wetter/Niederschlag.jpg"
