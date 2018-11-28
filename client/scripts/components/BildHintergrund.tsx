@@ -14,9 +14,9 @@ import { toViewModel } from "./Wetter";
 import Screen from "./Screen";
 import ImageEffect, { CanvasEffect } from "../CanvasEffects/ImageEffect";
 import RainEffect from "../CanvasEffects/RainEffect";
-// import DayForNightEffect from "../CanvasEffects/DayForNightEffect";
-// import FireflyEffect from "../CanvasEffects/FireflyEffect";
-// import ClearEffect from "../CanvasEffects/ClearEffect";
+import DayForNightEffect from "../CanvasEffects/DayForNightEffect";
+import FireflyEffect from "../CanvasEffects/FireflyEffect";
+import ClearEffect from "../CanvasEffects/ClearEffect";
 
 export interface Props {}
 
@@ -32,7 +32,7 @@ export interface State {
     wind?: boolean;
     niederschlag?: number;
     temperatur?: number;
-    image?: { src: string };
+    image?: { src: string; effects: string[] };
   };
 
   ansehen: {
@@ -141,20 +141,29 @@ class BildHintergrund extends Component<
             }
           ];
 
-          if (wetter.niederschlag && wetter.niederschlag >= 0.1) {
-            layers.push({
-              effects: [
-                new RainEffect(scale(wetter.niederschlag, 0.1, 1, 0.01, 1))
-              ]
-            });
-          }
-          // if (wetter.zeit && wetter.zeit <= 1) {
-          //   layers[0].effects.push(new DayForNightEffect(1 - wetter.zeit));
+          const effects: string[] = (wetter.image || { effects: [] }).effects;
 
-          //   layers.push({
-          //     effects: [new ClearEffect(), new FireflyEffect()]
-          //   });
-          // }
+          if (wetter.niederschlag !== undefined && wetter.niederschlag >= 0.1) {
+            if (effects.indexOf("rain") >= 0) {
+              layers.push({
+                effects: [
+                  new RainEffect(scale(wetter.niederschlag, 0.1, 1, 0.01, 1))
+                ]
+              });
+            }
+          }
+
+          if (wetter.zeit !== undefined && wetter.zeit <= 1) {
+            if (effects.indexOf("dayfornight") >= 0) {
+              layers[0].effects.push(new DayForNightEffect(1 - wetter.zeit));
+            }
+
+            if (effects.indexOf("firefly") >= 0) {
+              layers.push({
+                effects: [new ClearEffect(), new FireflyEffect()]
+              });
+            }
+          }
           backgroundElement = <Screen layers={layers} />;
         }
       } else if (bild.kanal === "ansehen") {

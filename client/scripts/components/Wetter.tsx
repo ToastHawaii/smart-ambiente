@@ -12,7 +12,10 @@ import {
   GaugeEmpty,
   Snowflake,
   WhiteBalanceSunny,
-  Fire
+  Fire,
+  WeatherNight,
+  WeatherSunny,
+  ThemeLightDark
 } from "mdi-material-ui";
 import ButtonGroup from "./ButtonGroup";
 import { Component } from "./Component";
@@ -28,7 +31,7 @@ export function toViewModel(
     temperatur: number;
     mode: "vorhersage" | "manuell";
   },
-  image?: { src: string }
+  image?: { src: string; effects: string[] }
 ) {
   return {
     zeit: model.zeit,
@@ -137,9 +140,21 @@ class Wetter extends Component<Props & WithStyles<ComponentClassNames>, State> {
     this.publish("kanal/wetter", { temperatur }, fromViewModel);
   }
 
+  public handleZeitChange = (_event: any, zeit: number) => {
+    this.publish("kanal/wetter", { zeit }, fromViewModel);
+  }
+
   public render() {
     const { classes } = this.props;
     const { wolken, wind, niederschlag, temperatur, mode } = this.state;
+
+    let zeit: number;
+
+    if (this.state.zeit !== undefined && this.state.zeit <= 2 * (1 / 3))
+      zeit = 0;
+    else if (this.state.zeit !== undefined && this.state.zeit <= 2 * (2 / 3))
+      zeit = 1;
+    else zeit = 2;
 
     return (
       <div className={classes.root}>
@@ -162,6 +177,36 @@ class Wetter extends Component<Props & WithStyles<ComponentClassNames>, State> {
           />
         </ButtonGroup>
         <Collapse in={mode === "manuell"}>
+          <ButtonGroup
+            value={zeit}
+            onChange={this.handleZeitChange}
+            selection="exclusive"
+            style={{
+              marginTop: "1%"
+            }}
+          >
+            <MenuButton
+              icon={<WeatherNight />}
+              title="Nacht"
+              selected={zeit <= 2 * (1 / 3)}
+              backgroundGradient="Blue, MidnightBlue"
+              value={0}
+            />
+            <MenuButton
+              icon={<ThemeLightDark />}
+              title="Dämmerung"
+              selected={zeit <= 2 * (2 / 3)}
+              backgroundGradient="Orange, Red"
+              value={1}
+            />
+            <MenuButton
+              icon={<WeatherSunny />}
+              title="Tag"
+              selected={zeit <= 2}
+              backgroundGradient="Yellow, Orange"
+              value={2}
+            />
+          </ButtonGroup>
           <ButtonGroup
             selection="multiple"
             style={{

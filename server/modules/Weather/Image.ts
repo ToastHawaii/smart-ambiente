@@ -50,7 +50,7 @@ export function chooseGoodMatch(weather: Forecast) {
           ""
         )
           .split(" ")
-          .filter(k => k)
+          .filter(k => k && k.split("=")[0] !== "allow")
           .map(k => {
             return {
               key: k.split("=")[0],
@@ -59,7 +59,17 @@ export function chooseGoodMatch(weather: Forecast) {
                 .split(",")
                 .map(v => parseFloat(v))
             };
-          })
+          }),
+        effects:
+          (
+            (i.replace(/ ?\([0-9]+\)/g, "") || "").replace(
+              /\.[a-z0-9]+/g,
+              ""
+            ) || ""
+          )
+            .split(" ")
+            .filter(k => k && k.split("=")[0] === "allow")
+            .map(k => k.split("=")[1].split(","))[0] || []
       };
     })
     .map(f => {
@@ -74,22 +84,25 @@ export function chooseGoodMatch(weather: Forecast) {
             );
             return (1 - minAbstand / kategorie.maxDeviation) * kategorie.weight;
           })
-          .reduce((a, b) => a + b, 0)
+          .reduce((a, b) => a + b, 0),
+        effects: f.effects
       };
     })
     .sort((a, b) => b.accuracy - a.accuracy);
 
-  const rangedFiles: { file: string; max: number }[] = [];
+  const rangedFiles: { file: string; effects: string[]; max: number }[] = [];
 
   let max = 0;
   for (const f of files) {
     max += f.accuracy;
-    rangedFiles.push({ file: f.file, max: max });
+    rangedFiles.push({ file: f.file, effects: f.effects, max: max });
   }
 
   topic("files", files);
   const next = random(0, max);
-  const file = rangedFiles.filter(f => f.max >= next)[0].file;
+  const file = rangedFiles
+    .filter(f => f.max >= next)
+    .map(f => ({ src: source + "/" + f.file, effects: f.effects }))[0];
 
-  return source + "/" + file;
+  return file;
 }

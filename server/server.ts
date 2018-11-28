@@ -108,9 +108,8 @@ app.get("/api/kanal/:kanal", function(req, res) {
 });
 
 app.get("/api/kanal/wetter/image", function(_req, res) {
-  res.json({
-    src: chooseGoodMatch(data.kanal["wetter"])
-  });
+  res.json(chooseGoodMatch(data.kanal["wetter"])
+  );
 });
 
 app.post("/api/kanal/:kanal", async function(req, res) {
