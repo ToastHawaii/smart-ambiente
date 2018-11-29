@@ -1,7 +1,6 @@
 import * as React from "react";
 import { StyleRulesCallback, withStyles } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
-import * as classnames from "classnames";
 import Erde from "./Erde";
 import Schweiz from "./Schweiz";
 import { getRandomInt, scale, getJson } from "../utils";
@@ -158,7 +157,10 @@ class BildHintergrund extends Component<
               layers[0].effects.push(new DayForNightEffect(1 - wetter.zeit));
             }
 
-            if (effects.indexOf("firefly") >= 0) {
+            if (
+              effects.indexOf("firefly") >= 0 &&
+              !(wetter.niederschlag !== undefined && wetter.niederschlag >= 0.1)
+            ) {
               layers.push({
                 effects: [new ClearEffect(), new FireflyEffect()]
               });
@@ -171,18 +173,6 @@ class BildHintergrund extends Component<
         else if (ansehen.ort === "erde") backgroundElement = <Erde />;
         else if (ansehen.ort === "weltraum")
           backgroundElement = <YoutubeVideo video="5_-rh6L1jiU" />;
-        else if (ansehen.ort === "spotlight")
-          backgroundElement = (
-            <div
-              className={classnames(classes.fill)}
-              style={{
-                backgroundImage:
-                  "url('/img/spotlight/background (" +
-                  getRandomInt(1, 219) +
-                  ").jpg')"
-              }}
-            />
-          );
         else backgroundElement = <Events />;
       } else if (bild.kanal === "natur") {
         let video = "";

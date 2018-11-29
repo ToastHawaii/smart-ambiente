@@ -1,13 +1,7 @@
 import * as React from "react";
 import { StyleRulesCallback, withStyles } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
-import {
-  Earth,
-  ImageFilterHdr,
-  Star,
-  Windows,
-  Calendar
-} from "mdi-material-ui";
+import { Earth, ImageFilterHdr, Star, Calendar } from "mdi-material-ui";
 import ButtonGroup from "./ButtonGroup";
 import { Component } from "./Component";
 import MenuButton from "./MenuButton";
@@ -15,7 +9,7 @@ import MenuButton from "./MenuButton";
 export interface Props {}
 
 export interface State {
-  ort?: "schweiz" | "erde" | "weltraum";
+  ort?: "schweiz" | "erde" | "weltraum" | "ereignisse";
 }
 
 type ComponentClassNames = "root";
@@ -92,16 +86,10 @@ class Aussenansicht extends Component<
             value="weltraum"
           />
           <MenuButton
-            title="Spotlight"
-            icon={<Windows />}
-            backgroundGradient="SkyBlue, Blue"
-            value="spotlight"
-          />
-          <MenuButton
             title="Ereignisse"
             icon={<Calendar />}
             backgroundGradient="DarkRed, DarkSlateGray"
-            value="erreignisse"
+            value="ereignisse"
           />
         </ButtonGroup>
       </div>
