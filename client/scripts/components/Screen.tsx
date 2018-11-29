@@ -33,8 +33,10 @@ class Screen extends React.Component<Props, State> {
           const c = ReactDOM.findDOMNode(
             this.refs["canvas" + i]
           ) as HTMLCanvasElement;
-          c.width = c.scrollWidth;
-          c.height = c.scrollHeight;
+
+          const dpi = window.devicePixelRatio;
+          c.width = c.scrollWidth * dpi;
+          c.height = c.scrollHeight * dpi;
 
           for (const effect of layer.effects) {
             await effect.render(c, canvas);
@@ -77,8 +79,10 @@ class Screen extends React.Component<Props, State> {
       const c = ReactDOM.findDOMNode(
         this.refs["canvas" + i]
       ) as HTMLCanvasElement;
-      c.width = c.scrollWidth;
-      c.height = c.scrollHeight;
+
+      const dpi = window.devicePixelRatio;
+      c.width = c.scrollWidth * dpi;
+      c.height = c.scrollHeight * dpi;
 
       for (const effect of layer.effects) {
         await effect.resize(c, canvas);

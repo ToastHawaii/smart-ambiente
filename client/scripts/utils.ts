@@ -41,7 +41,7 @@ export function imageFromSource(src: string) {
 }
 
 export function animate(render: (delta: number) => Promise<boolean>) {
-  let running: boolean | undefined = undefined;
+  let running: boolean = true;
   let lastFrame = +new Date();
 
   function loop(now: number) {
@@ -68,9 +68,7 @@ export function scale(
   min: number,
   max: number,
   scaledMin: number,
-  scaledMax: number,
+  scaledMax: number
 ) {
-  return (
-    ((scaledMax - scaledMin) * (unscaled - min)) / (max - min) + scaledMin
-  );
+  return ((scaledMax - scaledMin) * (unscaled - min)) / (max - min) + scaledMin;
 }

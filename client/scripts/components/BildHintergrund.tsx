@@ -129,14 +129,10 @@ class BildHintergrund extends Component<
           backgroundElement = (
             <YoutubeVideo video="mWyak0g5LLI" align="bottom" startAt={25} />
           );
-        else {
+        else if (wetter.image) {
           const layers: { effects: CanvasEffect[] }[] = [
             {
-              effects: [
-                new ImageEffect(
-                  "/img/weather/" + (wetter.image || { src: "" }).src
-                )
-              ]
+              effects: [new ImageEffect("/img/weather/" + wetter.image.src)]
             }
           ];
 

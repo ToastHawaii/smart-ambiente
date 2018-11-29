@@ -65,9 +65,7 @@ export default class RainEffect implements CanvasEffect {
     deltaT: number,
     _underlyingCanvas: HTMLCanvasElement[]
   ) {
-    if (this.rainRenderer) {
-      this.raindrops.update(deltaT);
-      this.rainRenderer.draw();
-    }
+    this.raindrops.update(deltaT);
+    this.rainRenderer.draw();
   }
 }

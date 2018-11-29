@@ -19,7 +19,7 @@ export function chooseGoodMatch(weather: Forecast) {
     zeit: {
       maxDeviation: 2,
       current: weather.zeit,
-      weight: 2
+      weight: 3
     },
     wolken: {
       maxDeviation: 1,

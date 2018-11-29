@@ -75,7 +75,7 @@ export default class ImageEffect implements CanvasEffect {
   }
 
   public async render(canvas: HTMLCanvasElement) {
-    console.info("Image: resize");
+    console.info("Image: render " + this.src);
     const image = await imageFromSource(this.src);
     this.draw(image, canvas);
   }
