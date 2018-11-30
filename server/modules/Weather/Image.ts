@@ -3,8 +3,7 @@ import { random } from "../../utils/math";
 import { shuffle } from "../../utils/array";
 import { Forecast, getTempFolder } from "./Forecast";
 import debug from "../../utils/debug";
-debug.enabled = true;
-const topic = debug("Weather/Image");
+const topic = debug("Weather/Image", false);
 
 const imgSource = "../../smart-ambiente-media/img/weather/";
 

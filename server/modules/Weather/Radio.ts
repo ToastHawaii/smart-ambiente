@@ -9,14 +9,12 @@ const topic = debug("weather/controller", false);
 const soundSource = "../../smart-ambiente-media/sound/weather/";
 const channelApiUrls = [
   "http://192.168.1.112:8001/scene/weather",
-  "http://192.168.1.112:8002/scene/weather",
-  "http://192.168.1.112:8003/scene/weather"
+  "http://192.168.1.112:8002/scene/weather"
 ];
 
 const channelOutputUrls = [
   "http://localhost:8000/smart-ambiente/weather",
-  "http://localhost:8000/smart-ambiente/weather/part/1",
-  "http://localhost:8000/smart-ambiente/weather/part/2"
+  "http://localhost:8000/smart-ambiente/weather/part/1"
 ];
 
 function matchOrDefault(value: string, name: string, def: string) {
@@ -109,7 +107,8 @@ async function getSource(source: string, file: string) {
 }
 
 function split<T>(inputArray: T[], numberOfChunks: number) {
-  const perChunk = Math.floor(inputArray.length / numberOfChunks);
+  const perChunk = Math.ceil(inputArray.length / numberOfChunks);
+  topic("Chunks " + numberOfChunks + " size " + perChunk);
 
   return inputArray.reduce<T[][]>((resultArray, item, index) => {
     const chunkIndex = Math.floor(index / perChunk);
