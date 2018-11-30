@@ -7,7 +7,17 @@ import debug from "../../utils/debug";
 const topic = debug("weather/controller", false);
 
 const soundSource = "../../smart-ambiente-media/sound/weather/";
-const channelUrl = "http://192.168.1.112:8003/scene/weather";
+const channelApiUrls = [
+  "http://192.168.1.112:8000/scene/weather",
+  "http://192.168.1.112:8001/scene/weather",
+  "http://192.168.1.112:8002/scene/weather"
+];
+
+const channelOutputUrls = [
+  "http://localhost:8000/smart-ambiente/weather",
+  "http://localhost:8001/smart-ambiente/weather",
+  "http://localhost:8002/smart-ambiente/weather"
+];
 
 function matchOrDefault(value: string, name: string, def: string) {
   const matches = value.match(
@@ -30,7 +40,9 @@ function typVolume(typ: string, weather: Forecast) {
 }
 
 export async function stopSound() {
-  await postJson(channelUrl, []);
+  for (const channelUrl of channelApiUrls) {
+    await postJson(channelUrl, []);
+  }
 }
 
 export async function playSound(weather: Forecast) {
@@ -56,8 +68,26 @@ export async function playSound(weather: Forecast) {
       random: matchOrDefault(f, "random", def.random)
     }))
   )).filter(f => parseFloat(f.volume) > 0.1);
-  topic("POST", list);
-  await postJson(channelUrl, list);
+
+  let i = 0;
+  for (const chunk of split(list, channelOutputUrls.length)) {
+    if (i < channelOutputUrls.length - 1) {
+      // use multiple instance of liquidsoap
+      chunk.push({
+        source: channelOutputUrls[i + 1],
+        typ: "url",
+        volume: "1",
+        pan: "none",
+        crossfade: "0",
+        random: "0"
+      });
+    }
+
+    topic("POST " + channelApiUrls[i], chunk);
+    await postJson(channelApiUrls[i], chunk);
+    i++;
+  }
+
   await SonosHttp.createClient()
     .room("wohnzimmer")
     .favorite("Smart Ambiente - Wetter")
@@ -76,4 +106,20 @@ async function getSource(source: string, file: string) {
       typ: "url",
       source: await readFile(source + "/" + file)
     };
+}
+
+function split<T>(inputArray: T[], numberOfChunks: number) {
+  const perChunk = Math.floor(inputArray.length / numberOfChunks);
+
+  return inputArray.reduce<T[][]>((resultArray, item, index) => {
+    const chunkIndex = Math.floor(index / perChunk);
+
+    if (!resultArray[chunkIndex]) {
+      resultArray[chunkIndex] = []; // start a new chunk
+    }
+
+    resultArray[chunkIndex].push(item);
+
+    return resultArray;
+  }, []);
 }
