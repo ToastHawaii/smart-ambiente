@@ -9,10 +9,14 @@ muted = blank()
 
 channel = ref muted
 
-port = int_of_string(argv(default="8000",1))
+instance = argv(default="0",1)
 
-output.icecast(%mp3,port=port,mount="smart-ambiente/weather",mksafe(source.dynamic(fun ()->[!channel])))
-	
+if instance == "0" then
+	output.icecast(%mp3,mount="smart-ambiente/weather",mksafe(source.dynamic(fun ()->[!channel])))
+else 
+	output.icecast(%mp3,mount="smart-ambiente/weather/part/"^instance,mksafe(source.dynamic(fun ()->[!channel])))
+end	
+
 def update_scene(~protocol,~data,~headers,uri) =
 	
 	def sources_of_scene(entry) =
@@ -64,4 +68,4 @@ def update_scene(~protocol,~data,~headers,uri) =
 	)
 end
 
-harbor.http.register(port=port,method="POST","^/scene/weather",update_scene)
+harbor.http.register(port=int_of_string("800"^instance)+1,method="POST","^/scene/weather",update_scene)

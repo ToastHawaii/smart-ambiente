@@ -40,3 +40,13 @@ sudo nano rc.local
     cd /home/pi/smart-ambiente/node_modules/smart-ambiente
     liquidsoap out/smart-ambiente.liq
     " >>/dev/smart-ambiente-radio.log 2>>/dev/smart-ambiente-radio.err &
+
+    su - pi -c "
+    cd /home/pi/smart-ambiente/node_modules/smart-ambiente
+    liquidsoap out/smart-ambiente.liq -- 1
+    " >>/dev/smart-ambiente-radio1.log 2>>/dev/smart-ambiente-radio1.err &
+
+    su - pi -c "
+    cd /home/pi/smart-ambiente/node_modules/smart-ambiente
+    liquidsoap out/smart-ambiente.liq -- 2
+    " >>/dev/smart-ambiente-radio2.log 2>>/dev/smart-ambiente-radio2.err &

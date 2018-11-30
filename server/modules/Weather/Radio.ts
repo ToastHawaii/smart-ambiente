@@ -8,15 +8,15 @@ const topic = debug("weather/controller", false);
 
 const soundSource = "../../smart-ambiente-media/sound/weather/";
 const channelApiUrls = [
-  "http://192.168.1.112:8000/scene/weather",
   "http://192.168.1.112:8001/scene/weather",
-  "http://192.168.1.112:8002/scene/weather"
+  "http://192.168.1.112:8002/scene/weather",
+  "http://192.168.1.112:8003/scene/weather"
 ];
 
 const channelOutputUrls = [
   "http://localhost:8000/smart-ambiente/weather",
-  "http://localhost:8001/smart-ambiente/weather",
-  "http://localhost:8002/smart-ambiente/weather"
+  "http://localhost:8000/smart-ambiente/weather/part/1",
+  "http://localhost:8000/smart-ambiente/weather/part/2"
 ];
 
 function matchOrDefault(value: string, name: string, def: string) {
