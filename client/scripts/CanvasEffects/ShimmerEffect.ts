@@ -17,11 +17,13 @@ export default class ShimmerEffect implements CanvasEffect {
 
 const css = `@keyframes animated-brightness {
   0% {
+    -webkit-filter: brightness(85%);
     filter: brightness(85%);
   }
 
   100% {
-    filter: brightness(145%);
+    -webkit-filter: brightness(135%);
+    filter: brightness(135%);
   }
 }`;
 const head = document.head || document.getElementsByTagName("head")[0];
