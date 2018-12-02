@@ -21,7 +21,7 @@ export default class DayForNightEffect implements CanvasEffect {
 
     const pixels = this.getPixels(context);
     if (!pixels) return;
-    const newPixels = this.dayForNight(pixels, -30 * adjustment);
+    const newPixels = this.dayForNight(pixels, -30 *(1- adjustment));
     this.putPixels(context, newPixels);
   }
 

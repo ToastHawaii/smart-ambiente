@@ -16,6 +16,9 @@ import RainEffect from "../CanvasEffects/RainEffect";
 import DayForNightEffect from "../CanvasEffects/DayForNightEffect";
 import FireflyEffect from "../CanvasEffects/FireflyEffect";
 import ClearEffect from "../CanvasEffects/ClearEffect";
+import ShimmerEffect from "../CanvasEffects/ShimmerEffect";
+import InsectEffect from "../CanvasEffects/InsectEffect";
+import BrightnessEffect from "../CanvasEffects/BrightnessEffect";
 
 export interface Props {}
 
@@ -27,8 +30,8 @@ export interface State {
 
   wetter: {
     zeit?: number;
-    wolken?: boolean;
-    wind?: boolean;
+    wolken?: number;
+    wind?: number;
     niederschlag?: number;
     temperatur?: number;
     image?: { src: string; effects: string[] };
@@ -130,38 +133,60 @@ class BildHintergrund extends Component<
             <YoutubeVideo video="mWyak0g5LLI" align="bottom" startAt={25} />
           );
         else if (wetter.image) {
+          const weather = this.extractWeather(wetter);
+
+          const effects = this.extractEffects(wetter);
+
           const layers: { effects: CanvasEffect[] }[] = [
             {
               effects: [new ImageEffect("/img/weather/" + wetter.image.src)]
             }
           ];
 
-          const effects: string[] = (wetter.image || { effects: [] }).effects;
+          if (effects.brightness)
+            layers[layers.length - 1].effects.push(
+              new BrightnessEffect(wetter.wolken)
+            );
 
-          if (wetter.niederschlag !== undefined && wetter.niederschlag >= 0.1) {
-            if (effects.indexOf("rain") >= 0) {
-              layers.push({
-                effects: [
-                  new RainEffect(scale(wetter.niederschlag, 0.1, 1, 0.01, 1))
-                ]
-              });
-            }
-          }
+          if (!weather.tag && effects.dayForNight)
+            layers[layers.length - 1].effects.push(
+              new DayForNightEffect(wetter.zeit)
+            );
 
-          if (wetter.zeit !== undefined && wetter.zeit <= 1) {
-            if (effects.indexOf("dayfornight") >= 0) {
-              layers[0].effects.push(new DayForNightEffect(1 - wetter.zeit));
-            }
+          if (weather.niederschlag && effects.rain)
+            layers.push({
+              effects: [
+                new RainEffect(
+                  scale(wetter.niederschlag || 0.1, 0.1, 1, 0.01, 1)
+                )
+              ]
+            });
 
-            if (
-              effects.indexOf("firefly") >= 0 &&
-              !(wetter.niederschlag !== undefined && wetter.niederschlag >= 0.1)
-            ) {
-              layers.push({
-                effects: [new ClearEffect(), new FireflyEffect()]
-              });
-            }
-          }
+          if (weather.wind && effects.shimmer)
+            layers[layers.length - 1].effects.push(
+              new ShimmerEffect(scale(wetter.wind || 0.1, 0.1, 1, 0.01, 1))
+            );
+
+          if (
+            !weather.niederschlag &&
+            !weather.wind &&
+            weather.tag &&
+            effects.insect
+          )
+            layers.push({
+              effects: [new ClearEffect(), new InsectEffect()]
+            });
+
+          if (
+            !weather.niederschlag &&
+            !weather.wind &&
+            !weather.tag &&
+            effects.firefly
+          )
+            layers.push({
+              effects: [new ClearEffect(), new FireflyEffect()]
+            });
+
           backgroundElement = <Screen layers={layers} />;
         }
       } else if (bild.kanal === "ansehen") {
@@ -271,6 +296,36 @@ class BildHintergrund extends Component<
     }
 
     return <div className={classes.root}>{backgroundElement}</div>;
+  }
+
+  private extractEffects(wetter: {
+    image?: { src: string; effects: string[] } | undefined;
+  }) {
+    const e: string[] = (wetter.image || { effects: [] }).effects;
+    const effects = {
+      brightness: e.indexOf("brightness") >= 0,
+      dayForNight: e.indexOf("dayfornight") >= 0,
+      shimmer: e.indexOf("shimmer") >= 0,
+      rain: e.indexOf("rain") >= 0,
+      insect: e.indexOf("insect") >= 0,
+      firefly: e.indexOf("firefly") >= 0
+    };
+    return effects;
+  }
+
+  private extractWeather(wetter: {
+    zeit?: number | undefined;
+    wolken?: number | undefined;
+    wind?: number | undefined;
+    niederschlag?: number | undefined;
+  }) {
+    return {
+      wolken: wetter.wolken !== undefined && wetter.wolken > 0.1,
+      tag: wetter.zeit !== undefined && wetter.zeit > 1,
+      wind: wetter.wind !== undefined && wetter.wind >= 0.1,
+      niederschlag:
+        wetter.niederschlag !== undefined && wetter.niederschlag >= 0.1
+    };
   }
 }
 

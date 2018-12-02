@@ -85,9 +85,9 @@ class Circle {
       this.y,
       cr <= 0 ? 1 : cr
     );
-    gradient.addColorStop(0.0, "rgba(109,214,131," + newo + ")");
-    gradient.addColorStop(this.stop, "rgba(11,76,29," + newo * 0.6 + ")");
-    gradient.addColorStop(1.0, "rgba(11,76,29,0)");
+    gradient.addColorStop(0.0, "rgba(255,255,255," + newo + ")");
+    gradient.addColorStop(this.stop, "rgba(77,101,181," + newo * 0.6 + ")");
+    gradient.addColorStop(1.0, "rgba(77,101,181, 0)");
     context.fillStyle = gradient;
     context.fill();
   }
@@ -101,7 +101,7 @@ class Circle {
   }
 }
 
-export default class FireflyEffect implements CanvasEffect {
+export default class InsectEffect implements CanvasEffect {
   private pixies: Circle[] = [];
   constructor() {}
 

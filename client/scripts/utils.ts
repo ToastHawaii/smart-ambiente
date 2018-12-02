@@ -64,11 +64,11 @@ export function animate(render: (delta: number) => Promise<boolean>) {
 }
 
 export function scale(
-  unscaled: number,
+  val: number,
   min: number,
   max: number,
-  scaledMin: number,
-  scaledMax: number
+  from: number,
+  to: number
 ) {
-  return ((scaledMax - scaledMin) * (unscaled - min)) / (max - min) + scaledMin;
+  return ((to - from) * (val - min)) / (max - min) + from;
 }

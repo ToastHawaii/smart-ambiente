@@ -41,6 +41,8 @@ sudo nano rc.local
     liquidsoap out/smart-ambiente.liq
     " >>/dev/smart-ambiente-radio.log 2>>/dev/smart-ambiente-radio.err &
 
+    sleep 5
+
     su - pi -c "
     cd /home/pi/smart-ambiente/node_modules/smart-ambiente
     liquidsoap out/smart-ambiente.liq -- 1

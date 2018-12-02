@@ -35,8 +35,8 @@ export function toViewModel(
 ) {
   return {
     zeit: model.zeit,
-    wolken: model.wolken >= 1 ? true : false,
-    wind: model.wind >= 1 ? true : false,
+    wolken: model.wolken,
+    wind: model.wind,
     niederschlag: model.niederschlag,
     temperatur: model.temperatur,
     mode: model.mode,
@@ -46,16 +46,16 @@ export function toViewModel(
 
 export function fromViewModel(viewModel: {
   zeit: number;
-  wolken: boolean;
-  wind: boolean;
+  wolken: number;
+  wind: number;
   niederschlag: number;
   temperatur: number;
   mode: "vorhersage" | "manuell";
 }) {
   return {
     zeit: viewModel.zeit,
-    wolken: viewModel.wolken ? 1 : 0,
-    wind: viewModel.wind ? 1 : 0,
+    wolken: viewModel.wolken,
+    wind: viewModel.wind,
     niederschlag: viewModel.niederschlag,
     temperatur: viewModel.temperatur,
     mode: viewModel.mode
@@ -66,8 +66,8 @@ export interface Props {}
 
 export interface State {
   zeit?: number;
-  wolken?: boolean;
-  wind?: boolean;
+  wolken?: number;
+  wind?: number;
   niederschlag?: number;
   temperatur?: number;
   mode?: "vorhersage" | "manuell";
@@ -215,14 +215,14 @@ class Wetter extends Component<Props & WithStyles<ComponentClassNames>, State> {
           >
             <MenuButton
               onChange={this.handleWolkenChange}
-              selected={wolken}
+              selected={wolken && wolken >= 0.1}
               icon={<WeatherCloudy />}
               title="Wolken"
               backgroundImage="/img/button/wetter/Wolken.jpg"
             />
             <MenuButton
               onChange={this.handleWindChange}
-              selected={wind}
+              selected={wind && wind >= 0.1}
               icon={<WeatherWindy />}
               title="Wind"
               backgroundImage="/img/button/wetter/Wind.gif"
