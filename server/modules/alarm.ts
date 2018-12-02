@@ -17,7 +17,7 @@ async function enableLicht(weather: WeatherForecast.Forecast) {
     },
     Hue.Scheduler
   >(result);
-  if (weather.wolken >= 1) {
+  if (weather.wolken >= 0.2) {
     // console.log("Bewölkt");
     for (const s of schedules.filter(
       s => s.name.indexOf("Sonnenaufgang") !== -1

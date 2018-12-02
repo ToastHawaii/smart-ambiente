@@ -320,7 +320,7 @@ class BildHintergrund extends Component<
     niederschlag?: number | undefined;
   }) {
     return {
-      wolken: wetter.wolken !== undefined && wetter.wolken > 0.1,
+      wolken: wetter.wolken !== undefined && wetter.wolken > 0.2,
       tag: wetter.zeit !== undefined && wetter.zeit > 1,
       wind: wetter.wind !== undefined && wetter.wind >= 0.1,
       niederschlag:

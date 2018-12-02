@@ -19,17 +19,24 @@ function getTime() {
 }
 
 function getPrecipitation(forecast: Owm.Forecast) {
-  return midrange(
-    ...forecast.list.map(
-      s =>
-        (1 / 0.3) * ((s.rain && s.rain["3h"]) || (s.snow && s.snow["3h"]) || 0)
+  return Math.min(
+    1,
+    midrange(
+      ...forecast.list.map(
+        s =>
+          (1 / 0.6) *
+          ((s.rain && s.rain["3h"]) || (s.snow && s.snow["3h"]) || 0)
+      )
     )
   );
 }
 
 function getWind(forecast: Owm.Forecast) {
-  return midrange(
-    ...forecast.list.map(s => (1 / 5) /* 5 m/s = 18 km/h */ * s.wind.speed)
+  return Math.min(
+    1,
+    midrange(
+      ...forecast.list.map(s => (1 / 10) /* 10 m/s = 36 km/h */ * s.wind.speed)
+    )
   );
 }
 
