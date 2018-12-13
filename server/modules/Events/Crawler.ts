@@ -11,6 +11,7 @@ import * as cheerio from "cheerio";
 import { getHtml, getJson } from "../../utils/request";
 import { casinotheaterReader } from "./CasinotheaterReader";
 import debug from "../../utils/debug";
+import { inspect } from "util";
 const topic = debug("Events/Crawler", false);
 
 export interface Event {
@@ -135,27 +136,55 @@ async function crawelJson<T>(
     .reduce(selectMany((x: any) => x), []);
 
   for (const sourceUrl of sourceUrls) {
-    topic("GET " + sourceUrl);
-    const elements = reader.itemSelector(await getJson<T[]>(sourceUrl));
+    try {
+      topic("GET " + sourceUrl);
+      const elements = reader.itemSelector(await getJson<T[]>(sourceUrl));
 
-    for (const e of elements) {
-      if (!reader.sourceDetailUrl)
-        await transformPersist(persist, reader, reader.mapper(e));
-      else {
-        const detailUrl = reader.sourceDetailUrl(e);
+      for (const e of elements) {
+        try {
+          if (!reader.sourceDetailUrl)
+            await transformPersist(persist, reader, reader.mapper(e));
+          else {
+            const detailUrl = reader.sourceDetailUrl(e);
 
-        topic("GET " + detailUrl);
-        const body = await getHtml(detailUrl);
+            topic("GET " + detailUrl);
+            const body = await getHtml(detailUrl);
 
-        if (!body) {
-          console.error("body is null on GET " + detailUrl);
-          return;
+            if (!body) {
+              console.error("body is null on GET " + detailUrl);
+              return;
+            }
+
+            topic(body);
+            const $ = cheerio.load(body);
+            await transformPersist(
+              persist,
+              reader,
+              reader.mapper(e, $("body"))
+            );
+          }
+        } catch (err) {
+          const now = moment();
+          await persist({
+            titel: "Error in " + reader.sourceName,
+            beschreibung: `${err}\n${inspect(e)}\n${sourceUrl}`,
+            kategorie: "Error",
+            start: now,
+            quelle: reader.sourceName,
+            createdAt: now
+          });
         }
-
-        topic(body);
-        const $ = cheerio.load(body);
-        await transformPersist(persist, reader, reader.mapper(e, $("body")));
       }
+    } catch (err) {
+      const now = moment();
+      await persist({
+        titel: "Error in " + reader.sourceName,
+        beschreibung: `${err}\n${sourceUrl}`,
+        kategorie: "Error",
+        start: now,
+        quelle: reader.sourceName,
+        createdAt: now
+      });
     }
   }
 }
@@ -165,64 +194,59 @@ async function transformPersist(
   reader: Reader,
   readerEvents: Event[]
 ) {
-  try {
-    for (const readerEvent of readerEvents) {
-      const now = moment();
-      const inAWeek = moment().add(7, "days");
+  for (const readerEvent of readerEvents) {
+    const now = moment();
+    const inAWeek = moment().add(7, "days");
 
-      if ((readerEvent.ende || readerEvent.start).isBefore(now, "day")) {
-        return;
-      }
-
-      if (readerEvent.start.isAfter(inAWeek, "day")) {
-        return;
-      }
-
-      if (readerEvent.start.isBefore(now, "day")) {
-        readerEvent.start = moment({
-          years: now.year(),
-          months: now.month(),
-          date: now.date(),
-          hours: readerEvent.start.hours(),
-          minutes: readerEvent.start.minutes()
-        });
-      }
-
-      if (readerEvent.ende && readerEvent.ende.isAfter(inAWeek, "day")) {
-        readerEvent.ende = moment({
-          years: inAWeek.year(),
-          months: inAWeek.month(),
-          date: inAWeek.date(),
-          hours: readerEvent.ende.hours(),
-          minutes: readerEvent.ende.minutes()
-        });
-      }
-
-      if (readerEvent.kategorie)
-        readerEvent.kategorie = readerEvent.kategorie
-          .replace(/\s+/g, " ")
-          .trim();
-      readerEvent.titel = (readerEvent.titel || "").replace(/\s+/g, " ").trim();
-      if (readerEvent.beschreibung)
-        readerEvent.beschreibung = readerEvent.beschreibung
-          .replace(/\s+/g, " ")
-          .trim();
-      if (readerEvent.ort)
-        readerEvent.ort = readerEvent.ort
-          .split("\n")
-          .map(z => z.replace(/\s+/g, " ").trim())
-          .filter(z => z)
-          .join(", ");
-
-      // enrich
-      const calenderEvent: Calendar.Event = {
-        ...readerEvent,
-        quelle: reader.sourceName
-      };
-
-      await persist(calenderEvent);
+    if ((readerEvent.ende || readerEvent.start).isBefore(now, "day")) {
+      return;
     }
-  } catch (err) {
-    console.error("error: " + err);
+
+    if (readerEvent.start.isAfter(inAWeek, "day")) {
+      return;
+    }
+
+    if (readerEvent.start.isBefore(now, "day")) {
+      readerEvent.start = moment({
+        years: now.year(),
+        months: now.month(),
+        date: now.date(),
+        hours: readerEvent.start.hours(),
+        minutes: readerEvent.start.minutes()
+      });
+    }
+
+    if (readerEvent.ende && readerEvent.ende.isAfter(inAWeek, "day")) {
+      readerEvent.ende = moment({
+        years: inAWeek.year(),
+        months: inAWeek.month(),
+        date: inAWeek.date(),
+        hours: readerEvent.ende.hours(),
+        minutes: readerEvent.ende.minutes()
+      });
+    }
+
+    if (readerEvent.kategorie)
+      readerEvent.kategorie = readerEvent.kategorie.replace(/\s+/g, " ").trim();
+    readerEvent.titel = (readerEvent.titel || "").replace(/\s+/g, " ").trim();
+    if (readerEvent.beschreibung)
+      readerEvent.beschreibung = readerEvent.beschreibung
+        .replace(/\s+/g, " ")
+        .trim();
+    if (readerEvent.ort)
+      readerEvent.ort = readerEvent.ort
+        .split("\n")
+        .map(z => z.replace(/\s+/g, " ").trim())
+        .filter(z => z)
+        .join(", ");
+
+    // enrich
+    const calenderEvent: Calendar.Event = {
+      ...readerEvent,
+      quelle: reader.sourceName,
+      createdAt: now
+    };
+
+    await persist(calenderEvent);
   }
 }

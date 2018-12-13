@@ -18,6 +18,7 @@ export interface Event {
   ende?: moment.Moment;
   ort?: string;
   quelle: string;
+  createdAt: moment.Moment;
 }
 
 const events: Event[] = [];
@@ -58,7 +59,8 @@ export function getIcal(kategorie: string = "") {
       allDay: isAllDay(e),
       description: e.beschreibung || undefined,
       location: e.ort || undefined,
-      url: e.bild || undefined
+      url: e.bild || undefined,
+      stamp: e.createdAt
     });
 
     const categories: { name: string }[] = [];
@@ -72,12 +74,12 @@ export function getIcal(kategorie: string = "") {
 }
 // dav.debug.enabled = true;
 
- if (args["--RELEASE"]) {
-init();
- }
+if (args["--RELEASE"]) {
+  init();
+}
 
 async function init() {
-  await delay(30 * 1000);
+   await delay(30 * 1000);
 
   try {
     topic("Crawel");
@@ -88,7 +90,8 @@ async function init() {
       }
 
       const existings = events.filter(e => textIsEquals(e.titel, event.titel));
-      topic("existings: ", existings.map(e => e.titel));
+      if (existings.length > 0)
+        topic("existings: ", existings.map(e => e.titel));
       if (existings.length === 0) {
         await persist(event);
         return;
@@ -99,7 +102,7 @@ async function init() {
       }
 
       const same = existings.filter(e => isBetween(event, e));
-      topic("same: ", same.map(e => e.titel));
+      if (same.length > 0) topic("same: ", same.map(e => e.titel));
       for (const e of same) {
         e.start = event.start;
         e.ende = event.ende;
@@ -253,6 +256,10 @@ const baseKategorieSchlagwoerter = [
   {
     name: "Essen",
     schlagwoerter: ["essen", "fleisch", "brunch", "café", "restaurant"]
+  },
+  {
+    name: "Error",
+    schlagwoerter: ["error"]
   }
 ];
 
