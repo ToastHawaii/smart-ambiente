@@ -20,8 +20,10 @@ export interface CanvasEffect {
   ): void;
 }
 
-export default class ImageEffect implements CanvasEffect {
+export default class AnimatedImageEffect implements CanvasEffect {
   constructor(private src: string) {}
+
+  public automaticUpdates = true;
 
   private draw(
     image: HTMLImageElement,
@@ -76,9 +78,16 @@ export default class ImageEffect implements CanvasEffect {
     canvasContext.drawImage(image, cx, cy, cw, ch, x, y, w, h);
   }
 
+  private image: HTMLImageElement;
+
   public async render(canvas: HTMLCanvasElement) {
     console.info("Image: render " + this.src);
-    const image = await imageFromSource(this.src);
-    this.draw(image, canvas);
+    this.image = await imageFromSource(this.src);
+    this.draw(this.image, canvas);
+  }
+
+  public update(canvas: HTMLCanvasElement) {
+    console.info("Image: update " + this.src);
+    this.draw(document.getElementsByTagName("img")[0], canvas);
   }
 }

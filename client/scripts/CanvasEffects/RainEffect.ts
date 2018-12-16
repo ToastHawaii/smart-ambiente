@@ -53,14 +53,7 @@ export default class RainEffect implements CanvasEffect {
     );
   }
 
-  public async resize(
-    canvas: HTMLCanvasElement,
-    underlyingCanvas: HTMLCanvasElement[]
-  ) {
-    this.init(canvas, underlyingCanvas[0]);
-  }
-
-  public async update(
+  public step(
     _canvas: HTMLCanvasElement,
     deltaT: number,
     _underlyingCanvas: HTMLCanvasElement[]

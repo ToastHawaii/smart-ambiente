@@ -102,18 +102,18 @@ class Circle {
 }
 
 export default class InsectEffect implements CanvasEffect {
-  private pixies: Circle[] = [];
+  private pixies: Circle[] ;
   constructor() {}
 
   public async render(canvas: HTMLCanvasElement) {
+    this.pixies = [];
     for (let i = 0; i < MAX_PARTICLES; i++) {
       this.pixies.push(new Circle());
       this.pixies[i].reset(canvas);
     }
   }
-  public async resize(_canvas: HTMLCanvasElement) {}
 
-  public async update(canvas: HTMLCanvasElement, deltaT: number) {
+  public step(canvas: HTMLCanvasElement, deltaT: number) {
     for (let i = 0; i < this.pixies.length; i++) {
       this.pixies[i].fade(deltaT);
       this.pixies[i].move(canvas, deltaT);

@@ -9,10 +9,6 @@ export default class ShimmerEffect implements CanvasEffect {
       scale(this.adjustment, 0, 1, 60, 20)
     )}s infinite ease-in-out alternate`;
   }
-
-  public async resize() {}
-
-  public async update() {}
 }
 
 const css = `@keyframes animated-brightness {

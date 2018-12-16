@@ -38,9 +38,8 @@ class Screen extends React.Component<Props, State> {
           c.width = c.scrollWidth * dpi;
           c.height = c.scrollHeight * dpi;
 
-          for (const effect of layer.effects) {
-            await effect.render(c, canvas);
-          }
+          for (const effect of layer.effects)
+            if (effect.render) await effect.render(c, canvas);
 
           canvas.push(c);
           i++;
@@ -48,14 +47,19 @@ class Screen extends React.Component<Props, State> {
       }
 
       const canvas: HTMLCanvasElement[] = [];
+      let automaticUpdates = false;
       let ii = 0;
       for (const layer of this.props.layers) {
         const c = ReactDOM.findDOMNode(
           this.refs["canvas" + ii]
         ) as HTMLCanvasElement;
 
-        for (const effect of layer.effects) {
-          await effect.update(c, deltaT, canvas);
+        for (const effect of layer.effects){
+          automaticUpdates = automaticUpdates || !!effect.automaticUpdates;
+
+          if (effect.update) await effect.update(c, canvas);
+
+          if (effect.step) await effect.step(c, deltaT, canvas);
         }
 
         canvas.push(c);
@@ -84,9 +88,8 @@ class Screen extends React.Component<Props, State> {
       c.width = c.scrollWidth * dpi;
       c.height = c.scrollHeight * dpi;
 
-      for (const effect of layer.effects) {
-        await effect.resize(c, canvas);
-      }
+      for (const effect of layer.effects)
+        if (effect.render) await effect.render(c, canvas);
 
       canvas.push(c);
       i++;

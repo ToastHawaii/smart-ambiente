@@ -8,20 +8,13 @@ export default class DayForNightEffect implements CanvasEffect {
     this.draw(canvas, this.adjustment);
   }
 
-  public async resize(canvas: HTMLCanvasElement) {
-    console.info("DayForNight: resize");
-    this.draw(canvas, this.adjustment);
-  }
-
-  public async update() {}
-
   private draw(canvas: HTMLCanvasElement, adjustment: number) {
     const context = canvas.getContext("2d");
     if (!context) return;
 
     const pixels = this.getPixels(context);
     if (!pixels) return;
-    const newPixels = this.dayForNight(pixels, -30 *(1- adjustment));
+    const newPixels = this.dayForNight(pixels, -30 * (1 - adjustment));
     this.putPixels(context, newPixels);
   }
 

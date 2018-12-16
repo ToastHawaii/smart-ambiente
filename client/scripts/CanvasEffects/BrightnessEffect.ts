@@ -8,13 +8,6 @@ export default class BrightnessEffect implements CanvasEffect {
     this.draw(canvas, (1 - this.adjustment - 0.5) * 2 * 5);
   }
 
-  public async resize(canvas: HTMLCanvasElement) {
-    console.info("BrightnessEffect: resize");
-    this.draw(canvas, (1 - this.adjustment - 0.5) * 2 * 5);
-  }
-
-  public async update() {}
-
   private draw(canvas: HTMLCanvasElement, adjustment: number) {
     const context = canvas.getContext("2d");
     if (!context) return;
