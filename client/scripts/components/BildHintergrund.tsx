@@ -19,6 +19,7 @@ import ClearEffect from "../CanvasEffects/ClearEffect";
 import ShimmerEffect from "../CanvasEffects/ShimmerEffect";
 import InsectEffect from "../CanvasEffects/InsectEffect";
 import BrightnessEffect from "../CanvasEffects/BrightnessEffect";
+import StarsEffect from "../CanvasEffects/StarsEffect";
 
 export interface Props {}
 
@@ -151,6 +152,14 @@ class BildHintergrund extends Component<
           if (!weather.tag && effects.dayForNight)
             layers[layers.length - 1].effects.push(
               new DayForNightEffect(wetter.zeit)
+            );
+
+          if (!weather.tag && effects.stars)
+            layers[layers.length - 1].effects.push(
+              new StarsEffect(
+                "/img/weather/" + wetter.image.src,
+                ...effects.starsMargin
+              )
             );
 
           if (weather.niederschlag && effects.rain)
@@ -308,8 +317,18 @@ class BildHintergrund extends Component<
       shimmer: e.indexOf("shimmer") >= 0,
       rain: e.indexOf("rain") >= 0,
       insect: e.indexOf("insect") >= 0,
-      firefly: e.indexOf("firefly") >= 0
+      firefly: e.indexOf("firefly") >= 0,
+      stars: e.filter(v => v.startsWith("stars")).length > 0,
+      starsMargin:
+        e.filter(v => v.startsWith("stars")).length > 0
+          ? e
+              .filter(v => v.startsWith("stars"))[0]
+              .substring(5)
+              .split(";")
+              .map(v => parseFloat(v))
+          : []
     };
+
     return effects;
   }
 

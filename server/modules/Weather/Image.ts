@@ -62,7 +62,7 @@ export function chooseGoodMatch(weather: Forecast) {
         effects:
           (
             (i.replace(/ ?\([0-9]+\)/g, "") || "").replace(
-              /\.[a-z0-9]+/g,
+              /\.[a-z0-9]+$/g,
               ""
             ) || ""
           )

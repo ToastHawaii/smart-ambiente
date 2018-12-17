@@ -18,8 +18,8 @@ const css = `@keyframes animated-brightness {
   }
 
   100% {
-    -webkit-filter: brightness(135%);
-    filter: brightness(135%);
+    -webkit-filter: brightness(115%);
+    filter: brightness(115%);
   }
 }`;
 const head = document.head || document.getElementsByTagName("head")[0];
