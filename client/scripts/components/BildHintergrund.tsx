@@ -11,7 +11,7 @@ import YoutubePlaylist from "./YoutubePlaylist";
 import Events from "./Events";
 import { toViewModel } from "./Wetter";
 import Screen from "./Screen";
-import ImageEffect, { CanvasEffect } from "../CanvasEffects/ImageEffect";
+// import ImageEffect, { CanvasEffect } from "../CanvasEffects/ImageEffect";
 import RainEffect from "../CanvasEffects/RainEffect";
 import DayForNightEffect from "../CanvasEffects/DayForNightEffect";
 import FireflyEffect from "../CanvasEffects/FireflyEffect";
@@ -20,6 +20,8 @@ import ShimmerEffect from "../CanvasEffects/ShimmerEffect";
 import InsectEffect from "../CanvasEffects/InsectEffect";
 import BrightnessEffect from "../CanvasEffects/BrightnessEffect";
 import StarsEffect from "../CanvasEffects/StarsEffect";
+import AnimatedImageEffect from "../CanvasEffects/AnimatedImageEffect";
+import { CanvasEffect } from "../CanvasEffects/ImageEffect";
 
 export interface Props {}
 
@@ -140,7 +142,9 @@ class BildHintergrund extends Component<
 
           const layers: { effects: CanvasEffect[] }[] = [
             {
-              effects: [new ImageEffect("/img/weather/" + wetter.image.src)]
+              effects: [
+                new AnimatedImageEffect("/img/weather/" + wetter.image.src)
+              ]
             }
           ];
 
@@ -154,7 +158,7 @@ class BildHintergrund extends Component<
               new DayForNightEffect(wetter.zeit)
             );
 
-          if (!weather.tag && effects.stars)
+          if (!weather.tag && !weather.wolken && effects.stars)
             layers[layers.length - 1].effects.push(
               new StarsEffect(
                 "/img/weather/" + wetter.image.src,

@@ -1,24 +1,5 @@
-import { imageFromSource } from "../utils";
-
-export interface CanvasEffect {
-  automaticUpdates?: boolean;
-
-  render?(
-    canvas: HTMLCanvasElement,
-    underlyingCanvas: HTMLCanvasElement[]
-  ): Promise<void>;
-
-  update?(
-    canvas: HTMLCanvasElement,
-    underlyingCanvas: HTMLCanvasElement[]
-  ): void;
-
-  step?(
-    canvas: HTMLCanvasElement,
-    deltaT: number,
-    underlyingCanvas: HTMLCanvasElement[]
-  ): void;
-}
+import { CanvasEffect } from "./ImageEffect";
+import GIF, { Image } from "./gif";
 
 export default class AnimatedImageEffect implements CanvasEffect {
   constructor(private src: string) {}
@@ -26,7 +7,7 @@ export default class AnimatedImageEffect implements CanvasEffect {
   public automaticUpdates = true;
 
   private draw(
-    image: HTMLImageElement,
+    image: Image,
     canvas: HTMLCanvasElement,
     x = 0,
     y = 0,
@@ -41,8 +22,8 @@ export default class AnimatedImageEffect implements CanvasEffect {
     if (offsetX > 1) offsetX = 1;
     if (offsetY > 1) offsetY = 1;
 
-    const iw = image.naturalWidth;
-    const ih = image.naturalHeight;
+    const iw = image.width;
+    const ih = image.height;
     const r = Math.min(w / iw, h / ih);
     let nw = iw * r;
     let nh = ih * r;
@@ -78,16 +59,32 @@ export default class AnimatedImageEffect implements CanvasEffect {
     canvasContext.drawImage(image, cx, cy, cw, ch, x, y, w, h);
   }
 
-  private image: HTMLImageElement;
+  private images: GIF;
 
-  public async render(canvas: HTMLCanvasElement) {
-    console.info("Image: render " + this.src);
-    this.image = await imageFromSource(this.src);
-    this.draw(this.image, canvas);
+  public render(canvas: HTMLCanvasElement) {
+    return new Promise<void>(resolve => {
+      console.info("AnimatedImageEffect: render " + this.src);
+
+      let myGif = new GIF(); // will work as well but not needed as GIF() returns the correct reference already.
+      myGif.load(this.src); // set URL and load
+      myGif.onload = () => {
+        // fires when loading is complete
+        //event.type   = "load"
+        this.images = myGif;
+
+        if (this.images.image) this.draw(this.images.image, canvas); //event.path array containing a reference to the gif
+
+        resolve();
+      };
+
+      //  this.draw(this.images[0], canvas);
+    });
   }
-
-  public update(canvas: HTMLCanvasElement) {
-    console.info("Image: update " + this.src);
-    this.draw(document.getElementsByTagName("img")[0], canvas);
+  public step(
+    canvas: HTMLCanvasElement,
+    _deltaT: number,
+    _underlyingCanvas: HTMLCanvasElement[]
+  ) {
+    if (this.images && this.images.image) this.draw(this.images.image, canvas); //event.path array containing a reference to the gif
   }
 }
