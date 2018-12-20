@@ -93,35 +93,63 @@ async function crawelHtml(
     .reduce(selectMany((x: any) => x), []);
 
   for (const sourceUrl of sourceUrls) {
-    topic("GET " + sourceUrl);
-    let body = await getHtml(sourceUrl);
+    try {
+      topic("GET " + sourceUrl);
+      let body = await getHtml(sourceUrl);
 
-    topic(body);
-    const $ = cheerio.load(body);
+      topic(body);
+      const $ = cheerio.load(body);
 
-    const elements: Cheerio[] = [];
-    $(reader.itemSelector).each((_i, e) => {
-      elements.push($(e));
-    });
+      const elements: Cheerio[] = [];
+      $(reader.itemSelector).each((_i, e) => {
+        elements.push($(e));
+      });
 
-    for (const $e of elements) {
-      if (!reader.sourceDetailUrl)
-        await transformPersist(persist, reader, reader.mapper($e));
-      else {
-        const detailUrl = reader.sourceDetailUrl($e);
+      for (const $e of elements) {
+        try {
+          if (!reader.sourceDetailUrl)
+            await transformPersist(persist, reader, reader.mapper($e));
+          else {
+            const detailUrl = reader.sourceDetailUrl($e);
 
-        topic("GET " + detailUrl);
-        body = await getHtml(detailUrl);
+            topic("GET " + detailUrl);
+            body = await getHtml(detailUrl);
 
-        if (!body) {
-          console.error("body is null on GET " + detailUrl);
-          return;
+            if (!body) {
+              console.error("body is null on GET " + detailUrl);
+              return;
+            }
+
+            topic(body);
+            const $ = cheerio.load(body);
+            await transformPersist(
+              persist,
+              reader,
+              reader.mapper($e, $("body"))
+            );
+          }
+        } catch (err) {
+          const now = moment();
+          await persist({
+            titel: "Error in " + reader.sourceName,
+            beschreibung: `${err}\n${inspect($e)}\n${sourceUrl}`,
+            kategorie: "Error",
+            start: now,
+            quelle: reader.sourceName,
+            createdAt: now
+          });
         }
-
-        topic(body);
-        const $ = cheerio.load(body);
-        await transformPersist(persist, reader, reader.mapper($e, $("body")));
       }
+    } catch (err) {
+      const now = moment();
+      await persist({
+        titel: "Error in " + reader.sourceName,
+        beschreibung: `${err}\n${sourceUrl}`,
+        kategorie: "Error",
+        start: now,
+        quelle: reader.sourceName,
+        createdAt: now
+      });
     }
   }
 }
