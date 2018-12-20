@@ -1,13 +1,11 @@
 import { CanvasEffect } from "./ImageEffect";
-import GIF, { Image } from "./gif";
+import { Gif, parseGif, seek } from "./gif";
 
 export default class AnimatedImageEffect implements CanvasEffect {
   constructor(private src: string) {}
 
-  public automaticUpdates = true;
-
   private draw(
-    image: Image,
+    image: HTMLCanvasElement,
     canvas: HTMLCanvasElement,
     x = 0,
     y = 0,
@@ -59,32 +57,23 @@ export default class AnimatedImageEffect implements CanvasEffect {
     canvasContext.drawImage(image, cx, cy, cw, ch, x, y, w, h);
   }
 
-  private images: GIF;
+  private images: Gif;
 
-  public render(canvas: HTMLCanvasElement) {
-    return new Promise<void>(resolve => {
-      console.info("AnimatedImageEffect: render " + this.src);
+  public async render(canvas: HTMLCanvasElement) {
+    console.info("AnimatedImageEffect: render " + this.src);
 
-      let myGif = new GIF(); // will work as well but not needed as GIF() returns the correct reference already.
-      myGif.load(this.src); // set URL and load
-      myGif.onload = () => {
-        // fires when loading is complete
-        //event.type   = "load"
-        this.images = myGif;
-
-        if (this.images.image) this.draw(this.images.image, canvas); //event.path array containing a reference to the gif
-
-        resolve();
-      };
-
-      //  this.draw(this.images[0], canvas);
-    });
+    this.images = await parseGif(this.src);
+    // will work as well but not needed as GIF() returns the correct reference already.
+    this.draw(this.images.frames[0].image, canvas); //event.path array containing a reference to the gif
   }
+  private time = 0;
   public step(
     canvas: HTMLCanvasElement,
-    _deltaT: number,
+    deltaT: number,
     _underlyingCanvas: HTMLCanvasElement[]
   ) {
-    if (this.images && this.images.image) this.draw(this.images.image, canvas); //event.path array containing a reference to the gif
+    this.time = this.time + (deltaT % this.images.length);
+    const currentFrame = seek(this.images, this.time);
+    this.draw(this.images.frames[currentFrame].image, canvas); //event.path array containing a reference to the gif
   }
 }

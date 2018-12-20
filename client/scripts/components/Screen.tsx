@@ -47,19 +47,20 @@ class Screen extends React.Component<Props, State> {
       }
 
       const canvas: HTMLCanvasElement[] = [];
-      let automaticUpdates = false;
       let ii = 0;
       for (const layer of this.props.layers) {
+        let updated = false;
         const c = ReactDOM.findDOMNode(
           this.refs["canvas" + ii]
         ) as HTMLCanvasElement;
 
-        for (const effect of layer.effects){
-          automaticUpdates = automaticUpdates || !!effect.automaticUpdates;
+        for (const effect of layer.effects) {
+          if (effect.update && updated) await effect.update(c, canvas);
 
-          if (effect.update) await effect.update(c, canvas);
-
-          if (effect.step) await effect.step(c, deltaT, canvas);
+          if (effect.step) {
+            updated = true;
+            await effect.step(c, deltaT, canvas);
+          }
         }
 
         canvas.push(c);

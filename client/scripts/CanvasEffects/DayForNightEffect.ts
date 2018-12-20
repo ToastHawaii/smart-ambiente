@@ -7,6 +7,10 @@ export default class DayForNightEffect implements CanvasEffect {
     console.info("DayForNight: render");
     this.draw(canvas, this.adjustment);
   }
+  public async update(canvas: HTMLCanvasElement) {
+    console.info("DayForNight: update");
+    this.draw(canvas, this.adjustment);
+  }
 
   private draw(canvas: HTMLCanvasElement, adjustment: number) {
     const context = canvas.getContext("2d");

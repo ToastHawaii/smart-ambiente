@@ -1,22 +1,21 @@
-export type Image = HTMLCanvasElement & {
-  ctx?: CanvasRenderingContext2D | null;
-};
-
 export interface Frame {
-  delay?: number;
-  time?: number;
+  delay: number;
+  time: number;
   disposalMethod?: number;
-  image?: Image;
-  localColourTableFlag?: boolean;
+  image: HTMLCanvasElement;
+  localColourTableFlag: boolean;
   localColourTable?: number[][];
-  leftPos?: number;
-  topPos?: number;
-  width?: number;
-  height?: number;
+  leftPos: number;
+  topPos: number;
+  width: number;
+  height: number;
   transparencyIndex?: number;
-  interlaced?: boolean;
+  interlaced: boolean;
 }
 
+/**
+ * simple buffered stream used to read from the file
+ */
 export class Stream {
   public data: Uint8ClampedArray;
   public pos: number;
@@ -63,644 +62,497 @@ export class Stream {
   }
 }
 
-/** 
-  Gif Decoder and player for use with Canvas API's
+interface Buffers {
+  /**
+   *  used in de-interlacing.
+   */
+  interlaceOffsets: number[];
+  interlaceSteps: number[];
+  /**
+   * this holds a buffer to de interlace. Created on the first frame and when size changed
+   */
+  interlacedBufSize?: number;
+  deinterlaceBuf?: Uint8Array;
+  /**
+   * this holds a buffer for pixels. Created on the first frame and when size changed
+   */
+  pixelBufSize?: number;
+  pixelBuf?: Uint8Array;
+}
 
-Gifs use various methods to reduce the file size.
- The loaded frames do not maintain the optimisations and hold the full resolution frames as DOM images. 
- This mean the memory footprint of a decode gif will be many time larger than the Gif file.
+const GIF_FILE = {
+  // gif file data headers
+  GCExt: 0xf9,
+  COMMENT: 0xfe,
+  APPExt: 0xff,
+  UNKNOWN: 0x01, // not sure what this is but need to skip it in parser
+  IMAGE: 0x2c,
+  EOF: 59, // This is entered as decimal
+  EXT: 0x21
+};
+
+export interface Options {
+  firstFrameOnly?: boolean;
+}
+
+/**
+ *  LZW decoder uncompressed each frames pixels this needs to be optimised.
+ * @param minSize minSize is the min dictionary as powers of two size
+ * @param data data is the compressed pixels
+ * @param buffers
  */
-export default class GIF {
-  private timerID: any; // timer handle for set time out usage
-  private st: Stream | undefined; // holds the stream object when loading.
-  private interlaceOffsets = [0, 4, 2, 1]; // used in de-interlacing.
-  private interlaceSteps = [8, 8, 4, 2];
-  private interlacedBufSize: number; // this holds a buffer to de interlace.
-  // Created on the first frame and when size changed
-  private deinterlaceBuf?: Uint8Array;
-  private pixelBufSize?: number; // this holds a buffer for pixels. Created on the first frame and when size changed
-  private pixelBuf?: Uint8Array;
-  private complete: boolean;
-  private GIF_FILE = {
-    // gif file data headers
-    GCExt: 0xf9,
-    COMMENT: 0xfe,
-    APPExt: 0xff,
-    UNKNOWN: 0x01, // not sure what this is but need to skip it in parser
-    IMAGE: 0x2c,
-    EOF: 59, // This is entered as decimal
-    EXT: 0x21
-  };
-  // simple buffered stream used to read from the file
+function lzwDecode(minSize: number, data: number[], buffers: Buffers) {
+  let i;
+  let pixelPos;
+  let pos;
+  let clear;
+  let eod;
+  let size;
+  let done;
+  let dic: (number[] | null)[];
+  let code;
+  let last;
+  let d;
+  let len;
+  pos = pixelPos = 0;
+  dic = [];
+  clear = 1 << minSize;
+  eod = clear + 1;
+  size = minSize + 1;
+  done = false;
+  while (!done) {
+    // JavaScript optimisers like a clear exit though I never use 'done' apart from fooling the optimiser
+    last = code;
 
-  // LZW decoder uncompressed each frames pixels
-  // this needs to be optimised.
-  // minSize is the min dictionary as powers of two
-  // size and data is the compressed pixels
-  private lzwDecode(minSize: number, data: number[]) {
-    let i;
-    let pixelPos;
-    let pos;
-    let clear;
-    let eod;
-    let size;
-    let done;
-    let dic: (number[] | null)[];
-    let code;
-    let last;
-    let d;
-    let len;
-    pos = pixelPos = 0;
-    dic = [];
-    clear = 1 << minSize;
-    eod = clear + 1;
-    size = minSize + 1;
-    done = false;
-    while (!done) {
-      // JavaScript optimisers like a clear exit though I never use 'done' apart from fooling the optimiser
-      last = code;
-
-      code = 0;
-      for (i = 0; i < size; i++) {
-        if (data[pos >> 3] & (1 << (pos & 7))) {
-          code |= 1 << i;
-        }
-        pos++;
+    code = 0;
+    for (i = 0; i < size; i++) {
+      if (data[pos >> 3] & (1 << (pos & 7))) {
+        code |= 1 << i;
       }
-      if (code === clear) {
-        // clear and reset the dictionary
-        dic = [];
-        size = minSize + 1;
-        for (i = 0; i < clear; i++) {
-          dic[i] = [i];
-        }
-        dic[clear] = [];
-        dic[eod] = null;
-      } else {
-        if (code === eod) {
-          done = true;
-          return;
-        }
-        if (code >= dic.length) {
-          if (isNullOrUndefined(last)) throw "Value is possibly 'undefined'";
-          const dicLast = dic[last];
-          if (isNullOrUndefined(dicLast)) throw "Value is possibly 'undefined'";
-          dic.push(dicLast.concat(dicLast[0]));
-        } else if (last !== clear) {
-          if (isNullOrUndefined(last)) throw "Value is possibly 'undefined'";
-          const dicLast = dic[last];
-          const dicCode = dic[code];
-          if (isNullOrUndefined(dicLast) || isNullOrUndefined(dicCode))
-            throw "Value is possibly 'undefined'";
-          dic.push(dicLast.concat(dicCode[0]));
-        }
-        d = dic[code];
-        if (!d) throw "Value is possibly 'undefined'";
-        len = d.length;
-        for (i = 0; i < len; i++) {
-          if (!this.pixelBuf) throw "Value is possibly 'undefined'";
-          this.pixelBuf[pixelPos++] = d[i];
-        }
-        if (dic.length === 1 << size && size < 12) {
-          size++;
-        }
+      pos++;
+    }
+    if (code === clear) {
+      // clear and reset the dictionary
+      dic = [];
+      size = minSize + 1;
+      for (i = 0; i < clear; i++) {
+        dic[i] = [i];
       }
-    }
-  }
-  private parseColourTable(count: number) {
-    // get a colour table of length count  Each entry is 3 bytes, for RGB.
-    let colours = [];
-    for (let i = 0; i < count; i++) {
-      if (!this.st) throw "Value is possibly 'undefined'";
-      colours.push([
-        this.st.data[this.st.pos++],
-        this.st.data[this.st.pos++],
-        this.st.data[this.st.pos++]
-      ]);
-    }
-    return colours;
-  }
-  public colorRes: number;
-  private globalColourCount: number;
-  public bgColourIndex: number;
-  private globalColourTable?: number[][];
-  private bitField: number;
-  private parse() {
-    // read the header. This is the starting point of the decode and async calls parseBlock
-    if (!this.st) throw "Value is possibly 'undefined'";
-    this.st.pos += 6;
-    this.width =
-      this.st.data[this.st.pos++] + (this.st.data[this.st.pos++] << 8);
-    this.height =
-      this.st.data[this.st.pos++] + (this.st.data[this.st.pos++] << 8);
-    this.bitField = this.st.data[this.st.pos++];
-    this.colorRes = (this.bitField & 0b1110000) >> 4;
-    this.globalColourCount = 1 << ((this.bitField & 0b111) + 1);
-    this.bgColourIndex = this.st.data[this.st.pos++];
-    // ignoring pixel aspect ratio. if not 0, aspectRatio = (pixelAspectRatio + 15) / 64
-    this.st.pos++;
-    if (this.bitField & 0b10000000) {
-      this.globalColourTable = this.parseColourTable(this.globalColourCount);
-    } // global colour flag
-    setTimeout(() => {
-      this.parseBlock();
-    }, 0);
-  }
-  private parseAppExt() {
-    // get application specific data. Netscape added iterations and terminator. Ignoring that
-    if (!this.st) throw "Value is possibly 'undefined'";
-    this.st.pos += 1;
-    if ("NETSCAPE" === this.st.getString(8)) {
-      // ignoring this data. iterations (word) and terminator (byte)
-      this.st.pos += 8;
+      dic[clear] = [];
+      dic[eod] = null;
     } else {
-      this.st.pos += 3; // 3 bytes of string usually "2.0" when identifier is NETSCAPE
-      this.st.readSubBlocks(); // unknown app extension
-    }
-  }
-  private parseGCExt() {
-    // get GC data
-    let bitField;
-    if (!this.st) throw "Value is possibly 'undefined'";
-    this.st.pos++;
-    bitField = this.st.data[this.st.pos++];
-    this.disposalMethod = (bitField & 0b11100) >> 2;
-    this.transparencyGiven = bitField & 0b1 ? true : false; // ignoring bit two that is marked as  userInput???
-    this.delayTime =
-      this.st.data[this.st.pos++] + (this.st.data[this.st.pos++] << 8);
-    this.transparencyIndex = this.st.data[this.st.pos++];
-    this.st.pos++;
-  }
-  private parseImg() {
-    // decodes image data to create the indexed pixel image
-    const deinterlace = (width: number) => {
-      // de interlace pixel data if needed
-      if (!this.pixelBufSize) throw "Value is possibly 'undefined'";
-      let lines;
-      let fromLine;
-      let pass;
-      let toLine;
-      lines = this.pixelBufSize / width;
-      fromLine = 0;
-      if (this.interlacedBufSize !== this.pixelBufSize) {
-        // create the buffer if size changed or undefined.
-        this.deinterlaceBuf = new Uint8Array(this.pixelBufSize);
-        this.interlacedBufSize = this.pixelBufSize;
-      }
-      for (pass = 0; pass < 4; pass++) {
-        for (
-          toLine = this.interlaceOffsets[pass];
-          toLine < lines;
-          toLine += this.interlaceSteps[pass]
-        ) {
-          if (!this.deinterlaceBuf || !this.pixelBuf)
-            throw "Value is possibly 'undefined'";
-          this.deinterlaceBuf.set(
-            this.pixelBuf.subarray(fromLine, fromLine + width),
-            toLine * width
-          );
-          fromLine += width;
-        }
-      }
-    };
-    const frame: Frame = {};
-    this.frames.push(frame);
-    frame.disposalMethod = this.disposalMethod;
-    frame.time = this.length;
-    if (!this.delayTime) throw "Value is possibly 'undefined'";
-    frame.delay = this.delayTime * 10;
-    this.length += frame.delay;
-    if (this.transparencyGiven) {
-      frame.transparencyIndex = this.transparencyIndex;
-    } else {
-      frame.transparencyIndex = undefined;
-    }
-    if (!this.st) throw "Value is possibly 'undefined'";
-    frame.leftPos =
-      this.st.data[this.st.pos++] + (this.st.data[this.st.pos++] << 8);
-    frame.topPos =
-      this.st.data[this.st.pos++] + (this.st.data[this.st.pos++] << 8);
-    frame.width =
-      this.st.data[this.st.pos++] + (this.st.data[this.st.pos++] << 8);
-    frame.height =
-      this.st.data[this.st.pos++] + (this.st.data[this.st.pos++] << 8);
-    this.bitField = this.st.data[this.st.pos++];
-    frame.localColourTableFlag = this.bitField & 0b10000000 ? true : false;
-    if (frame.localColourTableFlag) {
-      frame.localColourTable = this.parseColourTable(
-        1 << ((this.bitField & 0b111) + 1)
-      );
-    }
-    if (this.pixelBufSize !== frame.width * frame.height) {
-      // create a pixel buffer if not yet created or if current frame size is different from previous
-      this.pixelBuf = new Uint8Array(frame.width * frame.height);
-      this.pixelBufSize = frame.width * frame.height;
-    }
-    this.lzwDecode(this.st.data[this.st.pos++], this.st.readSubBlocksB()); // decode the pixels
-    if (this.bitField & 0b1000000) {
-      // de interlace if needed
-      frame.interlaced = true;
-      deinterlace(frame.width);
-    } else {
-      frame.interlaced = false;
-    }
-    this.processFrame(frame); // convert to canvas image
-  }
-  private processFrame(frame: Frame) {
-    // creates a RGBA canvas image from the indexed pixel data.
-    let ct;
-    let cData;
-    let dat;
-    let pixCount;
-    let ind;
-    let useT;
-    let i;
-    let pixel;
-    let pDat: Uint8Array | undefined;
-    let col;
-    let ti;
-    frame.image = document.createElement("canvas");
-    if (isNullOrUndefined(this.width) || isNullOrUndefined(this.height))
-      throw "Value is possibly 'undefined'";
-    frame.image.width = this.width;
-    frame.image.height = this.height;
-    frame.image.ctx = frame.image.getContext("2d");
-    ct = frame.localColourTableFlag
-      ? frame.localColourTable
-      : this.globalColourTable;
-    if (this.lastFrame === null) {
-      this.lastFrame = frame;
-    }
-    useT =
-      this.lastFrame.disposalMethod === 2 || this.lastFrame.disposalMethod === 3
-        ? true
-        : false;
-    if (!useT) {
-      if (
-        isNullOrUndefined(frame.image.ctx) ||
-        isNullOrUndefined(this.lastFrame.image) ||
-        isNullOrUndefined(this.width) ||
-        isNullOrUndefined(this.height)
-      )
-        throw "Value is possibly 'undefined'";
-      frame.image.ctx.drawImage(
-        this.lastFrame.image,
-        0,
-        0,
-        this.width,
-        this.height
-      );
-    }
-    if (
-      isNullOrUndefined(frame.image.ctx) ||
-      isNullOrUndefined(frame.leftPos) ||
-      isNullOrUndefined(frame.topPos) ||
-      isNullOrUndefined(frame.width) ||
-      isNullOrUndefined(frame.height)
-    )
-      throw "Value is possibly 'undefined'";
-    cData = frame.image.ctx.getImageData(
-      frame.leftPos,
-      frame.topPos,
-      frame.width,
-      frame.height
-    );
-    ti = frame.transparencyIndex;
-    dat = cData.data;
-    if (frame.interlaced) {
-      pDat = this.deinterlaceBuf;
-    } else {
-      pDat = this.pixelBuf;
-    }
-    if (!pDat) throw "Value is possibly 'undefined'";
-    pixCount = pDat.length;
-    ind = 0;
-    for (i = 0; i < pixCount; i++) {
-      pixel = pDat[i];
-      if (!ct) throw "Value is possibly 'undefined'";
-      col = ct[pixel];
-      if (ti !== pixel) {
-        dat[ind++] = col[0];
-        dat[ind++] = col[1];
-        dat[ind++] = col[2];
-        dat[ind++] = 255; // Opaque.
-      } else if (useT) {
-        dat[ind + 3] = 0; // Transparent.
-        ind += 4;
-      } else {
-        ind += 4;
-      }
-    }
-    frame.image.ctx.putImageData(cData, frame.leftPos, frame.topPos);
-    this.lastFrame = frame;
-    if (!this.waitTillDone && typeof this.onload === "function") {
-      this.doOnloadEvent();
-    } // if !waitTillDone the call onload now after first frame is loaded
-  }
-  private finnished() {
-    // called when the load has completed
-    this.loading = false;
-    this.frameCount = this.frames.length;
-    this.lastFrame = null;
-    this.st = undefined;
-    this.complete = true;
-    this.disposalMethod = undefined;
-    this.transparencyGiven = undefined;
-    this.delayTime = undefined;
-    this.transparencyIndex = undefined;
-    this.waitTillDone = undefined;
-    this.pixelBuf = undefined; // dereference pixel buffer
-    this.deinterlaceBuf = undefined; // dereference interlace buff (may or may not be used);
-    this.pixelBufSize = undefined;
-    this.currentFrame = 0;
-    if (this.frames.length > 0) {
-      this.image = this.frames[0].image;
-    }
-    this.doOnloadEvent();
-    if (typeof this.onloadall === "function") {
-      this.onloadall.bind(this)({ type: "loadall", path: [this] });
-    }
-    if (this.playOnLoad) {
-      this.play();
-    }
-  }
-  private canceled() {
-    // called if the load has been cancelled
-    this.finnished();
-    if (typeof this.cancelCallback === "function") {
-      this.cancelCallback.bind(this)({ type: "canceled", path: [this] });
-    }
-  }
-  private parseExt() {
-    // parse extended blocks
-
-    if (!this.st) throw "Value is possibly 'undefined'";
-    const blockID = this.st.data[this.st.pos++];
-    if (blockID === this.GIF_FILE.GCExt) {
-      this.parseGCExt();
-    } else if (blockID === this.GIF_FILE.COMMENT) {
-      this.comment += this.st.readSubBlocks();
-    } else if (blockID === this.GIF_FILE.APPExt) {
-      this.parseAppExt();
-    } else {
-      if (blockID === this.GIF_FILE.UNKNOWN) {
-        this.st.pos += 13;
-      } // skip unknow block
-      this.st.readSubBlocks();
-    }
-  }
-  private parseBlock() {
-    // parsing the blocks
-    if (this.isCanceled !== undefined && this.isCanceled === true) {
-      this.canceled();
-      return;
-    }
-
-    if (!this.st) throw "Value is possibly 'undefined'";
-    const blockId = this.st.data[this.st.pos++];
-    if (blockId === this.GIF_FILE.IMAGE) {
-      // image block
-      this.parseImg();
-      if (this.firstFrameOnly) {
-        this.finnished();
+      if (code === eod) {
+        done = true;
         return;
       }
-    } else if (blockId === this.GIF_FILE.EOF) {
-      this.finnished();
-      return;
-    } else {
-      this.parseExt();
-    }
-    if (typeof this.onprogress === "function") {
-      this.onprogress({
-        bytesRead: this.st.pos,
-        totalBytes: this.st.data.length,
-        frame: this.frames.length
-      });
-    }
-    setTimeout(() => {
-      this.parseBlock();
-    }, 0); // parsing frame async so processes can get some time in.
-  }
-  private isCanceled: boolean | undefined;
-  private cancelCallback: any;
-  /**
-   * call to stop loading
-   * @param callback
-   */
-  public cancel(callback: any) {
-    // cancels the loading. This will cancel the load before the next frame is decoded
-    if (this.complete) {
-      return false;
-    }
-    this.cancelCallback = callback;
-    this.isCanceled = true;
-    return true;
-  }
-  private error(type: any) {
-    if (typeof this.onerror === "function") {
-      this.onerror.bind(this)({ type: type, path: [this] });
-    }
-    this.onload = this.onerror = undefined;
-    this.loading = false;
-  }
-  public nextFrameAt: number;
-  public lastFrameAt: number;
-  private doOnloadEvent() {
-    // fire onload event if set
-    this.currentFrame = 0;
-    this.nextFrameAt = this.lastFrameAt = new Date().valueOf(); // just sets the time now
-    if (typeof this.onload === "function") {
-      this.onload.bind(this)({ type: "load", path: [this] });
-    }
-    this.onerror = this.onload = undefined;
-  }
-  private dataLoaded(data: number) {
-    // Data loaded create stream and parse
-    this.st = new Stream(data);
-    this.parse();
-  }
-  public src: string;
-  /**
-   * call this to load a file
-   * @param filename
-   */
-  public load(filename: string) {
-    return new Promise<void>(resolve => {
-      // starts the load
-      let ajax = new XMLHttpRequest();
-      ajax.responseType = "arraybuffer";
-      ajax.onload = (e: any) => {
-        if (e.target.status === 404) {
-          this.error("File not found");
-        } else if (e.target.status >= 200 && e.target.status < 300) {
-          this.dataLoaded(ajax.response);
-        } else {
-          this.error("Loading error : " + e.target.status);
-        }
-        resolve();
-      };
-      ajax.open("GET", filename, true);
-      ajax.send();
-      ajax.onerror = _e => {
-        this.error("File error");
-      };
-      this.src = filename;
-      this.loading = true;
-    });
-  }
-
-  /**
-   * call to start play
-   */
-  public play() {
-    // starts play if paused
-    if (!this.playing) {
-      this.paused = false;
-      this.playing = true;
-      this.startPlaying();
-    }
-  }
-  /**
-   * call to pause
-   */
-  public pause() {
-    // stops play
-    this.paused = true;
-    this.playing = false;
-    clearTimeout(this.timerID);
-  }
-  /**
-   * call to toggle play and pause state
-   */
-  public togglePlay() {
-    if (this.paused || !this.playing) {
-      this.play();
-    } else {
-      this.pause();
-    }
-  }
-  /**
-   * call to seek to frame
-   */
-  public seekFrame(frame: number) {
-    // seeks to frame number.
-    clearTimeout(this.timerID);
-    this.currentFrame = frame % this.frames.length;
-    if (this.playing) {
-      this.startPlaying();
-    } else {
-      this.image = this.frames[this.currentFrame].image;
-    }
-  }
-  /**
-   * call to seek to time
-   */
-  public seek(time: number) {
-    // time in Seconds  // seek to frame that would be displayed at time
-    clearTimeout(this.timerID);
-    if (time < 0) {
-      time = 0;
-    }
-    time *= 1000; // in ms
-    time %= this.length;
-    let frame = 0;
-    let currentTime = this.frames[frame].time;
-    let currentDelay = this.frames[frame].delay;
-
-    if (!currentTime || !currentDelay) throw "Value is possibly 'undefined'";
-    while (time > currentTime + currentDelay && frame < this.frames.length) {
-      frame += 1;
-      let currentTime = this.frames[frame].time;
-      let currentDelay = this.frames[frame].delay;
-
-      if (!currentTime || !currentDelay) throw "Value is possibly 'undefined'";
-    }
-    this.currentFrame = frame;
-    if (this.playing) {
-      this.startPlaying();
-    } else {
-      this.image = this.frames[this.currentFrame].image;
-    }
-  }
-  private startPlaying() {
-    let delay;
-    let frame;
-    if (this.playSpeed === 0) {
-      this.pause();
-      return;
-    } else {
-      if (this.playSpeed < 0) {
-        this.currentFrame -= 1;
-        if (this.currentFrame < 0) {
-          this.currentFrame = this.frames.length - 1;
-        }
-        frame = this.currentFrame;
-        frame -= 1;
-        if (frame < 0) {
-          frame = this.frames.length - 1;
-        }
-        const currentDelay = this.frames[frame].delay;
-        if (!currentDelay) throw "Value is possibly 'undefined'";
-        delay = (-currentDelay * 1) / this.playSpeed;
-      } else {
-        this.currentFrame += 1;
-        this.currentFrame %= this.frames.length;
-        const currentDelay = this.frames[this.currentFrame].delay;
-        if (!currentDelay) throw "Value is possibly 'undefined'";
-        delay = (currentDelay * 1) / this.playSpeed;
+      if (code >= dic.length) {
+        if (isNullOrUndefined(last)) throw "Value is possibly 'undefined'";
+        const dicLast = dic[last];
+        if (isNullOrUndefined(dicLast)) throw "Value is possibly 'undefined'";
+        dic.push(dicLast.concat(dicLast[0]));
+      } else if (last !== clear) {
+        if (isNullOrUndefined(last)) throw "Value is possibly 'undefined'";
+        const dicLast = dic[last];
+        const dicCode = dic[code];
+        if (isNullOrUndefined(dicLast) || isNullOrUndefined(dicCode))
+          throw "Value is possibly 'undefined'";
+        dic.push(dicLast.concat(dicCode[0]));
       }
-      this.image = this.frames[this.currentFrame].image;
-      this.timerID = setTimeout(() => {
-        this.startPlaying();
-      }, delay);
+      d = dic[code];
+      if (!d) throw "Value is possibly 'undefined'";
+      len = d.length;
+      for (i = 0; i < len; i++) {
+        if (!buffers.pixelBuf) throw "Value is possibly 'undefined'";
+        buffers.pixelBuf[pixelPos++] = d[i];
+      }
+      if (dic.length === 1 << size && size < 12) {
+        size++;
+      }
     }
   }
+}
 
-  /**
-   * fire on load. Use waitTillDone = true to have load fire at end or false to fire on first frame
-   */
-  public onload?: Function | null = null;
+function parseColourTable(count: number, st: Stream) {
+  // get a colour table of length count  Each entry is 3 bytes, for RGB.
+  const colours = [];
+  for (let i = 0; i < count; i++) {
+    colours.push([st.data[st.pos++], st.data[st.pos++], st.data[st.pos++]]);
+  }
+  return colours;
+}
 
-  /**
-   *  fires on error
-   */
-  public onerror?: Function | null = null;
-  /**
-   * fires a load progress event
-   */
-  public onprogress: Function | null = null;
-  public onloadall: Function | null = null; // event fires when all frames have loaded and gif is ready
-  public paused = false; // true if paused
-  public playing = false; // true if playing
-  public waitTillDone? = true; // If true onload will fire when all frames loaded, if false, onload will fire when first frame has loaded
-  public loading = false; // true if still loading
-  public firstFrameOnly = false; // if true only load the first frame
-  public width: number | null = null; // width in pixels
-  public height: number | null = null; // height in pixels
-  public frames: Frame[] = []; // array of frames
-  public comment = ""; // comments if found in file. Note I remember that some gifs have comments per frame if so this will be all comment concatenated
-  public length = 0; // gif length in ms (1/1000 second)
-  public currentFrame = 0; // current frame.
-  public frameCount = 0; // number of frames
-  public playSpeed = 1; // play speed 1 normal, 2 twice 0.5 half, -1 reverse etc...
-  /**
-   * temp hold last frame loaded so you can display the gif as it loads
-   */
-  public lastFrame: Frame | null = null;
-  /**
-   * the current image at the currentFrame
-   */
-  public image?: Image | null = null;
-  /**
-   * if true starts playback when loaded
-   */
-  public playOnLoad = true;
+interface Context {
+  disposalMethod?: number;
+  transparencyGiven?: boolean;
+  delayTime?: number;
+  transparencyIndex?: number;
+}
 
-  private transparencyIndex?: number;
-  private delayTime?: number;
-  private transparencyGiven?: boolean;
-  private disposalMethod?: number;
+function parse(
+  url: string,
+  options: Options,
+  st: Stream,
+  resolve: (value: Gif) => void
+) {
+  st.pos += 6;
+
+  // read the header. This is the starting point of the decode and async calls parseBlock
+  const gif: Gif = {
+    src: url,
+    comment: "",
+    frames: [],
+    length: 0,
+
+    bgColourIndex: 0,
+    globalColourCount: 0,
+    colorRes: 0,
+    height: 0,
+    width: 0
+  };
+
+  gif.width = st.data[st.pos++] + (st.data[st.pos++] << 8);
+  gif.height = st.data[st.pos++] + (st.data[st.pos++] << 8);
+  const bitField = st.data[st.pos++];
+  gif.colorRes = (bitField & 0b1110000) >> 4;
+  gif.globalColourCount = 1 << ((bitField & 0b111) + 1);
+  gif.bgColourIndex = st.data[st.pos++];
+  // ignoring pixel aspect ratio. if not 0, aspectRatio = (pixelAspectRatio + 15) / 64
+  st.pos++;
+  if (bitField & 0b10000000) {
+    gif.globalColourTable = parseColourTable(gif.globalColourCount, st);
+  } // global colour flag
+  setTimeout(() => {
+    parseBlock(gif, options, st, resolve);
+  }, 0);
+}
+function parseAppExt(st: Stream) {
+  // get application specific data. Netscape added iterations and terminator. Ignoring that
+  st.pos += 1;
+  if ("NETSCAPE" === st.getString(8)) {
+    // ignoring this data. iterations (word) and terminator (byte)
+    st.pos += 8;
+  } else {
+    st.pos += 3; // 3 bytes of string usually "2.0" when identifier is NETSCAPE
+    st.readSubBlocks(); // unknown app extension
+  }
+}
+
+export function parseGif(
+  url: string,
+  options: Options = { firstFrameOnly: false }
+) {
+  return new Promise<Gif>((resolve, reject) => {
+    // starts the load
+    let ajax = new XMLHttpRequest();
+    ajax.responseType = "arraybuffer";
+    ajax.onload = (e: any) => {
+      if (e.target.status === 404) {
+        reject("File not found");
+      } else if (e.target.status >= 200 && e.target.status < 300) {
+        // Data loaded create stream and parse
+        parse(url, options, new Stream(ajax.response), resolve);
+      } else {
+        reject("Loading error: " + e.target.status);
+      }
+    };
+    ajax.open("GET", url, true);
+    ajax.send();
+    ajax.onerror = _e => {
+      reject("File error");
+    };
+  });
+}
+function parseGCExt(st: Stream, context: Context) {
+  // get GC data
+  let bitField;
+  st.pos++;
+
+  bitField = st.data[st.pos++];
+  context.disposalMethod = (bitField & 0b11100) >> 2;
+  context.transparencyGiven = bitField & 0b1 ? true : false; // ignoring bit two that is marked as  userInput???
+  context.delayTime = st.data[st.pos++] + (st.data[st.pos++] << 8);
+  context.transparencyIndex = st.data[st.pos++];
+
+  st.pos++;
+}
+
+function deinterlace(width: number, buffers: Buffers) {
+  // de interlace pixel data if needed
+  if (isNullOrUndefined(buffers.pixelBufSize))
+    throw "Value is possibly 'undefined'";
+  let lines;
+  let fromLine;
+  let pass;
+  let toLine;
+  lines = buffers.pixelBufSize / width;
+  fromLine = 0;
+  if (buffers.interlacedBufSize !== buffers.pixelBufSize) {
+    // create the buffer if size changed or undefined.
+    buffers.deinterlaceBuf = new Uint8Array(buffers.pixelBufSize);
+    buffers.interlacedBufSize = buffers.pixelBufSize;
+  }
+  for (pass = 0; pass < 4; pass++) {
+    for (
+      toLine = buffers.interlaceOffsets[pass];
+      toLine < lines;
+      toLine += buffers.interlaceSteps[pass]
+    ) {
+      if (
+        isNullOrUndefined(buffers.deinterlaceBuf) ||
+        isNullOrUndefined(buffers.pixelBuf)
+      )
+        throw "Value is possibly 'undefined'";
+      buffers.deinterlaceBuf.set(
+        buffers.pixelBuf.subarray(fromLine, fromLine + width),
+        toLine * width
+      );
+      fromLine += width;
+    }
+  }
+}
+function parseImg(
+  st: Stream,
+  gif: Gif,
+  context: Context,
+  previousFrame?: Frame
+) {
+  if (isNullOrUndefined(context.delayTime))
+    throw "Value is possibly 'undefined'";
+
+  const frame: Frame = {
+    disposalMethod: context.disposalMethod,
+    time: gif.length,
+    delay: context.delayTime * 10,
+    transparencyIndex: context.transparencyGiven
+      ? context.transparencyIndex
+      : undefined,
+    leftPos: st.data[st.pos++] + (st.data[st.pos++] << 8),
+    topPos: st.data[st.pos++] + (st.data[st.pos++] << 8),
+    width: st.data[st.pos++] + (st.data[st.pos++] << 8),
+    height: st.data[st.pos++] + (st.data[st.pos++] << 8),
+
+    localColourTableFlag: false,
+    localColourTable: undefined,
+
+    interlaced: false,
+
+    image: document.createElement("canvas")
+  };
+
+  const bitField = st.data[st.pos++];
+  if (bitField & 0b10000000) {
+    frame.localColourTableFlag = true;
+    frame.localColourTable = parseColourTable(
+      1 << ((bitField & 0b111) + 1),
+      st
+    );
+  }
+  gif.length += frame.delay;
+  const buffers: Buffers = {
+    interlaceOffsets: [0, 4, 2, 1], // used in de-interlacing.
+    interlaceSteps: [8, 8, 4, 2]
+  };
+  if (buffers.pixelBufSize !== frame.width * frame.height) {
+    // create a pixel buffer if not yet created or if current frame size is different from previous
+    buffers.pixelBuf = new Uint8Array(frame.width * frame.height);
+    buffers.pixelBufSize = frame.width * frame.height;
+  }
+  lzwDecode(st.data[st.pos++], st.readSubBlocksB(), buffers); // decode the pixels
+
+  if (bitField & 0b1000000) {
+    // de interlace if needed
+    frame.interlaced = true;
+    deinterlace(frame.width, buffers);
+  }
+
+  processFrame(frame, gif, buffers, previousFrame); // convert to canvas image
+
+  return frame;
+}
+
+function processFrame(
+  frame: Frame,
+  gif: Gif,
+  buffers: Buffers,
+  previousFrame?: Frame
+) {
+  // creates a RGBA canvas image from the indexed pixel data.
+  let ct;
+  let cData;
+  let dat;
+  let pixCount;
+  let ind;
+  let useT;
+  let i;
+  let pixel;
+  let pDat: Uint8Array | undefined;
+  let col;
+  let ti;
+
+  if (isNullOrUndefined(gif.width) || isNullOrUndefined(gif.height))
+    throw "Value is possibly 'undefined'";
+  frame.image.width = gif.width;
+  frame.image.height = gif.height;
+  const ctx = frame.image.getContext("2d");
+  ct = frame.localColourTableFlag
+    ? frame.localColourTable
+    : gif.globalColourTable;
+  if (previousFrame === undefined) {
+    previousFrame = frame;
+  }
+  useT =
+    previousFrame.disposalMethod === 2 || previousFrame.disposalMethod === 3
+      ? true
+      : false;
+  if (!useT) {
+    if (
+      isNullOrUndefined(ctx) ||
+      isNullOrUndefined(previousFrame.image) ||
+      isNullOrUndefined(gif.width) ||
+      isNullOrUndefined(gif.height)
+    )
+      throw "Value is possibly 'undefined'";
+    ctx.drawImage(previousFrame.image, 0, 0, gif.width, gif.height);
+  }
+  if (
+    isNullOrUndefined(ctx) ||
+    isNullOrUndefined(frame.leftPos) ||
+    isNullOrUndefined(frame.topPos) ||
+    isNullOrUndefined(frame.width) ||
+    isNullOrUndefined(frame.height)
+  )
+    throw "Value is possibly 'undefined'";
+  cData = ctx.getImageData(
+    frame.leftPos,
+    frame.topPos,
+    frame.width,
+    frame.height
+  );
+  ti = frame.transparencyIndex;
+  dat = cData.data;
+  if (frame.interlaced) {
+    pDat = buffers.deinterlaceBuf;
+  } else {
+    pDat = buffers.pixelBuf;
+  }
+  if (!pDat) throw "Value is possibly 'undefined'";
+  pixCount = pDat.length;
+  ind = 0;
+  for (i = 0; i < pixCount; i++) {
+    pixel = pDat[i];
+    if (!ct) throw "Value is possibly 'undefined'";
+    col = ct[pixel];
+    if (ti !== pixel) {
+      dat[ind++] = col[0];
+      dat[ind++] = col[1];
+      dat[ind++] = col[2];
+      dat[ind++] = 255; // Opaque.
+    } else if (useT) {
+      dat[ind + 3] = 0; // Transparent.
+      ind += 4;
+    } else {
+      ind += 4;
+    }
+  }
+  ctx.putImageData(cData, frame.leftPos, frame.topPos);
+
+  return frame;
+}
+
+function parseExt(st: Stream, gif: Gif, context: Context) {
+  // parse extended blocks
+
+  const blockID = st.data[st.pos++];
+  if (blockID === GIF_FILE.GCExt) {
+    parseGCExt(st, context);
+  } else if (blockID === GIF_FILE.COMMENT) {
+    gif.comment += st.readSubBlocks();
+  } else if (blockID === GIF_FILE.APPExt) {
+    parseAppExt(st);
+  } else {
+    if (blockID === GIF_FILE.UNKNOWN) {
+      st.pos += 13;
+    } // skip unknow block
+    st.readSubBlocks();
+  }
+}
+function parseBlock(
+  gif: Gif,
+  options: Options,
+  st: Stream,
+  resolve: (value: Gif) => void,
+  context: Context = {},
+  previousFrame?: Frame
+) {
+  // parsing the blocks
+
+  const blockId = st.data[st.pos++];
+  if (blockId === GIF_FILE.IMAGE) {
+    // image block
+    previousFrame = parseImg(st, gif, context, previousFrame);
+    gif.frames.push(previousFrame);
+    if (options.firstFrameOnly) {
+      resolve(gif);
+      return;
+    }
+  } else if (blockId === GIF_FILE.EOF) {
+    resolve(gif);
+    return;
+  } else {
+    parseExt(st, gif, context);
+  }
+
+  setTimeout(() => {
+    parseBlock(gif, options, st, resolve, context, previousFrame);
+  }, 0); // parsing frame async so processes can get some time in.
+}
+
+/**
+ * call to seek to time
+ * @param gif
+ * @param time time in ms
+ */
+export function seek(gif: Gif, time: number) {
+  // seek to frame that would be displayed at time
+  if (time < 0) {
+    time = 0;
+  }
+  time %= gif.length;
+  let frame = 0;
+
+  while (
+    time > gif.frames[frame].time + gif.frames[frame].delay &&
+    frame < gif.frames.length
+  ) {
+    frame += 1;
+  }
+
+  return frame;
+}
+
+export interface Gif {
+  globalColourTable?: number[][];
+  bgColourIndex: number;
+  globalColourCount: number;
+  colorRes: number;
+  src: string;
+  /**
+   *  width in pixels
+   */
+  width: number;
+  /**
+   * height in pixels
+   */
+  height: number;
+  frames: Frame[];
+  /**
+   *  comments if found in file. Note I remember that some gifs have comments per frame if so this will be all comment concatenated
+   */
+  comment: string;
+  /**
+   *  gif length in ms (1/1000 second)
+   */
+  length: number;
 }
 
 function isNullOrUndefined<T>(v: T | null | undefined): v is null | undefined {

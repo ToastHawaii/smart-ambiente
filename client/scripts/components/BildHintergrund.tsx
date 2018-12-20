@@ -11,7 +11,6 @@ import YoutubePlaylist from "./YoutubePlaylist";
 import Events from "./Events";
 import { toViewModel } from "./Wetter";
 import Screen from "./Screen";
-// import ImageEffect, { CanvasEffect } from "../CanvasEffects/ImageEffect";
 import RainEffect from "../CanvasEffects/RainEffect";
 import DayForNightEffect from "../CanvasEffects/DayForNightEffect";
 import FireflyEffect from "../CanvasEffects/FireflyEffect";
@@ -21,7 +20,7 @@ import InsectEffect from "../CanvasEffects/InsectEffect";
 import BrightnessEffect from "../CanvasEffects/BrightnessEffect";
 import StarsEffect from "../CanvasEffects/StarsEffect";
 import AnimatedImageEffect from "../CanvasEffects/AnimatedImageEffect";
-import { CanvasEffect } from "../CanvasEffects/ImageEffect";
+import ImageEffect, { CanvasEffect } from "../CanvasEffects/ImageEffect";
 
 export interface Props {}
 
@@ -143,7 +142,9 @@ class BildHintergrund extends Component<
           const layers: { effects: CanvasEffect[] }[] = [
             {
               effects: [
-                new AnimatedImageEffect("/img/weather/" + wetter.image.src)
+                !wetter.image.src.toUpperCase().endsWith(".GIF")
+                  ? new ImageEffect("/img/weather/" + wetter.image.src)
+                  : new AnimatedImageEffect("/img/weather/" + wetter.image.src)
               ]
             }
           ];
