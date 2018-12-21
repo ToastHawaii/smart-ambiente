@@ -4,7 +4,11 @@ import * as moment from "moment";
 export const zuerichUnbezahlbarReader: HtmlReader = {
   typ: "html",
   sourceName: "Zürich unbezahlbar",
-  sourceUrl: ["[http://www.zuerichunbezahlbar.ch/events/?date=]YYYY-MM-DD"],
+  sourceUrl: [
+    "[http://www.zuerichunbezahlbar.ch/events/?page=1&date=]YYYY-MM-DD",
+    "[http://www.zuerichunbezahlbar.ch/events/?page=2&date=]YYYY-MM-DD",
+    "[http://www.zuerichunbezahlbar.ch/events/?page=3&date=]YYYY-MM-DD"
+  ],
   itemSelector: "article",
   sourceDetailUrl: $item => {
     return "http://www.zuerichunbezahlbar.ch" + $item.find("a").attr("href");
