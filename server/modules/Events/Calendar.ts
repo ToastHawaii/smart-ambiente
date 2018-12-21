@@ -77,7 +77,6 @@ export function getIcal(kategorie: string = "") {
 if (args["--RELEASE"]) {
   init();
 }
-init();
 
 async function init() {
   await delay(30 * 1000);
