@@ -28,6 +28,8 @@ def update_scene(~protocol,~data,~headers,uri) =
 			source := input.http(entry["source"])
 		end
 		
+		source := amplify(float_of_string(entry["volume"]),source)
+		
 		pan = entry["pan"]
 		if pan != "" then
 			if pan == "random" then
@@ -50,16 +52,12 @@ def update_scene(~protocol,~data,~headers,uri) =
 		!source
 	end
 	
-	def weights_of_scene(entry) =
-		int_of_float(float_of_string(entry["volume"])*100.)
-	end
-	
 	scene = of_json(default=[[("typ",""),("source",""),("volume",""),("pan",""),("crossfade",""),("random","")]],data)
 
 	if list.length(scene) == 0 then
 		channel := muted
 	else
-		channel := amplify(2.,add(normalize=false,weights=list.map(weights_of_scene,scene),list.map(sources_of_scene,scene)))
+		channel := add(normalize=false,list.map(sources_of_scene,scene))
 	end
 	
     http_response(

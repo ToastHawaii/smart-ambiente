@@ -65,7 +65,7 @@ export async function playSound(weather: Forecast) {
       crossfade: matchOrDefault(f, "crossfade", def.crossfade),
       random: matchOrDefault(f, "random", def.random)
     }))
-  )).filter(f => parseFloat(f.volume) > 0.1);
+  )).filter(f => parseFloat(f.volume) >= 0.1);
 
   let i = 0;
   for (const chunk of split(sortAlternate(list), channelOutputUrls.length)) {
