@@ -16,14 +16,16 @@ export default class SnowallEffect implements CanvasEffect {
       this.windSpeed += normalDistributionInt(-1, 2);
     else this.windSpeed += normalDistributionInt(-2, 2);
 
-    for (let f of this.snowflakes) f.fall(this.windSpeed, deltaT);
+    const deltaSpeed = (deltaT / (1000 / 60) / 60) * 25;
+    const windSpeed = this.windSpeed / 10;
+    for (let f of this.snowflakes) f.fall(windSpeed, deltaSpeed);
 
     this.snowflakes = this.snowflakes.filter(f => !f.removed);
 
     if (
       (this.maxNumberOfSnowFlakes === 0 ||
         this.snowflakes.length < this.maxNumberOfSnowFlakes) &&
-      randomInt(0, 10) > 8
+      randomInt(0, 10) > 9
     )
       this.snowflakes.push(new Snowflake(canvas));
   }
@@ -49,8 +51,8 @@ function normalDistributionInt(min: number, max: number) {
 }
 
 export class Snowflake {
-  public minSnowFlakeDensity = 4;
-  public maxSnowFlakeDensity = 14;
+  public minSnowFlakeDensity = 12;
+  public maxSnowFlakeDensity = 22;
 
   public x: number;
   public y: number;
@@ -58,7 +60,6 @@ export class Snowflake {
   public rotation: number;
   public speedX: number;
   public speedY: number;
-  public speedRotation: number;
   public element: HTMLElement;
   public removed = false;
 
@@ -74,8 +75,7 @@ export class Snowflake {
 
     this.speedX = (normalDistributionInt(-2, 2) / this.speed) * this.density;
     this.speedY = (normalDistributionInt(1, 3) / this.speed) * this.density;
-    this.speedRotation =
-      (normalDistributionInt(-5, 5) / this.speed) * this.density;
+
     this.element;
 
     this.render();
@@ -104,20 +104,9 @@ export class Snowflake {
     if (!this.parent.parentElement) return;
     this.parent.parentElement.appendChild(this.element);
   }
-  // private maxSpeedRotation = 5;
-  public fall(wind: number, deltaT: number) {
-    const deltaSpeed = (deltaT / (1000 / 60) / 60) * 25;
-    this.x +=
-      ((this.speedX + wind / 10) / this.speed) * this.density * deltaSpeed;
-    this.y += this.speedY * deltaSpeed;
-
-    // if (this.speedRotation > this.maxSpeedRotation * 3)
-    //   this.speedRotation += normalDistributionInt(-3, 1);
-    // else if (this.speedRotation < this.maxSpeedRotation * -3)
-    //   this.speedRotation += normalDistributionInt(-1, 3);
-    // else this.speedRotation += normalDistributionInt(-3, 3);
-
-    // this.rotation += this.speedRotation * deltaSpeed;
+  public fall(wind: number, deltaSpeed: number) {
+    this.x += ((this.speedX + wind) / this.speed) * this.density * deltaSpeed;
+    this.y += this.speedY * deltaSpeed * 2;
 
     if (this.x < 0) this.x = this.parent.clientWidth;
 
