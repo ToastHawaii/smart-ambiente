@@ -23,7 +23,7 @@ export default class SnowallEffect implements CanvasEffect {
     if (
       (this.maxNumberOfSnowFlakes === 0 ||
         this.snowflakes.length < this.maxNumberOfSnowFlakes) &&
-      randomInt(0, 10) > 5
+      randomInt(0, 10) > 8
     )
       this.snowflakes.push(new Snowflake(canvas));
   }
@@ -49,8 +49,8 @@ function normalDistributionInt(min: number, max: number) {
 }
 
 export class Snowflake {
-  public minSnowFlakeDensity = 2;
-  public maxSnowFlakeDensity = 10;
+  public minSnowFlakeDensity = 4;
+  public maxSnowFlakeDensity = 14;
 
   public x: number;
   public y: number;

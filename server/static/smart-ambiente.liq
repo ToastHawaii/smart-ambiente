@@ -28,7 +28,7 @@ def update_scene(~protocol,~data,~headers,uri) =
 			source := input.http(entry["source"])
 		end
 		
-		source := amplify(float_of_string(entry["volume"]),source)
+		source := amplify(float_of_string(entry["volume"]),!source)
 		
 		pan = entry["pan"]
 		if pan != "" then
