@@ -104,20 +104,20 @@ export class Snowflake {
     if (!this.parent.parentElement) return;
     this.parent.parentElement.appendChild(this.element);
   }
-  private maxSpeedRotation = 5;
+  // private maxSpeedRotation = 5;
   public fall(wind: number, deltaT: number) {
     const deltaSpeed = (deltaT / (1000 / 60) / 60) * 25;
     this.x +=
       ((this.speedX + wind / 10) / this.speed) * this.density * deltaSpeed;
     this.y += this.speedY * deltaSpeed;
 
-    if (this.speedRotation > this.maxSpeedRotation * 3)
-      this.speedRotation += normalDistributionInt(-3, 1);
-    else if (this.speedRotation < this.maxSpeedRotation * -3)
-      this.speedRotation += normalDistributionInt(-1, 3);
-    else this.speedRotation += normalDistributionInt(-3, 3);
+    // if (this.speedRotation > this.maxSpeedRotation * 3)
+    //   this.speedRotation += normalDistributionInt(-3, 1);
+    // else if (this.speedRotation < this.maxSpeedRotation * -3)
+    //   this.speedRotation += normalDistributionInt(-1, 3);
+    // else this.speedRotation += normalDistributionInt(-3, 3);
 
-    this.rotation += this.speedRotation * deltaSpeed;
+    // this.rotation += this.speedRotation * deltaSpeed;
 
     if (this.x < 0) this.x = this.parent.clientWidth;
 
