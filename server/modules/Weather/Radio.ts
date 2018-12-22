@@ -4,7 +4,7 @@ import * as fs from "fs";
 import { postJson, readFile } from "../../utils/request";
 
 import debug from "../../utils/debug";
-const topic = debug("weather/controller", false);
+const topic = debug("weather/controller", true);
 
 const soundSource = "../../smart-ambiente-media/sound/weather/";
 const channelApiUrls = [
@@ -68,7 +68,7 @@ export async function playSound(weather: Forecast) {
   )).filter(f => parseFloat(f.volume) > 0.1);
 
   let i = 0;
-  for (const chunk of split(list, channelOutputUrls.length)) {
+  for (const chunk of split(sortAlternate(list), channelOutputUrls.length)) {
     if (i < channelOutputUrls.length - 1) {
       // use multiple instance of liquidsoap
       chunk.push({
@@ -121,4 +121,17 @@ function split<T>(inputArray: T[], numberOfChunks: number) {
 
     return resultArray;
   }, []);
+}
+
+function sortAlternate<T extends { random: string }>(a: T[]) {
+  a.sort((a, b) => parseFloat(a.random) - parseFloat(b.random));
+  const b = [];
+
+  const l = a.length - 1; // micro optimization
+  const L = l / 2; // micro optimization
+  let i;
+  for (i = 0; i < L; i++) b.push(a[l - i], a[i]);
+  if (a.length % 2) b.push(a[i]); // add last item in odd arrays
+
+  return b;
 }
