@@ -5,7 +5,7 @@ export const eventsChReader: HtmlReader = {
   typ:"html",
   sourceName: "events.ch",
   sourceUrl: [
-    "[https://events.ch/de/events/pager?filter=eventData.venueFloor.venue.city.zip%3E%3D8000%2CeventData.venueFloor.venue.city.zip%3C8600%2Cstartdate%3E%3D]YYYY-MM-DD[%2000%3A00%3A00&range=0-99]"
+    "[https://events.ch/de/events/pager?filter=eventData.venueFloor.venue.city.zip%3E%3D8000%2CeventData.venueFloor.venue.city.zip%3C8600%2Cstartdate%3E%3D]YYYY-MM-DD[%2000%3A00%3A00&range=0-119]"
   ],
   itemSelector: '[itemtype="http://schema.org/Event"]',
 
@@ -17,9 +17,9 @@ export const eventsChReader: HtmlReader = {
 
     let img =
       $detailItem.find('[itemprop="image"]').attr("src") ||
-      $detailItem
+      ($detailItem
         .find('[itemprop="image"]')
-        .attr("srcset")
+        .attr("srcset") || "")
         .split(" ")[0];
     // console.info($detailItem.find('[itemprop="startDate"]').attr("datetime"));
     const event: Event = {

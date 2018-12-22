@@ -21,6 +21,7 @@ import BrightnessEffect from "../CanvasEffects/BrightnessEffect";
 import StarsEffect from "../CanvasEffects/StarsEffect";
 import AnimatedImageEffect from "../CanvasEffects/AnimatedImageEffect";
 import ImageEffect, { CanvasEffect } from "../CanvasEffects/ImageEffect";
+import SnowallEffect from "../CanvasEffects/SnowallEffect";
 
 export interface Props {}
 
@@ -40,7 +41,7 @@ export interface State {
   };
 
   ansehen: {
-    ort?: "schweiz" | "erde" | "weltraum";
+    ort?: "winter" | "schweiz" | "erde" | "weltraum";
   };
 
   natur: {
@@ -204,7 +205,19 @@ class BildHintergrund extends Component<
           backgroundElement = <Screen layers={layers} />;
         }
       } else if (bild.kanal === "ansehen") {
-        if (ansehen.ort === "schweiz") backgroundElement = <Schweiz />;
+        if (ansehen.ort === "winter") {
+          const layers: { effects: CanvasEffect[] }[] = [
+            {
+              effects: [
+                new ImageEffect("/img/winter.jpg"),
+                new DayForNightEffect(0),
+                new SnowallEffect()
+              ]
+            }
+          ];
+
+          backgroundElement = <Screen layers={layers} />;
+        } else if (ansehen.ort === "schweiz") backgroundElement = <Schweiz />;
         else if (ansehen.ort === "erde") backgroundElement = <Erde />;
         else if (ansehen.ort === "weltraum")
           backgroundElement = <YoutubeVideo video="5_-rh6L1jiU" />;
