@@ -21,7 +21,8 @@ import BrightnessEffect from "../CanvasEffects/BrightnessEffect";
 import StarsEffect from "../CanvasEffects/StarsEffect";
 import AnimatedImageEffect from "../CanvasEffects/AnimatedImageEffect";
 import ImageEffect, { CanvasEffect } from "../CanvasEffects/ImageEffect";
-import SnowallEffect from "../CanvasEffects/SnowallEffect";
+import SnowfallEffect from "../CanvasEffects/SnowfallEffect";
+import LowPerformanceDeviceSnowfallEffect from "../CanvasEffects/LowPerformanceDeviceSnowfallEffect";
 
 export interface Props {}
 
@@ -211,7 +212,9 @@ class BildHintergrund extends Component<
               effects: [
                 new ImageEffect("/img/winter.jpg"),
                 new DayForNightEffect(0),
-                new SnowallEffect()
+                document.body.clientWidth > 1280
+                  ? new SnowfallEffect()
+                  : new LowPerformanceDeviceSnowfallEffect()
               ]
             }
           ];

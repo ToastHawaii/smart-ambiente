@@ -1,33 +1,41 @@
 import { CanvasEffect } from "./ImageEffect";
 
-export default class SnowallEffect implements CanvasEffect {
+export default class LowPerformanceDeviceSnowfallEffect implements CanvasEffect {
   public snowflakes: Snowflake[] = [];
   public windSpeed = 0;
   public parent = document.body;
-
+  private i = 0;
   public maxWindSpeed = 4;
+  private deltaT: number;
 
-  public maxNumberOfSnowFlakes = 0;
-
+  public maxNumberOfSnowFlakes =  40;
   public step(canvas: HTMLCanvasElement, deltaT: number) {
-    if (this.windSpeed > this.maxWindSpeed * 10)
-      this.windSpeed += normalDistributionInt(-2, 1);
-    else if (this.windSpeed < this.maxWindSpeed * -10)
-      this.windSpeed += normalDistributionInt(-1, 2);
-    else this.windSpeed += normalDistributionInt(-2, 2);
+    this.deltaT += deltaT;
+    if (this.i === 0) {
+      if (this.windSpeed > this.maxWindSpeed * 10)
+        this.windSpeed += normalDistributionInt(-2, 1);
+      else if (this.windSpeed < this.maxWindSpeed * -10)
+        this.windSpeed += normalDistributionInt(-1, 2);
+      else this.windSpeed += normalDistributionInt(-2, 2);
 
-    const deltaSpeed = (deltaT / (1000 / 60) / 60) * 25;
-    const windSpeed = this.windSpeed / 10;
-    for (let f of this.snowflakes) f.fall(windSpeed, deltaSpeed);
+      const deltaSpeed = ((this.deltaT / (1000 / 60) / 60) * 25) / 2;
+      const windSpeed = this.windSpeed / 10;
 
-    this.snowflakes = this.snowflakes.filter(f => !f.removed);
+      for (let f of this.snowflakes) f.fall(windSpeed, deltaSpeed);
 
-    if (
-      (this.maxNumberOfSnowFlakes === 0 ||
-        this.snowflakes.length < this.maxNumberOfSnowFlakes) &&
-      randomInt(0, 10) > 5
-    )
-      this.snowflakes.push(new Snowflake(canvas));
+      this.snowflakes = this.snowflakes.filter(f => !f.removed);
+
+      if (
+        this.snowflakes.length < this.maxNumberOfSnowFlakes &&
+        randomInt(0, 10) > 5
+      )
+        this.snowflakes.push(new Snowflake(canvas));
+
+      this.deltaT = 0;
+      this.i = 1;
+    } else {
+      this.i = 0;
+    }
   }
 }
 
@@ -51,7 +59,7 @@ function normalDistributionInt(min: number, max: number) {
 }
 
 export class Snowflake {
-  public minSnowFlakeDensity = 2;
+  public minSnowFlakeDensity =  4;
   public maxSnowFlakeDensity = 10;
   public maxSpeedRotation = 5;
 
