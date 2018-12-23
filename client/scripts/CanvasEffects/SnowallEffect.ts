@@ -25,7 +25,7 @@ export default class SnowallEffect implements CanvasEffect {
     if (
       (this.maxNumberOfSnowFlakes === 0 ||
         this.snowflakes.length < this.maxNumberOfSnowFlakes) &&
-      randomInt(0, 10) > 9
+      randomInt(0, 10) > 5
     )
       this.snowflakes.push(new Snowflake(canvas));
   }
@@ -51,8 +51,9 @@ function normalDistributionInt(min: number, max: number) {
 }
 
 export class Snowflake {
-  public minSnowFlakeDensity = 12;
-  public maxSnowFlakeDensity = 22;
+  public minSnowFlakeDensity = 2;
+  public maxSnowFlakeDensity = 10;
+  public maxSpeedRotation = 5;
 
   public x: number;
   public y: number;
@@ -60,6 +61,7 @@ export class Snowflake {
   public rotation: number;
   public speedX: number;
   public speedY: number;
+  public speedRotation: number;
   public element: HTMLElement;
   public removed = false;
 
@@ -75,8 +77,8 @@ export class Snowflake {
 
     this.speedX = (normalDistributionInt(-2, 2) / this.speed) * this.density;
     this.speedY = (normalDistributionInt(1, 3) / this.speed) * this.density;
-
-    this.element;
+    this.speedRotation =
+      (normalDistributionInt(-5, 5) / this.speed) * this.density;
 
     this.render();
   }
@@ -104,13 +106,21 @@ export class Snowflake {
     if (!this.parent.parentElement) return;
     this.parent.parentElement.appendChild(this.element);
   }
+
   public fall(wind: number, deltaSpeed: number) {
     this.x += ((this.speedX + wind) / this.speed) * this.density * deltaSpeed;
-    this.y += this.speedY * deltaSpeed * 2;
+    this.y += this.speedY * deltaSpeed;
+
+    if (this.speedRotation > this.maxSpeedRotation * 3)
+      this.speedRotation += normalDistributionInt(-3, 1);
+    else if (this.speedRotation < this.maxSpeedRotation * -3)
+      this.speedRotation += normalDistributionInt(-1, 3);
+    else this.speedRotation += normalDistributionInt(-3, 3);
+
+    this.rotation += (this.speedRotation + wind) * deltaSpeed;
 
     if (this.x < 0) this.x = this.parent.clientWidth;
-
-    if (this.x > this.parent.clientWidth) this.x = 0;
+    else if (this.x > this.parent.clientWidth) this.x = 0;
 
     if (this.y > this.parent.clientHeight || this.y < 0) {
       this.element.remove();
