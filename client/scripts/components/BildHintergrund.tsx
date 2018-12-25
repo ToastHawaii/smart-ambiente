@@ -23,7 +23,6 @@ import AnimatedImageEffect from "../CanvasEffects/AnimatedImageEffect";
 import ImageEffect, { CanvasEffect } from "../CanvasEffects/ImageEffect";
 import SnowfallEffect from "../CanvasEffects/SnowfallEffect";
 import LowPerformanceDeviceSnowfallEffect from "../CanvasEffects/LowPerformanceDeviceSnowfallEffect";
-import LoopVideo from "./LoopVideo";
 
 export interface Props {}
 
@@ -134,7 +133,9 @@ class BildHintergrund extends Component<
     else {
       if (bild.kanal === "wetter") {
         if (wetter.temperatur === 0)
-          backgroundElement = <LoopVideo src="video/fireplace" />;
+          backgroundElement = (
+            <YoutubeVideo video="mWyak0g5LLI" align="bottom" startAt={26} />
+          );
         else if (wetter.image) {
           const weather = this.extractWeather(wetter);
 
