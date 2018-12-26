@@ -5,14 +5,15 @@ import { tagesanzeigerChReader } from "./TagesanzeigerReader";
 import { zuriNetReader } from "./ZuriNetReader";
 import { comedyHausReader } from "./ComedyHausReader";
 import { pfirsiReader } from "./PfirsiReader";
+import { casinotheaterReader } from "./CasinotheaterReader";
+import { dynamoReader } from "./DynamoReader";
 import * as Calendar from "./Calendar";
 import * as moment from "moment";
 import * as cheerio from "cheerio";
 import { getHtml, getJson } from "../../utils/request";
-import { casinotheaterReader } from "./CasinotheaterReader";
 import debug from "../../utils/debug";
 import { inspect } from "util";
-const topic = debug("Events/Crawler", false);
+const topic = debug("Events/Crawler", true);
 
 export interface Event {
   kategorie?: string;
@@ -52,7 +53,8 @@ const readers: Reader[] = [
   zuriNetReader,
   comedyHausReader,
   pfirsiReader,
-  casinotheaterReader
+  casinotheaterReader,
+  dynamoReader
 ];
 
 function urls(url: string): string[] {
@@ -97,7 +99,6 @@ async function crawelHtml(
       topic("GET " + sourceUrl);
       let body = await getHtml(sourceUrl);
 
-      topic(body);
       const $ = cheerio.load(body);
 
       const elements: Cheerio[] = [];
@@ -120,7 +121,6 @@ async function crawelHtml(
               return;
             }
 
-            topic(body);
             const $ = cheerio.load(body);
             await transformPersist(
               persist,
@@ -130,26 +130,31 @@ async function crawelHtml(
           }
         } catch (err) {
           const now = moment();
-          await persist({
+          const error = {
             titel: "Error in " + reader.sourceName,
             beschreibung: `${err}\n${inspect($e)}\n${sourceUrl}`,
             kategorie: "Error",
             start: now,
             quelle: reader.sourceName,
             createdAt: now
-          });
+          };
+          topic(body);
+          topic("Error", error);
+          await persist(error);
         }
       }
     } catch (err) {
       const now = moment();
-      await persist({
+      const error = {
         titel: "Error in " + reader.sourceName,
         beschreibung: `${err}\n${sourceUrl}`,
         kategorie: "Error",
         start: now,
         quelle: reader.sourceName,
         createdAt: now
-      });
+      };
+      topic("Error", error);
+      await persist(error);
     }
   }
 }

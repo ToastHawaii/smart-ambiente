@@ -172,7 +172,8 @@ function shouldBeIgnored(event: { titel: string; beschreibung?: string }) {
     "beratungsstelle für kinder",
     "trauer-stammtisch",
     "fragen zur lehre",
-    "über den tod reden"
+    "über den tod reden",
+    "titel der veranstaltung"
   ].some(
     f =>
       event.titel.toUpperCase().indexOf(f.toUpperCase()) > -1 ||
@@ -216,8 +217,21 @@ function isAllDay(e: { start: moment.Moment; ende?: moment.Moment }) {
 
 const baseKategorieSchlagwoerter = [
   { name: "Film", schlagwoerter: ["film", "kino"] },
-  { name: "Einkaufen", schlagwoerter: ["markt"] },
-  { name: "Theater", schlagwoerter: ["theater", "zirkus"] },
+  { name: "Einkaufen", schlagwoerter: ["markt", "shop"] },
+  {
+    name: "Comedy",
+    schlagwoerter: [
+      "comedy",
+      "kabarett",
+      "poetry-slam",
+      "poetry slam",
+      "poetryslam",
+      "impro",
+      "witz",
+      "humor"
+    ]
+  },
+  { name: "Theater", schlagwoerter: ["theater", "zirkus", "musical", "oper"] },
   { name: "Führung", schlagwoerter: ["führung"] },
   {
     name: "Bildung",
@@ -229,33 +243,49 @@ const baseKategorieSchlagwoerter = [
       "infoanlass",
       "stammtisch",
       "bildung",
-      "informationsabend"
+      "informationsabend",
+      "gedichte",
+      "lyrik"
     ]
   },
-  { name: "Bewegung", schlagwoerter: ["sport", "fitness", "traning"] },
+  {
+    name: "Bewegung",
+    schlagwoerter: ["sport", "fitness", "traning", "marathon"]
+  },
   { name: "Festival", schlagwoerter: ["festival", "messe"] },
-  { name: "Party", schlagwoerter: ["party", "fest"] },
+  { name: "Party", schlagwoerter: ["party", "fest", "disco", "club"] },
   {
     name: "Ausstellung",
     schlagwoerter: ["ausstellung", "museum", "museen", "kunst"]
   },
   {
-    name: "Comedy",
+    name: "Musik",
     schlagwoerter: [
-      "comedy",
-      "kabarett",
-      "poetry-slam",
-      "poetry slam",
-      "poetryslam"
+      "musik",
+      "konzert",
+      "tanz",
+      "jazz",
+      "melodien",
+      "band",
+      "album",
+      "rock",
+      "pop",
+      "hip-hop",
+      "hip hop"
     ]
   },
   {
-    name: "Musik",
-    schlagwoerter: ["musik", "konzert", "tanz", "jazz", "melodien"]
-  },
-  {
     name: "Essen",
-    schlagwoerter: ["essen", "fleisch", "brunch", "café", "restaurant"]
+    schlagwoerter: [
+      "essen",
+      "fleisch",
+      "brunch",
+      "café",
+      "restaurant",
+      "fundue",
+      "degustation",
+      "bar"
+    ]
   },
   {
     name: "Error",
