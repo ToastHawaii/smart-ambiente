@@ -85,7 +85,7 @@ export async function playSound(weather: Forecast) {
 
   await SonosHttp.createClient()
     .room("wohnzimmer")
-    .favorite("Smart Ambiente - Wetter")
+    .favorite("Smart Ambiente")
     .play()
     .do();
 
