@@ -47,49 +47,55 @@ function getCloudiness(forecast: Owm.Forecast) {
 function getTemp(forecast: Owm.Forecast): number {
   const temp = midrange(...forecast.list.map(s => s.main.temp));
 
-  if (temp < 4) return Temperatur.Eisig;
+  if (temp < 0) return Temperatur.MaessigKalt;
 
-  if (temp < 12) return Temperatur.Kalt;
+  // if (temp < 5) return Temperatur.Kuehl;
 
-  if (temp < 18) return Temperatur.Mild;
+  if (temp < 10) return Temperatur.Mild;
 
-  if (temp < 22) return Temperatur.Warm;
+  if (temp < 15) return Temperatur.MaessigWarm;
 
-  if (temp < 26) return Temperatur.Heiss;
+  if (temp < 20) return Temperatur.Warm;
 
-  return Temperatur.SehrHeiss;
+  if (temp < 25) return Temperatur.SehrWarm;
+
+  return Temperatur.Heiss;
 }
 
 export function getTempFolder(temperatur: number) {
   switch (temperatur) {
     case 0:
-      return "icy";
+      return "moderately-cold";
 
     case 1:
-      return "cold";
+      return "cool";
 
     case 2:
       return "mild";
 
     case 3:
-      return "warm";
+      return "moderately-warm";
 
     case 4:
-      return "hot";
+      return "warm";
 
     case 5:
-      return "very-hot";
+      return "very-warm";
+
+    case 6:
+      return "hot";
   }
   throw "temperatur not known";
 }
 
 export enum Temperatur {
-  Eisig,
-  Kalt,
+  MaessigKalt,
+  Kuehl,
   Mild,
+  MaessigWarm,
   Warm,
-  Heiss,
-  SehrHeiss
+  SehrWarm,
+  Heiss
 }
 
 export enum Zeit {

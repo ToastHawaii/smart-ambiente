@@ -1,7 +1,7 @@
 import { getJson } from "../utils/request";
 import { delay } from "../utils/timer";
 import debug from "../utils/debug";
-const topic = debug("node-sonos-http-api");
+const topic = debug("node-sonos-http-api", false);
 
 export function createClient() {
   return new Sonos("http://localhost:5005");
@@ -42,9 +42,14 @@ class Room {
   }
 
   public async state() {
-    return await getJson<{ volume: number }>(
-      this.baseUrl + "/" + this.name + "/state"
-    );
+    return await getJson<{
+      volume: number;
+      mute: boolean;
+      currentTrack: {
+        uri: string;
+      };
+      playbackState: "PLAYING";
+    }>(this.baseUrl + "/" + this.name + "/state");
   }
 
   public crossfade(state: "on" | "off") {

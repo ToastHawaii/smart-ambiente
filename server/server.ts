@@ -13,7 +13,7 @@ import "./modules/hue-sonos-link";
 import { chooseGoodMatch } from "./modules/Weather/Image";
 import debug from "./utils/debug";
 debug.enabled = true;
-const topic = debug("server");
+const topic = debug("server", false);
 
 const sonosHttp = SonosHttp.createClient();
 const hueHttp = HueHttp.createHueService(

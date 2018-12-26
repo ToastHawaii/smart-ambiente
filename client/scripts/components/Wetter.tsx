@@ -9,13 +9,14 @@ import {
   Teach,
   Gauge,
   GaugeLow,
-  GaugeEmpty,
+  // GaugeEmpty,
   Snowflake,
   WhiteBalanceSunny,
   Fire,
   WeatherNight,
   WeatherSunny,
-  ThemeLightDark
+  ThemeLightDark,
+  GaugeFull
 } from "mdi-material-ui";
 import ButtonGroup from "./ButtonGroup";
 import { Component } from "./Component";
@@ -245,39 +246,55 @@ class Wetter extends Component<Props & WithStyles<ComponentClassNames>, State> {
           >
             <MenuButton
               icon={<Snowflake />}
-              title="Eisig"
-              backgroundImage="/img/button/wetter/Eisig.jpg"
+              title="Mässig Kalt"
+              backgroundImage="/img/button/wetter/maessig-kalt.jpg"
               value={0}
             />
-            <MenuButton
+            {/* <MenuButton
               icon={<GaugeEmpty />}
-              title="Kalt"
-              backgroundImage="/img/button/wetter/Kalt.jpg"
+              title="Kühl"
+              backgroundImage="/img/button/wetter/kuehl.jpg"
               value={1}
-            />
+            /> */}
             <MenuButton
               icon={<GaugeLow />}
               title="Mild"
-              backgroundImage="/img/button/wetter/Mild.jpg"
+              backgroundImage="/img/button/wetter/mild.jpg"
               value={2}
             />
             <MenuButton
               icon={<Gauge />}
-              title="Warm"
-              backgroundImage="/img/button/wetter/Warm.jpg"
+              title="Mässig Warm"
+              backgroundImage="/img/button/wetter/maessig-warm.jpg"
               value={3}
+            />
+            {/* </ButtonGroup>
+          <ButtonGroup
+            value={temperatur}
+            onChange={this.handleTemperaturChange}
+            selection="exclusive"
+            style={{
+              marginTop: "1%"
+            }}
+          > */}
+            <MenuButton
+              icon={<GaugeFull />}
+              title="Warm"
+              backgroundImage="/img/button/wetter/warm.jpg"
+              value={4}
+              // style={{ marginLeft: "50.999%" }}
             />
             <MenuButton
               icon={<WhiteBalanceSunny />}
-              title="Heiss"
-              backgroundImage="/img/button/wetter/Heiss.jpg"
-              value={4}
+              title="Sehr Warm"
+              backgroundImage="/img/button/wetter/sehr-warm.jpg"
+              value={5}
             />
             <MenuButton
               icon={<Fire />}
-              title="Sehr Heiss"
-              backgroundImage="/img/button/wetter/SehrHeiss.jpg"
-              value={5}
+              title="Heiss"
+              backgroundImage="/img/button/wetter/heiss.jpg"
+              value={6}
             />
           </ButtonGroup>
         </Collapse>
