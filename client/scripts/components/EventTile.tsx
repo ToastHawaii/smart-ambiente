@@ -11,7 +11,10 @@ import {
   EmoticonExcited,
   VideoVintage,
   Silverware,
-  ImageOutline
+  ImageOutline,
+  Run,
+  Brush,
+  Voice
 } from "mdi-material-ui";
 import { StyleRulesCallback, withStyles, Typography } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
@@ -158,13 +161,22 @@ class EventTile extends React.Component<
         i = <Silverware />;
         break;
       case "Bewegung":
-        i = <Tree />;
+        i = <Run />;
         break;
       case "Ausstellung":
         i = <ImageOutline />;
         break;
       case "Comedy":
         i = <EmoticonExcited />;
+        break;
+      case "Natur":
+        i = <Tree />;
+        break;
+      case "Gestalten":
+        i = <Brush />;
+        break;
+      case "Sprache":
+        i = <Voice />;
         break;
     }
 

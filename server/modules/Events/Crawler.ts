@@ -7,10 +7,11 @@ import { comedyHausReader } from "./ComedyHausReader";
 import { pfirsiReader } from "./PfirsiReader";
 import { casinotheaterReader } from "./CasinotheaterReader";
 import { dynamoReader } from "./DynamoReader";
+import { gzZhReader } from "./GzZhReader";
 import * as Calendar from "./Calendar";
 import * as moment from "moment";
 import * as cheerio from "cheerio";
-import { getHtml, getJson } from "../../utils/request";
+import { getHtml, getJson, postForm } from "../../utils/request";
 import debug from "../../utils/debug";
 import { inspect } from "util";
 const topic = debug("Events/Crawler", true);
@@ -25,7 +26,7 @@ export interface Event {
   ort?: string;
 }
 
-type Reader = HtmlReader | JsonReader<any, any>;
+type Reader = HtmlReader | JsonReader<any, any> | FormReader<any, any>;
 
 export interface HtmlReader {
   typ: "html";
@@ -45,6 +46,16 @@ export interface JsonReader<A, I> {
   mapper: (listItem: I, $detailItem?: Cheerio) => Event[];
 }
 
+export interface FormReader<A, I> {
+  typ: "form";
+  sourceName: string;
+  sourceUrl: string[];
+  sourceBody: string[];
+  itemSelector: (listItems: A) => I[];
+  sourceDetailUrl?: (listItem: I) => string;
+  mapper: (listItem: I, $detailItem?: Cheerio) => Event[];
+}
+
 const readers: Reader[] = [
   stadtZuerichChReader,
   zuerichUnbezahlbarReader,
@@ -54,20 +65,21 @@ const readers: Reader[] = [
   comedyHausReader,
   pfirsiReader,
   casinotheaterReader,
-  dynamoReader
+  dynamoReader,
+  gzZhReader
 ];
 
-function urls(url: string): string[] {
-  if (url.indexOf("[") === -1) return [url];
+function params(param: string): string[] {
+  if (param.indexOf("[") === -1) return [param];
 
-  const urls: string[] = [];
+  const params: string[] = [];
   let day = moment();
   for (let i = 0; i < 8; i++) {
-    urls.push(day.format(url));
+    params.push(day.format(param));
     day = day.add(1, "day");
   }
 
-  return urls;
+  return params;
 }
 
 function selectMany(f: any) {
@@ -81,7 +93,8 @@ export async function crawel(
 ) {
   for (const reader of readers) {
     if (reader.typ === "html") await crawelHtml(reader, persist);
-    else await crawelJson(reader, persist);
+    else if (reader.typ === "json") await crawelJson(reader, persist);
+    else await crawelForm(reader, persist);
   }
 }
 
@@ -91,9 +104,10 @@ async function crawelHtml(
 ) {
   topic(reader.sourceName);
   const sourceUrls = reader.sourceUrl
-    .map(u => urls(u))
+    .map(u => params(u))
     .reduce(selectMany((x: any) => x), []);
 
+  let count = 0;
   for (const sourceUrl of sourceUrls) {
     try {
       topic("GET " + sourceUrl);
@@ -106,6 +120,7 @@ async function crawelHtml(
         elements.push($(e));
       });
 
+      count += elements.length;
       for (const $e of elements) {
         try {
           if (!reader.sourceDetailUrl)
@@ -157,6 +172,104 @@ async function crawelHtml(
       await persist(error);
     }
   }
+  if (count === 0) {
+    const now = moment();
+    const error = {
+      titel: "Error in " + reader.sourceName,
+      beschreibung: `Keine Events gefunden`,
+      kategorie: "Error",
+      start: now,
+      quelle: reader.sourceName,
+      createdAt: now
+    };
+    topic("Error", error);
+    await persist(error);
+  }
+}
+
+async function crawelForm<T>(
+  reader: FormReader<any, any>,
+  persist: (event: Calendar.Event) => Promise<void>
+) {
+  topic(reader.sourceName);
+  const sourceUrls = reader.sourceUrl
+    .map(u => params(u))
+    .reduce(selectMany((x: any) => x), []);
+
+  const sourceBodys = reader.sourceBody
+    .map(u => params(u))
+    .reduce(selectMany((x: any) => x), []);
+
+  let count = 0;
+  for (const sourceUrl of sourceUrls) {
+    for (const body of sourceBodys)
+      try {
+        topic("POST " + sourceUrl, { body: body });
+        const elements = reader.itemSelector(
+          await postForm<T[]>(sourceUrl, body)
+        );
+
+        count += elements.length;
+        for (const e of elements) {
+          try {
+            if (!reader.sourceDetailUrl)
+              await transformPersist(persist, reader, reader.mapper(e));
+            else {
+              const detailUrl = reader.sourceDetailUrl(e);
+
+              topic("GET " + detailUrl);
+              const body = await getHtml(detailUrl);
+
+              if (!body) {
+                console.error("body is null on GET " + detailUrl);
+                return;
+              }
+
+              topic(body);
+              const $ = cheerio.load(body);
+              await transformPersist(
+                persist,
+                reader,
+                reader.mapper(e, $("body"))
+              );
+            }
+          } catch (err) {
+            const now = moment();
+            await persist({
+              titel: "Error in " + reader.sourceName,
+              beschreibung: `${err}\n${inspect(e)}\n${sourceUrl}`,
+              kategorie: "Error",
+              start: now,
+              quelle: reader.sourceName,
+              createdAt: now
+            });
+          }
+        }
+      } catch (err) {
+        const now = moment();
+        await persist({
+          titel: "Error in " + reader.sourceName,
+          beschreibung: `${err}\n${sourceUrl}`,
+          kategorie: "Error",
+          start: now,
+          quelle: reader.sourceName,
+          createdAt: now
+        });
+      }
+  }
+  if (count === 0) {
+    const now = moment();
+    const error = {
+      titel: "Error in " + reader.sourceName,
+      beschreibung: `Keine Events gefunden`,
+      kategorie: "Error",
+      start: now,
+      quelle: reader.sourceName,
+      createdAt: now
+    };
+    topic("Error", error);
+    await persist(error);
+  }
 }
 
 async function crawelJson<T>(
@@ -165,14 +278,16 @@ async function crawelJson<T>(
 ) {
   topic(reader.sourceName);
   const sourceUrls = reader.sourceUrl
-    .map(u => urls(u))
+    .map(u => params(u))
     .reduce(selectMany((x: any) => x), []);
 
+  let count = 0;
   for (const sourceUrl of sourceUrls) {
     try {
       topic("GET " + sourceUrl);
       const elements = reader.itemSelector(await getJson<T[]>(sourceUrl));
 
+      count += elements.length;
       for (const e of elements) {
         try {
           if (!reader.sourceDetailUrl)
@@ -219,6 +334,19 @@ async function crawelJson<T>(
         createdAt: now
       });
     }
+  }
+  if (count === 0) {
+    const now = moment();
+    const error = {
+      titel: "Error in " + reader.sourceName,
+      beschreibung: `Keine Events gefunden`,
+      kategorie: "Error",
+      start: now,
+      quelle: reader.sourceName,
+      createdAt: now
+    };
+    topic("Error", error);
+    await persist(error);
   }
 }
 

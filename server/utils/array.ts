@@ -45,3 +45,7 @@ export function sortAlternate<T extends { random: string }>(a: T[]) {
 
   return b;
 }
+
+export function flatten<T>(arr: T[][]): T[] {
+  return [].concat.apply([], arr);
+}

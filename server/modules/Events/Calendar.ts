@@ -217,7 +217,10 @@ function isAllDay(e: { start: moment.Moment; ende?: moment.Moment }) {
 
 const baseKategorieSchlagwoerter = [
   { name: "Film", schlagwoerter: ["film", "kino"] },
-  { name: "Einkaufen", schlagwoerter: ["markt", "shop"] },
+  {
+    name: "Einkaufen",
+    schlagwoerter: ["markt", "shop", "börse", "märkte", "börsen"]
+  },
   {
     name: "Comedy",
     schlagwoerter: [
@@ -228,7 +231,9 @@ const baseKategorieSchlagwoerter = [
       "poetryslam",
       "impro",
       "witz",
-      "humor"
+      "humor",
+      "komödie",
+      "theatersport"
     ]
   },
   { name: "Theater", schlagwoerter: ["theater", "zirkus", "musical", "oper"] },
@@ -236,7 +241,6 @@ const baseKategorieSchlagwoerter = [
   {
     name: "Bildung",
     schlagwoerter: [
-      "lesung",
       "vortrag",
       "erfahrungsaustausch",
       "informationsveranstaltung",
@@ -244,16 +248,17 @@ const baseKategorieSchlagwoerter = [
       "stammtisch",
       "bildung",
       "informationsabend",
-      "gedichte",
-      "lyrik"
+      "beratung",
+      "wissen",
+      "diskussion"
     ]
-  },
-  {
-    name: "Bewegung",
-    schlagwoerter: ["sport", "fitness", "traning", "marathon"]
   },
   { name: "Festival", schlagwoerter: ["festival", "messe"] },
   { name: "Party", schlagwoerter: ["party", "fest", "disco", "club"] },
+  {
+    name: "Bewegung",
+    schlagwoerter: ["sport", "fitness", "traning", "marathon", "tanz"]
+  },
   {
     name: "Ausstellung",
     schlagwoerter: ["ausstellung", "museum", "museen", "kunst"]
@@ -284,7 +289,21 @@ const baseKategorieSchlagwoerter = [
       "restaurant",
       "fundue",
       "degustation",
-      "bar"
+      "bar",
+      "zmorge"
+    ]
+  },
+  { name: "Natur", schlagwoerter: ["tier", "natur", "garten", "zoo"] },
+  { name: "Gestalten", schlagwoerter: ["zeichnen", "werken", "gestalten"] },
+  {
+    name: "Sprache",
+    schlagwoerter: [
+      "lesung",
+      "gedichte",
+      "lyrik",
+      "sprache",
+      "konversation",
+      "literatur"
     ]
   },
   {

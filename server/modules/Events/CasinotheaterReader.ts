@@ -2,6 +2,7 @@ import { JsonReader, Event } from "./Crawler";
 import * as moment from "moment";
 import * as $ from "cheerio";
 import debug from "../../utils/debug";
+import { flatten } from "../../utils/array";
 const topic = debug("Events/CasinotheaterReader", false);
 
 type Items = {
@@ -64,6 +65,3 @@ export const casinotheaterReader: JsonReader<Items, Item> = {
   }
 };
 
-function flatten<T>(arr: T[][]): T[] {
-  return [].concat.apply([], arr);
-}

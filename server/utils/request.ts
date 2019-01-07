@@ -25,6 +25,14 @@ export function postJson(url: string, body: any) {
   });
 }
 
+export function postForm<T>(url: string, body: string) {
+  return new Promise<T>(resolve => {
+    request.post(url, { json: true, form: body }, (_err, _res, body) => {
+      resolve(body);
+    });
+  });
+}
+
 export function getHtml(sourceUrl: string) {
   return new Promise<string>(resolve =>
     request.get(
