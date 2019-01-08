@@ -1,60 +1,44 @@
 import { HtmlReader, Event } from "./Crawler";
 import * as moment from "moment";
+import debug from "../../utils/debug";
+const topic = debug("StadtZuerichChReader", false);
 
 export const stadtZuerichChReader: HtmlReader = {
-  typ:"html",
+  typ: "html",
   sourceName: "stadt-zuerich.ch",
   sourceUrl: [
-    "[https://www.stadt-zuerich.ch/portal/de/index/aktuelles/agenda/veranstaltungen_suche_archiv.html?q=&q_category=&q_date=]DD.MM.YYYY[&q_type=event&limit=100]"
+    "[https://www.stadt-zuerich.ch/portal/de/index/aktuelles/agenda/veranstaltungen_suche_archiv.html?q=&q_category=&q_date=]DD.MM.YYYY[&q_dateend=]DD.MM.YYYY[&q_target_groups=targetgroups%3Aerwachsene&q_venue=&name=&q_zip=&q_type=eventplus&limit=100]"
   ],
-  itemSelector: ".mod_table tbody tr",
+  itemSelector: ".var_event_search_result a",
   sourceDetailUrl: $item => {
-    return "https://www.stadt-zuerich.ch" + $item.find("a").attr("href");
+    return "https://www.stadt-zuerich.ch" + $item.attr("href");
   },
   mapper: ($listItem: Cheerio, $detailItem?: Cheerio) => {
     if (!$detailItem) return [];
 
-    const dateTime = $listItem
-      .find("td")
-      .first()
+    const date = $listItem
+      .find(".mod_eventinfo__date")
+      .attr("datetime")
+      .split("T")[0];
+    const time = $listItem
+      .find(".mod_eventinfo__time")
       .text()
-      .split(" - ");
-    const start = dateTime[0].split(", ");
-    const ende = dateTime[1].split(", ");
-
-    let startDateTime = start[0];
-    let endeDateTime = ende[0];
-    if (start.length > 1) startDateTime += " " + start[1];
-    else if (ende.length > 1) startDateTime += " " + ende[1];
-    else startDateTime += " 0.00";
-
-    if (ende.length > 1) endeDateTime += " " + ende[1];
-    else endeDateTime += " 0.00";
-
-    startDateTime = startDateTime
-      .replace("Sept.", "September")
-      .replace("Febr.", "Februar");
-    endeDateTime = endeDateTime
-      .replace("Sept.", "September")
-      .replace("Febr.", "Februar");
-
+      .split("–");
+    const start = time[0];
+    const ende = time[1];
+    topic("Start - Ende", {
+      start: date + " " + start,
+      ende: date + " " + ende
+    });
     const event: Event = {
-      titel: $detailItem.find("#event #event_title").text(),
-      beschreibung: $detailItem.find("#event > p").text(),
-      start: moment(
-        startDateTime,
-        ["dd Do MMM YYYY H.mm", "dd Do MMM. YYYY H.mm", "dd Do MMMM YYYY H.mm"],
-        "de"
-      ),
-      ende: moment(
-        endeDateTime,
-        ["dd Do MMM YYYY H.mm", "dd Do MMM. YYYY H.mm", "dd Do MMMM YYYY H.mm"],
-        "de"
-      ),
-      ort: $listItem
-        .find("td")
-        .last()
-        .text()
+      kategorie: $detailItem.find("#event h2").text(),
+      titel: $detailItem.find("#event h1").text(),
+      beschreibung: $detailItem
+        .find("#event p.lead,#event .contentitem p")
+        .text(),
+      start: moment(date + " " + start, "YYYY-MM-DD H.mm", "de"),
+      ende: moment(date + " " + ende, "YYYY-MM-DD H.mm [Uhr]", "de"),
+      ort: $listItem.find("#event .mod_eventinfo__location").text()
     };
 
     if ($detailItem.find("#event img").attr("src"))

@@ -1,5 +1,5 @@
-import { zuerichUnbezahlbarReader } from "./ZuerichUnbezahlbarReader";
 import { stadtZuerichChReader } from "./StadtZuerichChReader";
+import { zuerichUnbezahlbarReader } from "./ZuerichUnbezahlbarReader";
 import { eventsChReader } from "./EventsChReader";
 import { tagesanzeigerChReader } from "./TagesanzeigerReader";
 import { zuriNetReader } from "./ZuriNetReader";

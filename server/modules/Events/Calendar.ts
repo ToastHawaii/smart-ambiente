@@ -294,7 +294,10 @@ const baseKategorieSchlagwoerter = [
     ]
   },
   { name: "Natur", schlagwoerter: ["tier", "natur", "garten", "zoo"] },
-  { name: "Gestalten", schlagwoerter: ["zeichnen", "werken", "gestalten"] },
+  {
+    name: "Gestalten",
+    schlagwoerter: ["zeichnen", "werken", "gestalten", "workshop"]
+  },
   {
     name: "Sprache",
     schlagwoerter: [
