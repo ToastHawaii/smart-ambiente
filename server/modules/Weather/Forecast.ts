@@ -49,7 +49,7 @@ function getTemp(forecast: Owm.Forecast): number {
 
   if (temp < 0) return Temperatur.MaessigKalt;
 
-  // if (temp < 5) return Temperatur.Kuehl;
+  if (temp < 5) return Temperatur.Kuehl;
 
   if (temp < 10) return Temperatur.Mild;
 

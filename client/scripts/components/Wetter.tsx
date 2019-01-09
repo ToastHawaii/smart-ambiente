@@ -16,7 +16,8 @@ import {
   WeatherNight,
   WeatherSunny,
   ThemeLightDark,
-  GaugeFull
+  GaugeFull,
+  GaugeEmpty
 } from "mdi-material-ui";
 import ButtonGroup from "./ButtonGroup";
 import { Component } from "./Component";
@@ -250,12 +251,12 @@ class Wetter extends Component<Props & WithStyles<ComponentClassNames>, State> {
               backgroundImage="/img/button/wetter/maessig-kalt.jpg"
               value={0}
             />
-            {/* <MenuButton
+            <MenuButton
               icon={<GaugeEmpty />}
               title="Kühl"
               backgroundImage="/img/button/wetter/kuehl.jpg"
               value={1}
-            /> */}
+            />
             <MenuButton
               icon={<GaugeLow />}
               title="Mild"
@@ -268,7 +269,7 @@ class Wetter extends Component<Props & WithStyles<ComponentClassNames>, State> {
               backgroundImage="/img/button/wetter/maessig-warm.jpg"
               value={3}
             />
-            {/* </ButtonGroup>
+          </ButtonGroup>
           <ButtonGroup
             value={temperatur}
             onChange={this.handleTemperaturChange}
@@ -276,13 +277,12 @@ class Wetter extends Component<Props & WithStyles<ComponentClassNames>, State> {
             style={{
               marginTop: "1%"
             }}
-          > */}
+          >
             <MenuButton
               icon={<GaugeFull />}
               title="Warm"
               backgroundImage="/img/button/wetter/warm.jpg"
               value={4}
-              // style={{ marginLeft: "50.999%" }}
             />
             <MenuButton
               icon={<WhiteBalanceSunny />}
