@@ -43,6 +43,7 @@ class Room {
 
   public async state() {
     return await getJson<{
+      status?: "error";
       volume: number;
       mute: boolean;
       currentTrack: {

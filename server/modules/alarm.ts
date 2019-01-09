@@ -4,6 +4,8 @@ import * as Hue from "./philips-hue-api";
 import * as WeatherForecast from "./Weather/Forecast";
 import { setKanal, setSinn } from "../server";
 import { args } from "../utils/arguments";
+import debug from "../utils/debug";
+const topic = debug("alarm", false);
 
 const hue = Hue.createHueService(
   "http://192.168.1.101/api/p5u0Ki9EwbUQ330gcMA9-gK3qBKhYWCWJ1NmkNVs"
@@ -18,27 +20,27 @@ async function enableLicht(weather: WeatherForecast.Forecast) {
     Hue.Scheduler
   >(result);
   if (weather.wolken >= 0.2) {
-    // console.log("Bewölkt");
+    topic("Bewölkt");
     for (const s of schedules.filter(
       s => s.name.indexOf("Sonnenaufgang") !== -1
     )) {
-      // console.log(s.name + " Ein");
+      topic(s.name + " Ein");
       hue.updateSchedulesEnabled(s.id);
     }
     for (const s of schedules.filter(s => s.name.indexOf("Heiter") !== -1)) {
-      // console.log(s.name + " Aus");
+      topic(s.name + " Aus");
       hue.updateSchedulesDisabled(s.id);
     }
   } else {
-    // console.log("Heiter");
+    topic("Heiter");
     for (const s of schedules.filter(
       s => s.name.indexOf("Sonnenaufgang") !== -1
     )) {
-      // console.log(s.name + " Aus");
+      topic(s.name + " Aus");
       hue.updateSchedulesDisabled(s.id);
     }
     for (const s of schedules.filter(s => s.name.indexOf("Heiter") !== -1)) {
-      // console.log(s.name + " Ein");
+      topic(s.name + " Ein");
       hue.updateSchedulesEnabled(s.id);
     }
   }
@@ -59,7 +61,7 @@ async function disableLicht() {
       s.name.indexOf("Morgen") !== -1 ||
       s.name.indexOf("Ausschalten") !== -1
   )) {
-    // console.log(s.name + " Aus");
+    topic(s.name + " Aus");
     hue.updateSchedulesDisabled(s.id);
   }
 }
@@ -67,12 +69,12 @@ async function disableLicht() {
 if (!args["--NOALARM"]) {
   sequenz("06:58", "1-5", 5, [
     async () => {
+      setSinn("ton", { lautstaerke: "aus", kanal: "wetter" });
+      setKanal("wetter", { mode: "vorhersage" });
+
       setSinn("licht", { helligkeit: "aus", kanal: "tageslicht" });
       const weather = await WeatherForecast.query();
       enableLicht(weather);
-
-      setSinn("ton", { lautstaerke: "aus", kanal: "wetter" });
-      setKanal("wetter", { mode: "vorhersage" });
     },
     () => {
       setSinn("licht", { helligkeit: "viel", kanal: "tageslicht" });

@@ -107,8 +107,8 @@ function checkChannel() {
     const state = await sonosHttp.room("Wohnzimmer").state();
     const playing = state.playbackState === "PLAYING";
     const uri = (state.currentTrack || { uri: "" }).uri || "";
-    topic("radio check", { playing, uri });
-    if (!(playing && uri.endsWith("smart-ambiente/channel"))) {
+    topic("radio check", { playing, uri, state });
+    if (state.status !== "error" && !(playing && uri.endsWith("smart-ambiente/channel"))) {
       topic("radio stop");
       await stopSound();
     } else {

@@ -12,8 +12,8 @@ import * as Calendar from "./Calendar";
 import * as moment from "moment";
 import * as cheerio from "cheerio";
 import { getHtml, getJson, postForm } from "../../utils/request";
-import debug from "../../utils/debug";
 import { inspect } from "util";
+import debug from "../../utils/debug";
 const topic = debug("Events/Crawler", true);
 
 export interface Event {
