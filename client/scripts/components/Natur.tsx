@@ -2,10 +2,10 @@ import * as React from "react";
 import { StyleRulesCallback, withStyles } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
 import {
-  WeatherSunny,
-  Beach,
+  // WeatherSunny,
+  // Beach,
   Blackberry,
-  Brightness5,
+  // Brightness5,
   NotificationClearAll
 } from "mdi-material-ui";
 import ButtonGroup from "./ButtonGroup";
@@ -79,7 +79,7 @@ class Aussenansicht extends Component<
             backgroundImage="/img/button/natur/Wasserfall.jpg"
             value="wasserfall"
           />
-          <MenuButton
+          {/* <MenuButton
             title="Strand"
             icon={<Beach />}
             backgroundImage="/img/button/natur/Strand.jpg"
@@ -90,19 +90,19 @@ class Aussenansicht extends Component<
             icon={<Brightness5 />}
             backgroundImage="/img/button/natur/Savanne.jpg"
             value="savanne"
-          />
+          /> */}
           <MenuButton
             title="Aquarium"
             icon={<Blackberry />}
             backgroundImage="/img/button/natur/Aquarium.jpg"
             value="aquarium"
           />
-          <MenuButton
+          {/* <MenuButton
             title="Sonne"
             icon={<WeatherSunny />}
             backgroundImage="/img/button/natur/Sonne.jpg"
             value="sonne"
-          />
+          /> */}
         </ButtonGroup>
       </div>
     );

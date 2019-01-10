@@ -1,8 +1,8 @@
 import { Event, FormReader } from "./Crawler";
 import * as moment from "moment";
 import * as cheerio from "cheerio";
-import debug from "../../utils/debug";
 import { getHtml } from "../../utils/request";
+import debug from "../../utils/debug";
 const topic = debug("Events/GzZhReader", true);
 
 moment.locale("de");

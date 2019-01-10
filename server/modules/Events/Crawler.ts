@@ -8,6 +8,7 @@ import { pfirsiReader } from "./PfirsiReader";
 import { casinotheaterReader } from "./CasinotheaterReader";
 import { dynamoReader } from "./DynamoReader";
 import { gzZhReader } from "./GzZhReader";
+import { meetupReader } from "./MeetupReader";
 import * as Calendar from "./Calendar";
 import * as moment from "moment";
 import * as cheerio from "cheerio";
@@ -66,7 +67,8 @@ const readers: Reader[] = [
   pfirsiReader,
   casinotheaterReader,
   dynamoReader,
-  gzZhReader
+  gzZhReader,
+  meetupReader
 ];
 
 function params(param: string): string[] {
