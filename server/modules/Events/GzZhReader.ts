@@ -2,7 +2,8 @@ import { Event, FormReader } from "./Crawler";
 import * as moment from "moment";
 import * as cheerio from "cheerio";
 import debug from "../../utils/debug";
-const topic = debug("Events/GzZhReader", false);
+import { getHtml } from "../../utils/request";
+const topic = debug("Events/GzZhReader", true);
 
 moment.locale("de");
 
@@ -14,9 +15,17 @@ export const gzZhReader: FormReader<Items, Item> = {
   typ: "form",
   sourceName: "Zürcher Gemeinschaftszentren",
   sourceUrl: ["https://gz-zh.ch/wp/wp-admin/admin-ajax.php"],
-  sourceBody: [
-    "[action=more_post_ajax&nonce=fdecf310e1&params%5Bpage%5D=1&params%5Bdates%5D%5B%5D=]DD.MM.YYYY[&params%5Bterms%5D%5Bzielgruppen%5D%5B%5D=erwachsene&params%5Btype%5D=angebote&params%5Bqty%5D=100&params%5Bpeople%5D=0]"
-  ],
+  sourceBody: async () => {
+    const body = await getHtml("https://gz-zh.ch");
+    const match = /\"nonce\"\:\"([a-z0-9]+)\"/gi.exec(body);
+    topic("match", match || {});
+    if (!(match && match[1])) throw "nonce not found";
+    return [
+      `[action=more_post_ajax&nonce=${
+        match[1]
+      }&params%5Bpage%5D=1&params%5Bdates%5D%5B%5D=]DD.MM.YYYY[&params%5Bterms%5D%5Bzielgruppen%5D%5B%5D=erwachsene&params%5Btype%5D=angebote&params%5Bqty%5D=100&params%5Bpeople%5D=0]`
+    ];
+  },
   itemSelector: (listItems: Items) => {
     topic(listItems.content);
     const $ = cheerio.load(listItems.content);
@@ -49,9 +58,7 @@ export const gzZhReader: FormReader<Items, Item> = {
       events.push({
         kategorie: $e.find(".cat-title").text(),
         titel: $e.find(".entry-title").text(),
-        beschreibung: $e
-          .find(".entry-content .col-md-6.col-xl-6:nth-child(2)")
-          .text(),
+        beschreibung: $e.find(".entry-content .col-xl-6:nth-child(2)").text(),
         start: moment(date + " " + startEnd[0].trim(), "Do MMM YYYY HH:mm"),
         ende: moment(date + " " + startEnd[1].trim(), "Do MMM YYYY HH:mm"),
         ort: dateTimePlace[2],

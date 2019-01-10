@@ -50,7 +50,7 @@ export interface FormReader<A, I> {
   typ: "form";
   sourceName: string;
   sourceUrl: string[];
-  sourceBody: string[];
+  sourceBody: () => Promise<string[]>;
   itemSelector: (listItems: A) => I[];
   sourceDetailUrl?: (listItem: I) => string;
   mapper: (listItem: I, $detailItem?: Cheerio) => Event[];
@@ -196,7 +196,7 @@ async function crawelForm<T>(
     .map(u => params(u))
     .reduce(selectMany((x: any) => x), []);
 
-  const sourceBodys = reader.sourceBody
+  const sourceBodys = (await reader.sourceBody())
     .map(u => params(u))
     .reduce(selectMany((x: any) => x), []);
 
