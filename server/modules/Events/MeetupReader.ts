@@ -33,7 +33,16 @@ export const meetupReader: HtmlReader = {
 
     if (!(startDate && startDate[1])) return [];
 
+    let kategories = $detailItem
+      .parent()
+      .find("meta[name=keywords]")
+      .attr("content")
+      .split(",");
+
+    kategories = kategories.slice(0, kategories.length - 3);
+
     const event: Event = {
+      kategorie: kategories.join(", "),
       titel: $detailItem.find("h1").text(),
       beschreibung: $detailItem.find(".event-description").text(),
       start: moment(startDate[1]),

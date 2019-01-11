@@ -221,6 +221,27 @@ const baseKategorieSchlagwoerter = [
     name: "Einkaufen",
     schlagwoerter: ["markt", "shop", "börse", "märkte", "börsen"]
   },
+  { name: "Führung", schlagwoerter: ["führung"] },
+  {
+    name: "Bildung",
+    schlagwoerter: [
+      "vortrag",
+      "erfahrungsaustausch",
+      "informationsveranstaltung",
+      "infoanlass",
+      "stammtisch",
+      "bildung",
+      "informationsabend",
+      "beratung",
+      "wissen",
+      "diskussion",
+      "technologie",
+      "softwareentwicklung",
+      "programmieren",
+      "weiterentwicklung",
+      "zusammenarbeit"
+    ]
+  },
   {
     name: "Comedy",
     schlagwoerter: [
@@ -236,32 +257,19 @@ const baseKategorieSchlagwoerter = [
       "theatersport"
     ]
   },
-  { name: "Theater", schlagwoerter: ["theater", "zirkus", "musical", "oper"] },
-  { name: "Führung", schlagwoerter: ["führung"] },
-  {
-    name: "Bildung",
-    schlagwoerter: [
-      "vortrag",
-      "erfahrungsaustausch",
-      "informationsveranstaltung",
-      "infoanlass",
-      "stammtisch",
-      "bildung",
-      "informationsabend",
-      "beratung",
-      "wissen",
-      "diskussion"
-    ]
-  },
-  { name: "Festival", schlagwoerter: ["festival", "messe"] },
-  { name: "Party", schlagwoerter: ["party", "fest", "disco", "club"] },
   {
     name: "Bewegung",
-    schlagwoerter: ["sport", "fitness", "traning", "marathon", "tanz"]
+    schlagwoerter: ["sport", "fitness", "traning", "marathon", "tanz", "yoga"]
+  },
+  { name: "Theater", schlagwoerter: ["theater", "zirkus", "musical", "oper"] },
+  { name: "Party", schlagwoerter: ["party", "fest", "disco", "club"] },
+  {
+    name: "Festival",
+    schlagwoerter: ["festival", "messe", "sozial", "game", "spiele"]
   },
   {
     name: "Ausstellung",
-    schlagwoerter: ["ausstellung", "museum", "museen", "kunst"]
+    schlagwoerter: ["ausstellung", "museum", "museen", "kunst", "fotografie"]
   },
   {
     name: "Musik",
@@ -290,13 +298,14 @@ const baseKategorieSchlagwoerter = [
       "fundue",
       "degustation",
       "bar",
-      "zmorge"
+      "zmorge",
+      "zmittag"
     ]
   },
   { name: "Natur", schlagwoerter: ["tier", "natur", "garten", "zoo"] },
   {
     name: "Gestalten",
-    schlagwoerter: ["zeichnen", "werken", "gestalten", "workshop"]
+    schlagwoerter: ["zeichnen", "werken", "gestalten", "workshop", "photoshop"]
   },
   {
     name: "Sprache",
@@ -306,7 +315,9 @@ const baseKategorieSchlagwoerter = [
       "lyrik",
       "sprache",
       "konversation",
-      "literatur"
+      "literatur",
+      "englisch",
+      "kommunikation"
     ]
   },
   {
