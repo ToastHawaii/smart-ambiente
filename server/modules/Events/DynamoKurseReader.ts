@@ -1,11 +1,11 @@
 import { HtmlReader, Event } from "./Crawler";
 import * as moment from "moment";
 
-export const dynamoReader: HtmlReader = {
+export const dynamoKurseReader: HtmlReader = {
   typ: "html",
   sourceName: "Dynamo",
-  sourceUrl: ["https://www.dynamo.ch/veranstaltungen"],
-  itemSelector: ".node-event",
+  sourceUrl: ["https://www.dynamo.ch/kurse"],
+  itemSelector: ".node-kurs",
   sourceDetailUrl: $item => {
     return "https://www.dynamo.ch" + $item.find("a").attr("href");
   },
@@ -21,39 +21,31 @@ export const dynamoReader: HtmlReader = {
       if (img) img = getUrls(img)[0];
     }
 
-    const $dateTime = $detailItem.find(
-      "#content .pane-node-field-event-zeitraum .date-display-single"
+    const $date = $detailItem.find(
+      "#content .pane-node-field-kurs-datum .date-display-single"
     );
 
-    let dateTimeFrom: string;
-    let dateTimeTo: string;
-    if ($dateTime.length > 0) {
-      const dateTime = $dateTime
+    let dateFrom: string;
+    let dateTo: string | undefined = undefined;
+    if ($date.length > 0) {
+      const dateTime = $date
         .first()
         .text()
         .split(", ")[1];
-
-      const date = dateTime.split(" - ")[0];
-      const time = dateTime.split(" - ")[1];
-
-      const timeFrom = time.split(" bis ")[0];
-      const timeTo = time.split(" bis ")[1];
-
-      dateTimeFrom = date + " " + timeFrom;
-      dateTimeTo = date + " " + timeTo;
+      dateFrom = dateTime;
     } else {
-      dateTimeFrom = $detailItem
+      dateFrom = $detailItem
         .find(
-          "#content .pane-node-field-event-zeitraum .date-display-range .date-display-start"
+          "#content .pane-node-field-kurs-datum .date-display-range .date-display-start"
         )
         .first()
         .text()
         .split(", ")[1]
         .replace(/ \- /, " ");
 
-      dateTimeTo = $detailItem
+      dateTo = $detailItem
         .find(
-          "#content .pane-node-field-event-zeitraum .date-display-range .date-display-end"
+          "#content .pane-node-field-kurs-datum .date-display-range .date-display-end"
         )
         .first()
         .text()
@@ -65,12 +57,14 @@ export const dynamoReader: HtmlReader = {
       titel:
         $detailItem.find("#content .pane-node-title").text() +
         " - " +
-        $detailItem.find("#content .pane-node-field-event-subtitel").text(),
+        $detailItem.find("#content .pane-node-field-kurs-subtitel").text(),
       beschreibung: $detailItem
-        .find("#content .pane-node-field-event-description")
+        .find("#content .pane-node-field-kurs-description")
         .text(),
-      start: moment(dateTimeFrom, "Do MMMM YYYY h:mm"),
-      ende: dateTimeTo ? moment(dateTimeTo, "Do MMMM YYYY h:mm") : undefined,
+      start: moment(dateFrom + " 00:00", "Do MMMM YYYY HH:mm"),
+      ende: dateTo
+        ? moment(dateTo + " 00:00", "Do MMMM YYYY HH:mm")
+        : undefined,
       ort: "Jugendkulturhaus Dynamo, Wasserwerkstrasse 21, 8006 Zürich",
       bild: img
     });

@@ -6,7 +6,8 @@ import { zuriNetReader } from "./ZuriNetReader";
 import { comedyHausReader } from "./ComedyHausReader";
 import { pfirsiReader } from "./PfirsiReader";
 import { casinotheaterReader } from "./CasinotheaterReader";
-import { dynamoReader } from "./DynamoReader";
+import { dynamoVeranstaltungenReader } from "./DynamoVeranstaltungenReader";
+import { dynamoKurseReader } from "./DynamoKurseReader";
 import { gzZhReader } from "./GzZhReader";
 import { meetupReader } from "./MeetupReader";
 import * as Calendar from "./Calendar";
@@ -66,7 +67,8 @@ const readers: Reader[] = [
   comedyHausReader,
   pfirsiReader,
   casinotheaterReader,
-  dynamoReader,
+  dynamoVeranstaltungenReader,
+  dynamoKurseReader,
   gzZhReader,
   meetupReader
 ];
