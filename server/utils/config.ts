@@ -1,5 +1,4 @@
 import * as fs from "fs";
-import { args } from "./arguments";
 
 export interface Config {
   aufwachen: {
@@ -13,11 +12,7 @@ export interface Config {
   };
 }
 
-let config = "config.json";
-
-if (!args["--RELEASE"]) {
-  config = "server/static/config.json";
-}
+const config = "out/config.json";
 
 export function saveConfig(data: Config) {
   return new Promise<void>((resolve, reject) => {
