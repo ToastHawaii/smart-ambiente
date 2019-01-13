@@ -13,6 +13,7 @@ import Licht from "./Licht";
 import { Menu as IconMenu } from "mdi-material-ui";
 import classNames from "classnames";
 import * as PubSub from "pubsub-js";
+import Aufwachen from "./Aufwachen";
 
 export interface Props {}
 
@@ -119,6 +120,10 @@ class Menu extends React.Component<
               Licht
             </Typography>
             <Licht />
+            <Typography variant="headline" style={{ margin: "0 1%" }}>
+              Aufwachen
+            </Typography>
+            <Aufwachen />
           </div>
         </Collapse>
         <IconButton

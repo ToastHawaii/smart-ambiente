@@ -1,107 +1,128 @@
-import { toArray } from "../utils/array";
 import { sequenz } from "../utils/timer";
 import * as Hue from "./philips-hue-api";
 import * as WeatherForecast from "./Weather/Forecast";
-import { setKanal, setSinn } from "../server";
-import { args } from "../utils/arguments";
-import debug from "../utils/debug";
-const topic = debug("alarm", false);
+import { setKanal, setSinn, getKanal } from "../server";
+import { loadConfig } from "../utils/config";
 
 const hue = Hue.createHueService(
   "http://192.168.1.101/api/p5u0Ki9EwbUQ330gcMA9-gK3qBKhYWCWJ1NmkNVs"
 );
 
-async function enableLicht(weather: WeatherForecast.Forecast) {
-  const result = await hue.querySchedules();
-  const schedules = toArray<
-    {
-      [index: string]: Hue.Scheduler;
-    },
-    Hue.Scheduler
-  >(result);
-  if (weather.wolken >= 0.2) {
-    topic("Bewölkt");
-    for (const s of schedules.filter(
-      s => s.name.indexOf("Sonnenaufgang") !== -1
-    )) {
-      topic(s.name + " Ein");
-      hue.updateSchedulesEnabled(s.id);
-    }
-    for (const s of schedules.filter(s => s.name.indexOf("Heiter") !== -1)) {
-      topic(s.name + " Aus");
-      hue.updateSchedulesDisabled(s.id);
-    }
-  } else {
-    topic("Heiter");
-    for (const s of schedules.filter(
-      s => s.name.indexOf("Sonnenaufgang") !== -1
-    )) {
-      topic(s.name + " Aus");
-      hue.updateSchedulesDisabled(s.id);
-    }
-    for (const s of schedules.filter(s => s.name.indexOf("Heiter") !== -1)) {
-      topic(s.name + " Ein");
-      hue.updateSchedulesEnabled(s.id);
-    }
-  }
-}
+const interval = 5;
+const transition = interval * 60 * 10;
 
-async function disableLicht() {
-  const result = await hue.querySchedules();
-  const schedules = toArray<
-    {
-      [index: string]: Hue.Scheduler;
-    },
-    Hue.Scheduler
-  >(result);
-  for (const s of schedules.filter(
-    s =>
-      s.name.indexOf("Heiter") !== -1 ||
-      s.name.indexOf("Sonnenaufgang") !== -1 ||
-      s.name.indexOf("Morgen") !== -1 ||
-      s.name.indexOf("Ausschalten") !== -1
-  )) {
-    topic(s.name + " Aus");
-    hue.updateSchedulesDisabled(s.id);
-  }
-}
+(async function() {
+  const config = await loadConfig();
 
-if (!args["--NOALARM"]) {
-  sequenz("06:58", "1-5", 5, [
+  if (config.aufwachen.aktiv !== "an") return;
+
+  const zeit = config.alarm.zeit;
+  const days = config.alarm.tage;
+  sequenz(zeit, days, interval, [
     async () => {
+      const weather = await WeatherForecast.query();
+
       setSinn("ton", { lautstaerke: "aus", kanal: "wetter" });
-      setKanal("wetter", { mode: "vorhersage" });
+      setKanal("wetter", { mode: "vorhersage", ...weather });
 
       setSinn("licht", { helligkeit: "aus", kanal: "tageslicht" });
-      const weather = await WeatherForecast.query();
-      enableLicht(weather);
-    },
-    () => {
-      setSinn("licht", { helligkeit: "viel", kanal: "tageslicht" });
     },
     () => {
       setSinn("ton", { lautstaerke: "1", kanal: "wetter" });
+      setSinn("licht", { helligkeit: "viel", kanal: "tageslicht" });
+
+      if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
+        hue.recallScene("Wohnzimmer", "Minimum", 1);
+        hue.recallScene("Terrasse", "Nachtlicht", 1);
+        hue.recallScene("Toilette", "Nachtlicht", 1);
+      } else {
+        hue.recallScene("Wohnzimmer", "Minimum (Heiter)", 1);
+        hue.recallScene("Terrasse", "Minimum (Heiter)", 1);
+        hue.recallScene("Toilette", "Minimum (Heiter)", 1);
+      }
     },
     () => {
       setSinn("ton", { lautstaerke: "2", kanal: "wetter" });
+
+      if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
+        hue.recallScene("Wohnzimmer", "Sonnenaufgang (1)", transition);
+        hue.recallScene("Terrasse", "Nachtlicht", transition);
+        hue.recallScene("Toilette", "Nachtlicht", transition);
+      } else {
+        hue.recallScene("Wohnzimmer", "Sonnenaufgang 1 (Heiter)", transition);
+        hue.recallScene("Terrasse", "Sonnenaufgang 1. (Heiter)", transition);
+        hue.recallScene("Toilette", "Minimum (Heiter)", transition);
+      }
     },
     () => {
       setSinn("ton", { lautstaerke: "4", kanal: "wetter" });
+
+      if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
+        hue.recallScene("Wohnzimmer", "Sonnenaufgang (2)", transition);
+        hue.recallScene("Terrasse", "Sonnenaufgang (2)", transition);
+        hue.recallScene("Toilette", "Nachtlicht", transition);
+        hue.recallScene("Schlafzimmer", "Minimum", 1);
+      } else {
+        hue.recallScene("Wohnzimmer", "Sonnenaufgang 2 (Heiter)", transition);
+        hue.recallScene("Terrasse", "Sonnenaufgang 2. (Heiter)", transition);
+        hue.recallScene("Toilette", "Minimum (Heiter)", transition);
+        hue.recallScene("Schlafzimmer", "Minimum (Heiter)", 1);
+      }
     },
     () => {
       setSinn("ton", { lautstaerke: "8", kanal: "wetter" });
-      setSinn("bild", { bildschirm: "ein", kanal: "ansehen" });
+
+      if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
+        hue.recallScene("Wohnzimmer", "Sonnenaufgang (3)", transition);
+        hue.recallScene("Terrasse", "Sonnenaufgang (3)", transition);
+        hue.recallScene("Toilette", "Gedimmt", transition);
+        hue.recallScene("Schlafzimmer", "Nachtlicht", transition);
+      } else {
+        hue.recallScene("Wohnzimmer", "Sonnenaufgang 3 (Heiter)", transition);
+        hue.recallScene("Terrasse", "Sonnenaufgang 3. (Heiter)", transition);
+        hue.recallScene("Toilette", "Sonnenaufgang 3. (Heiter)", transition);
+        hue.recallScene(
+          "Schlafzimmer",
+          "Sonnenaufgang 3. (Heiter)",
+          transition
+        );
+      }
     },
     () => {
-      setSinn("ton", { lautstaerke: "10", kanal: "nachrichten" });
+      setSinn("ton", { lautstaerke: "10", kanal: "wetter" });
+
+      if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
+        hue.recallScene("Wohnzimmer", "Sonnenaufgang (4)", transition);
+        hue.recallScene("Terrasse", "Sonnenaufgang (4)", transition);
+        hue.recallScene("Toilette", "Entspannen", transition);
+        hue.recallScene("Schlafzimmer", "Entspannen", transition);
+      } else {
+        hue.recallScene("Wohnzimmer", "Sonnenaufgang 4 (Heiter)", transition);
+        hue.recallScene("Terrasse", "Sonnenaufgang 4. (Heiter)", transition);
+        hue.recallScene("Toilette", "Sonnenaufgang 4. (Heiter)", transition);
+        hue.recallScene(
+          "Schlafzimmer",
+          "Sonnenaufgang 4. (Heiter)",
+          transition
+        );
+      }
     },
     () => {
       setSinn("ton", { lautstaerke: "13", kanal: "nachrichten" });
+      setSinn("bild", { bildschirm: "ein", kanal: "ansehen" });
+
+      hue.recallScene("Wohnzimmer", "Konzentration", transition);
+      hue.recallScene("Terrasse", "Konzentration", transition);
+      hue.recallScene("Toilette", "Konzentration", transition);
+      hue.recallScene("Schlafzimmer", "Konzentration", transition);
     },
     () => {
       setSinn("ton", { lautstaerke: "15", kanal: "nachrichten" });
+
+      hue.recallScene("Wohnzimmer", "Aktivieren", transition);
+      hue.recallScene("Terrasse", "Aktivieren", transition);
+      hue.recallScene("Toilette", "Aktivieren", transition);
+      hue.recallScene("Schlafzimmer", "Aktivieren", transition);
     }
   ]);
-} else {
-  disableLicht();
-}
+})();

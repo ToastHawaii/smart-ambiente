@@ -1,5 +1,6 @@
 import { getJson, putJson } from "../utils/request";
 import { delay } from "../utils/timer";
+import { toArray } from "../utils/array";
 
 export function createHueService(baseUrl: string) {
   return new Hue(baseUrl);
@@ -38,6 +39,7 @@ export interface Light {
   };
   name: string;
   type: string;
+  group: string;
 }
 
 export interface Group {
@@ -47,6 +49,31 @@ export interface Group {
     any_on: boolean;
     all_on: boolean;
   };
+}
+export interface Scene {
+  name: string;
+  type: "GroupScene";
+  group: string;
+  lights: string[];
+  owner: string;
+  recycle: boolean;
+  locked: boolean;
+  picture: string;
+  lightstates: {
+    [id: string]: LightPartial;
+  };
+}
+
+export interface LightPartial {
+  on: boolean;
+  bri: number;
+  ct: number;
+  xy: [number, number];
+  transitiontime?: number;
+}
+
+export interface ScenePartial {
+  transitiontime?: number;
 }
 
 type Partial<T> = { [P in keyof T]?: T[P] };
@@ -58,6 +85,7 @@ export interface GroupPartial {
   hue?: number;
   effect?: string;
   scene?: string;
+  transitiontime?: number;
 }
 
 class Hue {
@@ -124,11 +152,65 @@ class Hue {
     return await getJson<Group>(this.baseUrl + "/groups/" + id);
   }
 
+  public async getGroupByName(name: string) {
+    const result = await this.queryGroups();
+    const groups = toArray<{ [index: string]: Group }, Group>(result);
+    return groups.filter(g => g.name === name)[0];
+  }
+
   public async queryGroups() {
     return await getJson<{ [index: string]: Group }>(this.baseUrl + "/groups");
   }
 
   public async updateGroups(id: string, attributes: GroupPartial) {
     await putJson(this.baseUrl + "/groups/" + id + "/action", attributes);
+  }
+
+  public async getScenes(id: string) {
+    return await getJson<Scene>(this.baseUrl + "/scenes/" + id);
+  }
+
+  public async getSceneByName(groupId: string, name: string) {
+    const result = await this.queryScenes();
+    const scenes = toArray<{ [index: string]: Scene }, Scene>(result);
+    const scene = scenes.filter(g => g.name === name && g.group === groupId)[0];
+    return { ...(await this.getScenes(scene.id)), id: scene.id };
+  }
+
+  public async queryScenes() {
+    return await getJson<{ [index: string]: Scene }>(this.baseUrl + "/scenes");
+  }
+
+  public async updateScenesLightstates(
+    id: string,
+    lightId: string,
+    attributes: LightPartial
+  ) {
+    await putJson(
+      this.baseUrl + "/scenes/" + id + "/lightstates/" + lightId,
+      attributes
+    );
+  }
+
+  public async setLightState(id: string, attributes: LightPartial) {
+    await putJson(this.baseUrl + "/lights/" + id + "/state", attributes);
+  }
+
+  public async recallScene(
+    roomName: string,
+    sceneName: string,
+    transitiontime?: number
+  ) {
+    const group = await this.getGroupByName(roomName);
+    const scene = await this.getSceneByName(group.id, sceneName);
+
+    for (const light of scene.lights) {
+      this.setLightState(light, {
+        ...scene.lightstates[light],
+        transitiontime: transitiontime
+      });
+    }
+
+    if (transitiontime) await delay(transitiontime * 100);
   }
 }

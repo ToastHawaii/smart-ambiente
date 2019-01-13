@@ -12,6 +12,7 @@ import "./modules/alarm";
 import "./modules/hue-sonos-link";
 import { chooseGoodMatch } from "./modules/Weather/Image";
 import debug from "./utils/debug";
+import { saveConfig, loadConfig } from "./utils/config";
 debug.enabled = true;
 const topic = debug("server", false);
 
@@ -44,6 +45,10 @@ const data: {
     licht: {
       helligkeit: "viel",
       kanal: "tageslicht"
+    },
+    aufwachen: {
+      aktiv: "aus",
+      kanal: "alarm"
     }
   },
   kanal: {
@@ -69,6 +74,10 @@ const data: {
     },
     zusehen: {
       aktivitaet: "bahnverkehr"
+    },
+    alarm: {
+      zeit: "06:55",
+      tage: "1-5"
     }
   }
 };
@@ -80,6 +89,10 @@ app.get("/api/sinn/:sinn", async function(req, res) {
     data.kanal["wetter"] = weather;
     data.kanal["wetter"].mode = "vorhersage";
 
+    const config = await loadConfig();
+    data.sinn["aufwachen"] = config.aufwachen;
+    data.kanal["alarm"] = config.alarm;
+
     controlTon();
     controlLicht();
   }
@@ -87,11 +100,11 @@ app.get("/api/sinn/:sinn", async function(req, res) {
   res.json(data.sinn[req.params.sinn]);
 });
 
-app.post("/api/sinn/:sinn", function(req, res) {
-  res.json(setSinn(req.params.sinn, req.body));
+app.post("/api/sinn/:sinn", async function(req, res) {
+  res.json(await setSinn(req.params.sinn, req.body));
 });
 
-export function setSinn(sinn: string, sinnData: any) {
+export async function setSinn(sinn: string, sinnData: any) {
   topic("Sinn", sinnData);
 
   data.sinn[sinn] = sinnData;
@@ -99,6 +112,12 @@ export function setSinn(sinn: string, sinnData: any) {
   if (sinn === "ton") controlTon();
 
   if (sinn === "licht") controlLicht();
+
+  if (sinn === "aufwachen")
+    await saveConfig({
+      aufwachen: data.sinn["aufwachen"],
+      alarm: data.kanal["alarm"]
+    });
 
   return data.sinn[sinn];
 }
@@ -134,8 +153,17 @@ export async function setKanal(kanal: string, kanalData: any) {
       controlTon();
       controlLicht();
     }
+  } else if (kanal === "alarm") {
+    await saveConfig({
+      aufwachen: data.sinn["aufwachen"],
+      alarm: data.kanal["alarm"]
+    });
   }
 
+  return data.kanal[kanal];
+}
+
+export function getKanal(kanal: string) {
   return data.kanal[kanal];
 }
 
