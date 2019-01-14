@@ -76,7 +76,7 @@ const data: {
       aktivitaet: "bahnverkehr"
     },
     alarm: {
-      zeit: "06:55",
+      zeit: "06:56",
       tage: "1-5"
     }
   }

@@ -211,6 +211,12 @@ class Hue {
       });
     }
 
-    if (transitiontime) await delay(transitiontime * 100);
+    await delay((transitiontime || 4) * 100);
+  }
+  public async updateGroupByName(roomName: string, attributes: GroupPartial) {
+    const group = await this.getGroupByName(roomName);
+    await this.updateGroups(group.id, attributes);
+
+    await delay((attributes.transitiontime || 4) * 100);
   }
 }

@@ -15,7 +15,7 @@ import MenuButton from "./MenuButton";
 export interface Props {}
 
 export interface State {
-  zeit?: "05:55" | "06:55" | "07:55";
+  zeit?: "05:56" | "06:56" | "07:56";
   tage?: "1-5" | "1-7";
 }
 
@@ -56,23 +56,23 @@ class Alarm extends Component<Props & WithStyles<ComponentClassNames>, State> {
           <MenuButton
             icon={<WeatherNight />}
             title="06:30"
-            selected={zeit === "05:55"}
+            selected={zeit === "05:56"}
             backgroundGradient="Blue, MidnightBlue"
-            value="05:55"
+            value="05:56"
           />
           <MenuButton
             icon={<ThemeLightDark />}
             title="07:30"
-            selected={zeit === "06:55"}
+            selected={zeit === "06:56"}
             backgroundGradient="Orange, Red"
-            value="06:55"
+            value="06:56"
           />
           <MenuButton
             icon={<WeatherSunny />}
             title="08:30"
-            selected={zeit === "07:55"}
+            selected={zeit === "07:56"}
             backgroundGradient="Yellow, Orange"
-            value="07:55"
+            value="07:56"
           />
         </ButtonGroup>
         <ButtonGroup

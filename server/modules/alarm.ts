@@ -27,9 +27,12 @@ const transition = interval * 60 * 10;
 
       setSinn("licht", { helligkeit: "aus", kanal: "tageslicht" });
     },
-    () => {
-      setSinn("ton", { lautstaerke: "1", kanal: "wetter" });
+    async () => {
       setSinn("licht", { helligkeit: "viel", kanal: "tageslicht" });
+
+      await calibrate("Wohnzimmer");
+      await calibrate("Terrasse");
+      await calibrate("Toilette");
 
       if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
         hue.recallScene("Wohnzimmer", "Minimum", 1);
@@ -42,7 +45,7 @@ const transition = interval * 60 * 10;
       }
     },
     () => {
-      setSinn("ton", { lautstaerke: "2", kanal: "wetter" });
+      setSinn("ton", { lautstaerke: "1", kanal: "wetter" });
 
       if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
         hue.recallScene("Wohnzimmer", "Sonnenaufgang (1)", transition);
@@ -54,8 +57,10 @@ const transition = interval * 60 * 10;
         hue.recallScene("Toilette", "Minimum (Heiter)", transition);
       }
     },
-    () => {
-      setSinn("ton", { lautstaerke: "4", kanal: "wetter" });
+    async () => {
+      setSinn("ton", { lautstaerke: "2", kanal: "wetter" });
+
+      await calibrate("Schlafzimmer");
 
       if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
         hue.recallScene("Wohnzimmer", "Sonnenaufgang (2)", transition);
@@ -70,7 +75,7 @@ const transition = interval * 60 * 10;
       }
     },
     () => {
-      setSinn("ton", { lautstaerke: "8", kanal: "wetter" });
+      setSinn("ton", { lautstaerke: "4", kanal: "wetter" });
 
       if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
         hue.recallScene("Wohnzimmer", "Sonnenaufgang (3)", transition);
@@ -89,7 +94,7 @@ const transition = interval * 60 * 10;
       }
     },
     () => {
-      setSinn("ton", { lautstaerke: "10", kanal: "wetter" });
+      setSinn("ton", { lautstaerke: "8", kanal: "wetter" });
 
       if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
         hue.recallScene("Wohnzimmer", "Sonnenaufgang (4)", transition);
@@ -108,7 +113,7 @@ const transition = interval * 60 * 10;
       }
     },
     () => {
-      setSinn("ton", { lautstaerke: "13", kanal: "nachrichten" });
+      setSinn("ton", { lautstaerke: "10", kanal: "nachrichten" });
       setSinn("bild", { bildschirm: "ein", kanal: "ansehen" });
 
       hue.recallScene("Wohnzimmer", "Konzentration", transition);
@@ -117,12 +122,26 @@ const transition = interval * 60 * 10;
       hue.recallScene("Schlafzimmer", "Konzentration", transition);
     },
     () => {
-      setSinn("ton", { lautstaerke: "15", kanal: "nachrichten" });
+      setSinn("ton", { lautstaerke: "13", kanal: "nachrichten" });
 
       hue.recallScene("Wohnzimmer", "Aktivieren", transition);
       hue.recallScene("Terrasse", "Aktivieren", transition);
       hue.recallScene("Toilette", "Aktivieren", transition);
       hue.recallScene("Schlafzimmer", "Aktivieren", transition);
+    },
+    () => {
+      setSinn("ton", { lautstaerke: "15", kanal: "nachrichten" });
     }
   ]);
 })();
+
+async function calibrate(groupName: string) {
+  await hue.updateGroupByName(groupName, {
+    on: true,
+    transitiontime: 1
+  });
+  await hue.updateGroupByName(groupName, {
+    on: false,
+    transitiontime: 1
+  });
+}
