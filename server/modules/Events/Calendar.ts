@@ -250,7 +250,6 @@ const baseKategorieSchlagwoerter = [
       "poetry-slam",
       "poetry slam",
       "poetryslam",
-      "impro",
       "witz",
       "humor",
       "komödie",
@@ -259,7 +258,15 @@ const baseKategorieSchlagwoerter = [
   },
   {
     name: "Bewegung",
-    schlagwoerter: ["sport", "fitness", "traning", "marathon", "tanz", "yoga"]
+    schlagwoerter: [
+      "sport",
+      "fitness",
+      "traning",
+      "marathon",
+      "tanz",
+      "yoga",
+      "dance"
+    ]
   },
   { name: "Theater", schlagwoerter: ["theater", "zirkus", "musical", "oper"] },
   { name: "Party", schlagwoerter: ["party", "fest", "disco", "club"] },
@@ -284,7 +291,8 @@ const baseKategorieSchlagwoerter = [
       "rock",
       "pop",
       "hip-hop",
-      "hip hop"
+      "hip hop",
+      "music"
     ]
   },
   {
@@ -297,9 +305,9 @@ const baseKategorieSchlagwoerter = [
       "restaurant",
       "fundue",
       "degustation",
-      "bar",
       "zmorge",
-      "zmittag"
+      "zmittag",
+      "food"
     ]
   },
   { name: "Natur", schlagwoerter: ["tier", "natur", "garten", "zoo"] },
@@ -317,8 +325,21 @@ const baseKategorieSchlagwoerter = [
       "konversation",
       "literatur",
       "englisch",
-      "kommunikation"
+      "kommunikation",
+      "conversation"
     ]
+  },
+  {
+    name: "Bildung",
+    schlagwoerter: ["diskussion", "discussion"]
+  },
+  {
+    name: "Comedy",
+    schlagwoerter: ["impro"]
+  },
+  {
+    name: "Essen",
+    schlagwoerter: ["bar"]
   },
   {
     name: "Error",

@@ -205,7 +205,7 @@ class Hue {
     const scene = await this.getSceneByName(group.id, sceneName);
 
     for (const light of scene.lights) {
-      this.setLightState(light, {
+      await this.setLightState(light, {
         ...scene.lightstates[light],
         transitiontime: transitiontime
       });
@@ -213,6 +213,7 @@ class Hue {
 
     await delay((transitiontime || 4) * 100);
   }
+  
   public async updateGroupByName(roomName: string, attributes: GroupPartial) {
     const group = await this.getGroupByName(roomName);
     await this.updateGroups(group.id, attributes);

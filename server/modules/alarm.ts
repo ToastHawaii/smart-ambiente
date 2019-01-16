@@ -30,17 +30,23 @@ const transition = interval * 60 * 10;
     async () => {
       setSinn("licht", { helligkeit: "viel", kanal: "tageslicht" });
 
-      await calibrate("Wohnzimmer");
-      await calibrate("Terrasse");
-      await calibrate("Toilette");
-
       if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
+        await hue.recallScene("Wohnzimmer", "Minimum", 1);
         hue.recallScene("Wohnzimmer", "Minimum", 1);
+
+        await hue.recallScene("Terrasse", "Nachtlicht", 1);
         hue.recallScene("Terrasse", "Nachtlicht", 1);
+
+        await hue.recallScene("Toilette", "Nachtlicht", 1);
         hue.recallScene("Toilette", "Nachtlicht", 1);
       } else {
+        await hue.recallScene("Wohnzimmer", "Minimum (Heiter)", 1);
         hue.recallScene("Wohnzimmer", "Minimum (Heiter)", 1);
+
+        await hue.recallScene("Terrasse", "Minimum (Heiter)", 1);
         hue.recallScene("Terrasse", "Minimum (Heiter)", 1);
+
+        await hue.recallScene("Toilette", "Minimum (Heiter)", 1);
         hue.recallScene("Toilette", "Minimum (Heiter)", 1);
       }
     },
@@ -60,17 +66,19 @@ const transition = interval * 60 * 10;
     async () => {
       setSinn("ton", { lautstaerke: "2", kanal: "wetter" });
 
-      await calibrate("Schlafzimmer");
-
       if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
         hue.recallScene("Wohnzimmer", "Sonnenaufgang (2)", transition);
         hue.recallScene("Terrasse", "Sonnenaufgang (2)", transition);
         hue.recallScene("Toilette", "Nachtlicht", transition);
+
+        await hue.recallScene("Schlafzimmer", "Minimum", 1);
         hue.recallScene("Schlafzimmer", "Minimum", 1);
       } else {
         hue.recallScene("Wohnzimmer", "Sonnenaufgang 2 (Heiter)", transition);
         hue.recallScene("Terrasse", "Sonnenaufgang 2. (Heiter)", transition);
         hue.recallScene("Toilette", "Minimum (Heiter)", transition);
+
+        await hue.recallScene("Schlafzimmer", "Minimum (Heiter)", 1);
         hue.recallScene("Schlafzimmer", "Minimum (Heiter)", 1);
       }
     },
@@ -134,14 +142,3 @@ const transition = interval * 60 * 10;
     }
   ]);
 })();
-
-async function calibrate(groupName: string) {
-  await hue.updateGroupByName(groupName, {
-    on: true,
-    transitiontime: 1
-  });
-  await hue.updateGroupByName(groupName, {
-    on: false,
-    transitiontime: 1
-  });
-}
