@@ -90,7 +90,6 @@ export function getIcal(kategorie: string = "") {
 if (args["--RELEASE"]) {
   init();
 }
-init();
 
 async function init() {
   await delay(30 * 1000);
@@ -267,7 +266,8 @@ const baseKategorieSchlagwoerter = [
       "witz",
       "humor",
       "komödie",
-      "theatersport"
+      "theatersport",
+      "satire"
     ]
   },
   {

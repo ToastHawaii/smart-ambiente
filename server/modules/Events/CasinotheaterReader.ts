@@ -40,7 +40,10 @@ export const casinotheaterReader: JsonReader<Items, Item> = {
     });
   },
   sourceDetailUrl: (item: Item) => {
-    return item.links.detail;
+    return item.links.detail.replace(
+      /\/\/www\.casinotheater\.ch/gi,
+      "https://www.casinotheater.ch"
+    );
   },
   mapper: (listItem: Item, $detailItem?: Cheerio) => {
     if (!$detailItem) return [];
@@ -57,11 +60,13 @@ export const casinotheaterReader: JsonReader<Items, Item> = {
         start: moment(listItem.humanDate, "DD.MM.YYYY HH:mm"),
         ort:
           "Casinotheater Winterthur AG, Stadthausstrasse 119, 8400 Winterthur",
-        bild: listItem.smallImage
+        bild: listItem.smallImage.replace(
+          /\/\/www\.casinotheater\.ch/gi,
+          "https://www.casinotheater.ch"
+        )
       });
     });
 
     return events;
   }
 };
-
