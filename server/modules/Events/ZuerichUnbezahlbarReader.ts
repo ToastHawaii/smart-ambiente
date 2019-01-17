@@ -15,6 +15,12 @@ export const zuerichUnbezahlbarReader: HtmlReader = {
   },
   mapper: (_$listItem: Cheerio, $detailItem?: Cheerio) => {
     if (!$detailItem) return [];
+    if (
+      ($detailItem.html() || "").indexOf(
+        "Entschuldige, leider"
+      ) >= 0
+    )
+      return [];
 
     const date = $detailItem.find(".detailpost__date time").attr("datetime");
     const start =
