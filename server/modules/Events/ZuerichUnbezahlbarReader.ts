@@ -29,7 +29,7 @@ export const zuerichUnbezahlbarReader: HtmlReader = {
       $detailItem
         .find(".detailpost__date time br")[0]
         .nextSibling.nodeValue.split("-")[0]
-        .replace(/\s+/g, " ")
+        .replace(/\s+/gi, " ")
         .trim();
     const ende =
       date +
@@ -37,7 +37,7 @@ export const zuerichUnbezahlbarReader: HtmlReader = {
       $detailItem
         .find(".detailpost__date time br")[0]
         .nextSibling.nodeValue.split("-")[1]
-        .replace(/\s+/g, " ")
+        .replace(/\s+/gi, " ")
         .trim();
     let img = $detailItem.find(".poster__image").attr("src");
     if (img.indexOf("/static/") === 0)

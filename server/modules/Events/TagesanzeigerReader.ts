@@ -26,7 +26,7 @@ export const tagesanzeigerChReader: HtmlReader = {
       const date = $e.find(".leo_date_begin,.leo_date_end").text();
       const times = ($e.find(".leo_time").text() || "00:00")
         .split("-")
-        .map(t => t.replace(/ Uhr( )?/g, ""));
+        .map(t => t.replace(/ Uhr( )?/gi, ""));
 
       let start: moment.Moment;
       let ende: moment.Moment | undefined = undefined;

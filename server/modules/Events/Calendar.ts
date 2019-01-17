@@ -45,29 +45,42 @@ export function getIcal(kategorie: string = "") {
   cal.prodId("//davical.org//NONSGML AWL Calendar//EN");
 
   for (const e of events) {
-    const id = (e.titel + e.start.toISOString()).replace(/[^a-z0-9]/g, "");
-    e.basisKategorie = extractBaseKategorie(e);
+    try {
+      const id = (e.titel + e.start.toISOString()).replace(/[^a-z0-9]/gi, "");
+      e.basisKategorie = extractBaseKategorie(e);
 
-    if (!e.basisKategorie.toUpperCase().includes(kategorie.toUpperCase()))
-      continue;
+      if (!e.basisKategorie.toUpperCase().includes(kategorie.toUpperCase()))
+        continue;
 
-    const calEvent = cal.createEvent({
-      uid: id,
-      summary: e.titel,
-      start: e.start,
-      end: e.ende,
-      allDay: isAllDay(e),
-      description: e.beschreibung || undefined,
-      location: e.ort || undefined,
-      url: e.bild || undefined,
-      stamp: e.createdAt
-    });
+      const calEvent = cal.createEvent({
+        uid: id,
+        summary: e.titel,
+        start: e.start,
+        end: e.ende,
+        allDay: isAllDay(e),
+        description: e.beschreibung || undefined,
+        location: e.ort || undefined,
+        url: e.bild || undefined,
+        stamp: e.createdAt
+      });
 
-    const categories: { name: string }[] = [];
+      const categories: { name: string }[] = [];
 
-    categories.push({ name: e.basisKategorie });
-    if (e.kategorie) categories.push({ name: e.kategorie });
-    calEvent.categories(categories);
+      categories.push({ name: e.basisKategorie });
+      if (e.kategorie) categories.push({ name: e.kategorie });
+      calEvent.categories(categories);
+    } catch (error) {
+      topic("error: " + error, {
+        summary: e.titel,
+        start: e.start,
+        end: e.ende,
+        allDay: isAllDay(e),
+        description: e.beschreibung || undefined,
+        location: e.ort || undefined,
+        url: e.bild || undefined,
+        stamp: e.createdAt
+      });
+    }
   }
 
   return cal.toString();
@@ -77,6 +90,7 @@ export function getIcal(kategorie: string = "") {
 if (args["--RELEASE"]) {
   init();
 }
+init();
 
 async function init() {
   await delay(30 * 1000);
@@ -156,7 +170,7 @@ function textIsEquals(s1: string | undefined, s2: string | undefined) {
 
 function textSimplify(s: string | undefined) {
   if (!s) return "";
-  return s.replace(/[^a-z0-9]/g, "");
+  return s.replace(/[^a-z0-9]/gi, "").toUpperCase();
 }
 
 function shouldBeIgnored(event: { titel: string; beschreibung?: string }) {
@@ -210,7 +224,7 @@ function isBetween(
 function isAllDay(e: { start: moment.Moment; ende?: moment.Moment }) {
   return (
     e.start.hour() === 0 &&
-    e.start.minute() === 0 &&
+    (e.start.minute() === 0 || e.start.minute() === 1) &&
     (!e.ende || (e.ende.hour() === 23 && e.ende.minute() === 59))
   );
 }

@@ -3,7 +3,7 @@ import * as moment from "moment";
 import * as cheerio from "cheerio";
 import { getHtml } from "../../utils/request";
 import debug from "../../utils/debug";
-const topic = debug("Events/GzZhReader", true);
+const topic = debug("Events/GzZhReader", false);
 
 moment.locale("de");
 

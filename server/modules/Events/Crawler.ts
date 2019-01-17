@@ -229,7 +229,6 @@ async function crawelForm<T>(
                 return;
               }
 
-              topic(body);
               const $ = cheerio.load(body);
               await transformPersist(
                 persist,
@@ -392,16 +391,18 @@ async function transformPersist(
     }
 
     if (readerEvent.kategorie)
-      readerEvent.kategorie = readerEvent.kategorie.replace(/\s+/g, " ").trim();
-    readerEvent.titel = (readerEvent.titel || "").replace(/\s+/g, " ").trim();
+      readerEvent.kategorie = readerEvent.kategorie
+        .replace(/\s+/gi, " ")
+        .trim();
+    readerEvent.titel = (readerEvent.titel || "").replace(/\s+/gi, " ").trim();
     if (readerEvent.beschreibung)
       readerEvent.beschreibung = readerEvent.beschreibung
-        .replace(/\s+/g, " ")
+        .replace(/\s+/gi, " ")
         .trim();
     if (readerEvent.ort)
       readerEvent.ort = readerEvent.ort
         .split("\n")
-        .map(z => z.replace(/\s+/g, " ").trim())
+        .map(z => z.replace(/\s+/gi, " ").trim())
         .filter(z => z)
         .join(", ");
 
