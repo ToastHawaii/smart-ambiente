@@ -16,7 +16,7 @@ export interface Props {}
 
 export interface State {
   zeit?: "05:56" | "06:56" | "07:56";
-  tage?: "1-5" | "1-7";
+  tage?: "1-5" | "0-6";
 }
 
 type ComponentClassNames = "root";
@@ -93,9 +93,9 @@ class Alarm extends Component<Props & WithStyles<ComponentClassNames>, State> {
           <MenuButton
             icon={<GamepadVariant />}
             title="Mo bis So"
-            selected={tage === "1-7"}
+            selected={tage === "0-6"}
             backgroundGradient="LimeGreen, DarkGreen"
-            value="1-7"
+            value="0-6"
           />
         </ButtonGroup>
       </div>
