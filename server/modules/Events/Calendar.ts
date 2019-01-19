@@ -25,7 +25,7 @@ const events: Event[] = [];
 
 function persist(e: Event) {
   e.basisKategorie = extractBaseKategorie(e);
-  topic("create: " + e.titel);
+  topic(`create: ${e.titel} ${e.start} - ${e.ende}`);
   events.push(e);
 }
 
@@ -104,7 +104,10 @@ async function init() {
 
       const existings = events.filter(e => textIsEquals(e.titel, event.titel));
       if (existings.length > 0)
-        topic("existings: ", existings.map(e => e.titel));
+        topic(
+          "existings: ",
+          existings.map(e => `${e.titel} ${e.start} - ${e.ende}`)
+        );
       if (existings.length === 0) {
         await persist(event);
         return;
@@ -115,7 +118,8 @@ async function init() {
       }
 
       const same = existings.filter(e => isBetween(event, e));
-      if (same.length > 0) topic("same: ", same.map(e => e.titel));
+      if (same.length > 0)
+        topic("same: ", same.map(e => `${e.titel} ${e.start} - ${e.ende}`));
       for (const e of same) {
         e.start = event.start;
         e.ende = event.ende;
@@ -204,19 +208,11 @@ function isBetween(
 
   let e2Ende = e2.ende;
   if (!e2Ende && isAllDay(e2)) e2Ende = e2.start.endOf("day");
-  // console.info(
-  //   (e1.start.isBetween(e2.start, e2Ende, "minutes", "[]") &&
-  //     (!e1Ende || e1Ende.isBetween(e2.start, e2Ende, "minutes", "[]"))) +
-  //     " e1: " +
-  //     e1.start.format("DD HH") +
-  //     (e1Ende ? " - " + e1Ende.format("DD HH") : "") +
-  //     " e2: " +
-  //     e2.start.format("DD HH") +
-  //     (e2Ende ? " - " + e2Ende.format("DD HH") : "")
-  // );
+
   return (
-    e1.start.isBetween(e2.start, e2Ende, "minutes", "[]") &&
-    (!e1Ende || e1Ende.isBetween(e2.start, e2Ende, "minutes", "[]"))
+    (!e1.ende && !e2.ende && e1.start.isSame(e2.start, "minutes")) ||
+    (e1.start.isBetween(e2.start, e2Ende, "minutes", "[]") &&
+      (!e1Ende || e1Ende.isBetween(e2.start, e2Ende, "minutes", "[]")))
   );
 }
 
