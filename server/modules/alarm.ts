@@ -28,6 +28,8 @@ const transition = interval * 60 * 10;
       setSinn("licht", { helligkeit: "aus", kanal: "tageslicht" });
     },
     async () => {
+      setSinn("ton", { lautstaerke: "1", kanal: "wetter" });
+
       setSinn("licht", { helligkeit: "viel", kanal: "tageslicht" });
 
       if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
@@ -51,7 +53,7 @@ const transition = interval * 60 * 10;
       }
     },
     () => {
-      setSinn("ton", { lautstaerke: "1", kanal: "wetter" });
+      setSinn("ton", { lautstaerke: "2", kanal: "wetter" });
 
       if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
         hue.recallScene("Wohnzimmer", "Sonnenaufgang (1)", transition);
@@ -64,7 +66,7 @@ const transition = interval * 60 * 10;
       }
     },
     async () => {
-      setSinn("ton", { lautstaerke: "2", kanal: "wetter" });
+      setSinn("ton", { lautstaerke: "4", kanal: "wetter" });
 
       if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
         hue.recallScene("Wohnzimmer", "Sonnenaufgang (2)", transition);
@@ -83,7 +85,7 @@ const transition = interval * 60 * 10;
       }
     },
     () => {
-      setSinn("ton", { lautstaerke: "4", kanal: "wetter" });
+      setSinn("ton", { lautstaerke: "8", kanal: "wetter" });
 
       if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
         hue.recallScene("Wohnzimmer", "Sonnenaufgang (3)", transition);
@@ -102,7 +104,7 @@ const transition = interval * 60 * 10;
       }
     },
     () => {
-      setSinn("ton", { lautstaerke: "8", kanal: "wetter" });
+      setSinn("ton", { lautstaerke: "10", kanal: "wetter" });
 
       if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
         hue.recallScene("Wohnzimmer", "Sonnenaufgang (4)", transition);
