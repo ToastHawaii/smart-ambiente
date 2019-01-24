@@ -47,8 +47,7 @@ export const gzZhReader: FormReader<Items, Item> = {
       const $e = cheerio(e);
       const $img = $e.find("img");
       const dateTimePlace = ($e.find(".place-time").html() || "").split("<br>");
-      const dateSplitted = dateTimePlace[0]
-        .split(",")[1]
+      const dateSplitted = (dateTimePlace[0].split(",")[1] || "")
         .trim()
         .split(" ");
       const date =
@@ -59,8 +58,14 @@ export const gzZhReader: FormReader<Items, Item> = {
         kategorie: $e.find(".cat-title").text(),
         titel: $e.find(".entry-title").text(),
         beschreibung: $e.find(".entry-content .col-xl-6:nth-child(2)").text(),
-        start: moment(date + " " + startEnd[0].trim(), "Do MMM YYYY HH:mm"),
-        ende: moment(date + " " + startEnd[1].trim(), "Do MMM YYYY HH:mm"),
+        start: moment(
+          date + " " + (startEnd[0] || "").trim(),
+          "Do MMM YYYY HH:mm"
+        ),
+        ende: moment(
+          date + " " + (startEnd[1] || "").trim(),
+          "Do MMM YYYY HH:mm"
+        ),
         ort: dateTimePlace[2],
         bild: $img ? "https://gz-zh.ch/" + $img.attr("data-src") : ""
       });

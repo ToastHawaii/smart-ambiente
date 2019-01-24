@@ -53,21 +53,82 @@ export const dynamoKurseReader: HtmlReader = {
         .replace(/ \- /, " ");
     }
 
-    events.push({
-      titel:
-        $detailItem.find("#content .pane-node-title").text() +
-        " - " +
-        $detailItem.find("#content .pane-node-field-kurs-subtitel").text(),
-      beschreibung: $detailItem
-        .find("#content .pane-node-field-kurs-description")
-        .text(),
-      start: moment(dateFrom + " 00:00", "Do MMMM YYYY HH:mm"),
-      ende: dateTo
-        ? moment(dateTo + " 00:00", "Do MMMM YYYY HH:mm")
-        : undefined,
-      ort: "Jugendkulturhaus Dynamo, Wasserwerkstrasse 21, 8006 Zürich",
-      bild: img
-    });
+    let timeFrom: string;
+    let timeTo: string | undefined = undefined;
+    const time = $detailItem
+      .find(
+        "#content .pane-node-field-kurs-zeitangabe .field-name-field-kurs-zeitangabe"
+      )
+      .first()
+      .text();
+
+    const timeFromMatch = /[0-2]?[0-9]((:|\.)[0-5][0-9])?/gi.exec(time);
+
+    if (!timeFromMatch || !timeFromMatch[0]) throw "time not found";
+
+    timeFrom = timeFromMatch[0].replace(/\./, ":");
+    if (timeFrom.length <= 2) timeFrom += ":00";
+
+    if (timeFrom.length < 5) timeFrom = "0" + timeFrom;
+
+    const timeToMatch = /(\-|bis)(^[0-9])*([0-2]?[0-9]((:|\.)[0-5][0-9])?)/gi.exec(
+      time
+    );
+
+    if (timeToMatch && timeToMatch[3]) {
+      timeTo = timeToMatch[3].replace(/\./, ":");
+
+      if (timeTo.length <= 2) timeTo += ":00";
+
+      if (timeTo.length < 5) timeTo = "0" + timeTo;
+    }
+
+    if (dateTo) {
+      let currentDate = moment(dateFrom + " 00:00", "Do MMMM YYYY HH:mm");
+      const endDate = moment(dateTo + " 00:00", "Do MMMM YYYY HH:mm");
+
+      if (!currentDate.isSameOrBefore(endDate)) throw "error in start end date";
+      while (currentDate.isSameOrBefore(endDate)) {
+        events.push({
+          titel:
+            $detailItem.find("#content .pane-node-title").text() +
+            " - " +
+            $detailItem.find("#content .pane-node-field-kurs-subtitel").text(),
+          beschreibung: $detailItem
+            .find("#content .pane-node-field-kurs-description")
+            .text(),
+          start: moment(
+            currentDate.format("YYYY-MM-DD") + " " + timeFrom,
+            "YYYY-MM-DD HH:mm"
+          ),
+          ende: timeTo
+            ? moment(
+                currentDate.format("YYYY-MM-DD") + " " + timeTo,
+                "YYYY-MM-DD HH:mm"
+              )
+            : undefined,
+          ort: "Jugendkulturhaus Dynamo, Wasserwerkstrasse 21, 8006 Zürich",
+          bild: img
+        });
+        currentDate.add(1, "day");
+      }
+    } else {
+      events.push({
+        titel:
+          $detailItem.find("#content .pane-node-title").text() +
+          " - " +
+          $detailItem.find("#content .pane-node-field-kurs-subtitel").text(),
+        beschreibung: $detailItem
+          .find("#content .pane-node-field-kurs-description")
+          .text(),
+        start: moment(dateFrom + " " + timeFrom, "Do MMMM YYYY HH:mm"),
+        ende: timeTo
+          ? moment(dateFrom + " " + timeTo, "Do MMMM YYYY HH:mm")
+          : undefined,
+        ort: "Jugendkulturhaus Dynamo, Wasserwerkstrasse 21, 8006 Zürich",
+        bild: img
+      });
+    }
 
     return events;
   }

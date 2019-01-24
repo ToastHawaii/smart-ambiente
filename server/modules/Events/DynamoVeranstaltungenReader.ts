@@ -26,7 +26,7 @@ export const dynamoVeranstaltungenReader: HtmlReader = {
     );
 
     let dateTimeFrom: string;
-    let dateTimeTo: string;
+    let dateTimeTo: string | undefined;
     if ($dateTime.length > 0) {
       const dateTime = $dateTime
         .first()
@@ -40,7 +40,7 @@ export const dynamoVeranstaltungenReader: HtmlReader = {
       const timeTo = time.split(" bis ")[1];
 
       dateTimeFrom = date + " " + timeFrom;
-      dateTimeTo = date + " " + timeTo;
+      if (timeTo) dateTimeTo = date + " " + timeTo;
     } else {
       dateTimeFrom = $detailItem
         .find(
