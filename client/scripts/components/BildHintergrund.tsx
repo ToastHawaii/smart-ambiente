@@ -23,6 +23,7 @@ import AnimatedImageEffect from "../CanvasEffects/AnimatedImageEffect";
 import ImageEffect, { CanvasEffect } from "../CanvasEffects/ImageEffect";
 import SnowfallEffect from "../CanvasEffects/SnowfallEffect";
 import LowPerformanceDeviceSnowfallEffect from "../CanvasEffects/LowPerformanceDeviceSnowfallEffect";
+import RandomAnimatedImageEffect from "../CanvasEffects/RandomAnimatedImageEffect";
 
 export interface Props {}
 
@@ -146,6 +147,11 @@ class BildHintergrund extends Component<
               effects: [
                 !wetter.image.src.toUpperCase().endsWith(".GIF")
                   ? new ImageEffect("/img/weather/" + wetter.image.src)
+                  : effects.random
+                  ? new RandomAnimatedImageEffect(
+                      "/img/weather/" + wetter.image.src,
+                      ...effects.randomFromTo
+                    )
                   : new AnimatedImageEffect("/img/weather/" + wetter.image.src)
               ]
             }
@@ -347,6 +353,15 @@ class BildHintergrund extends Component<
               .substring(5)
               .split(";")
               .map(v => parseFloat(v))
+          : [],
+      random: e.filter(v => v.startsWith("random")).length > 0,
+      randomFromTo:
+        e.filter(v => v.startsWith("random")).length > 0
+          ? e
+              .filter(v => v.startsWith("random"))[0]
+              .substring(6)
+              .split(";")
+              .map(v => parseInt(v, 10))
           : []
     };
 
