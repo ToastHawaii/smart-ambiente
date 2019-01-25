@@ -190,7 +190,14 @@ function shouldBeIgnored(event: { titel: string; beschreibung?: string }) {
     "trauer-stammtisch",
     "fragen zur lehre",
     "über den tod reden",
-    "titel der veranstaltung"
+    "titel der veranstaltung",
+    "audiowalk für kinder",
+    "indoor spielplatz",
+    " 45+",
+    " 50+",
+    " 55+",
+    " 60+",
+    " 65+"
   ].some(
     f =>
       event.titel.toUpperCase().indexOf(f.toUpperCase()) > -1 ||
