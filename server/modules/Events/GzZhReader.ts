@@ -43,34 +43,29 @@ export const gzZhReader: FormReader<Items, Item> = {
 
     const events: Event[] = [];
 
-    $detailItem.find("article").each((_i, e) => {
-      const $e = cheerio(e);
-      const $img = $e.find("img");
-      const dateTimePlace = ($e.find(".place-time").html() || "").split("<br>");
-      const dateSplitted = (dateTimePlace[0].split(",")[1] || "")
-        .trim()
-        .split(" ");
-      const date =
-        dateSplitted[0] + " " + dateSplitted[1] + ". " + dateSplitted[2];
-      const startEnd = dateTimePlace[1].split("&#x2013;");
+    const $e = $detailItem.find("article").first();
+    const $img = $e.find("img");
+    const dateTimePlace = ($e.find(".place-time").html() || "").split("<br>");
+    const dateSplitted = dateTimePlace[0]
+      .split(",")[1]
+      .trim()
+      .split(" ");
+    const date =
+      dateSplitted[0] + " " + dateSplitted[1] + ". " + dateSplitted[2];
+    const startEnd = dateTimePlace[1].split("&#x2013;");
 
-      events.push({
-        kategorie: $e.find(".cat-title").text(),
-        titel: $e.find(".entry-title").text(),
-        beschreibung: $e.find(".entry-content .col-xl-6:nth-child(2)").text(),
-        start: moment(
-          date + " " + (startEnd[0] || "").trim(),
-          "Do MMM YYYY HH:mm"
-        ),
-        ende: moment(
-          date + " " + (startEnd[1] || "").trim(),
-          "Do MMM YYYY HH:mm"
-        ),
-        ort: dateTimePlace[2],
-        bild: $img ? "https://gz-zh.ch/" + $img.attr("data-src") : ""
-      });
+    events.push({
+      kategorie: $e.find(".cat-title").text(),
+      titel: $e.find(".entry-title").text(),
+      beschreibung: $e.find(".entry-content .col-xl-6:nth-child(2)").text(),
+      start: moment(date + " " + startEnd[0].trim(), "Do MMM YYYY HH:mm"),
+      ende: moment(date + " " + startEnd[1].trim(), "Do MMM YYYY HH:mm"),
+      ort: dateTimePlace[2],
+      bild:
+        $img && $img.attr("data-src")
+          ? "https://gz-zh.ch/" + $img.attr("data-src")
+          : ""
     });
-
     return events;
   }
 };

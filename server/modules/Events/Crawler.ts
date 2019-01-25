@@ -238,26 +238,30 @@ async function crawelForm<T>(
             }
           } catch (err) {
             const now = moment();
-            await persist({
+            const error = {
               titel: "Error in " + reader.sourceName,
               beschreibung: `${err}\n${inspect(e)}\n${sourceUrl}`,
               kategorie: "Error",
               start: now,
               quelle: reader.sourceName,
               createdAt: now
-            });
+            };
+            topic("Error", error);
+            await persist(error);
           }
         }
       } catch (err) {
         const now = moment();
-        await persist({
+        const error = {
           titel: "Error in " + reader.sourceName,
           beschreibung: `${err}\n${sourceUrl}`,
           kategorie: "Error",
           start: now,
           quelle: reader.sourceName,
           createdAt: now
-        });
+        };
+        topic("Error", error);
+        await persist(error);
       }
   }
   if (count === 0) {
@@ -316,26 +320,30 @@ async function crawelJson<T>(
           }
         } catch (err) {
           const now = moment();
-          await persist({
+          const error = {
             titel: "Error in " + reader.sourceName,
             beschreibung: `${err}\n${inspect(e)}\n${sourceUrl}`,
             kategorie: "Error",
             start: now,
             quelle: reader.sourceName,
             createdAt: now
-          });
+          };
+          topic("Error", error);
+          await persist(error);
         }
       }
     } catch (err) {
       const now = moment();
-      await persist({
+      const error = {
         titel: "Error in " + reader.sourceName,
         beschreibung: `${err}\n${sourceUrl}`,
         kategorie: "Error",
         start: now,
         quelle: reader.sourceName,
         createdAt: now
-      });
+      };
+      topic("Error", error);
+      await persist(error);
     }
   }
   if (count === 0) {
