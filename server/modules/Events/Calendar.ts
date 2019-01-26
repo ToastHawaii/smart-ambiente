@@ -49,15 +49,24 @@ export function getIcal(kategorie: string = "") {
       const id = (e.titel + e.start.toISOString()).replace(/[^a-z0-9]/gi, "");
       e.basisKategorie = extractBaseKategorie(e);
 
-      if (!e.basisKategorie.toUpperCase().includes(kategorie.toUpperCase()))
+      if (
+        kategorie &&
+        !e.basisKategorie.toUpperCase().includes(kategorie.toUpperCase())
+      )
         continue;
+
+      const allDay = isAllDay(e);
 
       const calEvent = cal.createEvent({
         uid: id,
         summary: e.titel,
-        start: e.start,
-        end: e.ende,
-        allDay: isAllDay(e),
+        start: !allDay ? e.start : moment(e.start).add(3, "hour"),
+        end: !allDay
+          ? e.ende
+          : e.ende && !e.start.isSame(e.ende, "day")
+          ? moment(e.ende).add(3, "hour")
+          : undefined,
+        allDay: allDay,
         description: e.beschreibung || undefined,
         location: e.ort || undefined,
         url: e.bild || undefined,

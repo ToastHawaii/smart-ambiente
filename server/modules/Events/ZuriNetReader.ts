@@ -5,34 +5,29 @@ export const zuriNetReader: HtmlReader = {
   typ: "html",
   sourceName: "zuri.net",
   sourceUrl: ["[https://zuri.net/de/zurich/agenda/mix/]DD-MM-YYYY"],
-  itemSelector: ".agenda span.pre",
+  itemSelector: '[itemtype="http://data-vocabulary.org/Event"]',
   mapper: ($item: Cheerio) => {
-    const timeKategorie = $item.text().split(" | ");
-    const startEnd = timeKategorie[0].split(" - ");
-    const date = $item
-      .parents(".card")
-      .find(".subtitle")
-      .text()
-      .split(" ")[1];
     const event: Event = {
-      kategorie: timeKategorie[1],
-      titel: $item.next("h3").text(),
-      beschreibung: $item
-        .next("h3")
-        .next()
-        .text(),
-      start: moment(date + " " + startEnd[0], "DD.MM.YYYY HH:mm"),
+      kategorie: $item.find('[itemprop="eventType"]').text(),
+      titel: $item.find('[itemprop="name"]').text(),
+      beschreibung: $item.find('[itemprop="description"]').text(),
+      start: moment(
+        $item.find('[itemprop="startDate"]').attr("datetime"),
+        "YYYY-MM-DD HH:mm",
+        "de"
+      ),
       ort:
-        $item.next("a").text() +
-        " " +
         $item
-          .next("a")
-          .next()
-          .text()
+          .find('[itemprop="eventType"]')
+          .siblings()
+          .text() +
+        " " +
+        $item.find('[itemprop="location"]').text()
     };
 
-    if (startEnd[1])
-      event.ende = moment(date + " " + startEnd[1], "DD.MM.YYYY HH:mm");
+    const endDate = $item.find('[itemprop="endDate"]').attr("datetime");
+    if (endDate && endDate !== "1900-01-01 00:00")
+      event.ende = moment(endDate, "YYYY-MM-DD HH:mm", "de");
 
     return [event];
   }
