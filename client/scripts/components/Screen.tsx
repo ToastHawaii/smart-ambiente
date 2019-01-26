@@ -1,6 +1,6 @@
 import * as React from "react";
 import { animate } from "../utils";
-import ReactDOM = require("react-dom");
+import * as ReactDOM from "react-dom";
 import { CanvasEffect } from "../CanvasEffects/ImageEffect";
 
 interface Props {

@@ -45,7 +45,7 @@ class App extends React.Component<
 
   public handleClick = () => {
     PubSub.publish("menu", {});
-  }
+  };
 
   public render() {
     const { classes } = this.props;
