@@ -81,6 +81,8 @@ export const dynamoKurseReader: HtmlReader = {
       if (timeTo.length <= 2) timeTo += ":00";
 
       if (timeTo.length < 5) timeTo = "0" + timeTo;
+
+      if(timeTo === "00:00") timeTo = "23:59";
     }
 
     if (dateTo) {
