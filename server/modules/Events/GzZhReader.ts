@@ -54,12 +54,15 @@ export const gzZhReader: FormReader<Items, Item> = {
       dateSplitted[0] + " " + dateSplitted[1] + ". " + dateSplitted[2];
     const startEnd = dateTimePlace[1].split("&#x2013;");
 
+    let end = startEnd[1].trim();
+    if (end === "00:00") end = "23:59";
+
     events.push({
       kategorie: $e.find(".cat-title").text(),
       titel: $e.find(".entry-title").text(),
       beschreibung: $e.find(".entry-content .col-xl-6:nth-child(2)").text(),
       start: moment(date + " " + startEnd[0].trim(), "Do MMM YYYY HH:mm"),
-      ende: moment(date + " " + startEnd[1].trim(), "Do MMM YYYY HH:mm"),
+      ende: moment(date + " " + end, "Do MMM YYYY HH:mm"),
       ort: dateTimePlace[2],
       bild:
         $img && $img.attr("data-src")
