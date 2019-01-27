@@ -39,7 +39,7 @@ const style: StyleRulesCallback<ComponentClassNames> = () => ({
   }
 });
 
-class Aussenansicht extends Component<
+class Tour extends Component<
   Props & WithStyles<ComponentClassNames>,
   State
 > {
@@ -91,4 +91,4 @@ class Aussenansicht extends Component<
   }
 }
 
-export default withStyles(style)(Aussenansicht);
+export default withStyles(style)(Tour);

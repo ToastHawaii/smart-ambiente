@@ -21,8 +21,6 @@ import BrightnessEffect from "../CanvasEffects/BrightnessEffect";
 import StarsEffect from "../CanvasEffects/StarsEffect";
 import AnimatedImageEffect from "../CanvasEffects/AnimatedImageEffect";
 import ImageEffect, { CanvasEffect } from "../CanvasEffects/ImageEffect";
-import SnowfallEffect from "../CanvasEffects/SnowfallEffect";
-import LowPerformanceDeviceSnowfallEffect from "../CanvasEffects/LowPerformanceDeviceSnowfallEffect";
 import RandomAnimatedImageEffect from "../CanvasEffects/RandomAnimatedImageEffect";
 
 export interface Props {}
@@ -43,11 +41,26 @@ export interface State {
   };
 
   ansehen: {
-    ort?: "winter" | "schweiz" | "erde" | "weltraum";
+    ort?: "aquarium" | "schweiz" | "erde" | "weltraum";
   };
 
   natur: {
-    szene?: "wasserfall" | "strand" | "savanne" | "aquarium" | "sonne";
+    szene?:
+      | "feuer"
+      | "wind"
+      | "regen"
+      | "nordlicht"
+      | "sonnenuntergang"
+      | "bach"
+      | "wasserfall"
+      | "see"
+      | "berg"
+      | "meer"
+      | "windspiel"
+      | "bar"
+      | "windturbine"
+      | "bruecke"
+      | "leuchturm";
   };
 
   tour: {
@@ -212,41 +225,77 @@ class BildHintergrund extends Component<
           backgroundElement = <Screen layers={layers} />;
         }
       } else if (bild.kanal === "ansehen") {
-        if (ansehen.ort === "winter") {
-          const layers: { effects: CanvasEffect[] }[] = [
-            {
-              effects: [
-                new ImageEffect("/img/winter.jpg"),
-                new DayForNightEffect(0),
-                document.body.clientWidth > 1280
-                  ? new SnowfallEffect()
-                  : new LowPerformanceDeviceSnowfallEffect()
-              ]
-            }
-          ];
-
-          backgroundElement = <Screen layers={layers} />;
+        if (ansehen.ort === "aquarium") {
+          backgroundElement = <YoutubeVideo video="X0vK_57vQ7s" />;
         } else if (ansehen.ort === "schweiz") backgroundElement = <Schweiz />;
         else if (ansehen.ort === "erde") backgroundElement = <Erde />;
         else if (ansehen.ort === "weltraum")
           backgroundElement = <YoutubeVideo video="5_-rh6L1jiU" />;
         else backgroundElement = <Events />;
       } else if (bild.kanal === "natur") {
-        let video = "";
+        let cinemagraph = "";
 
-        if (natur.szene === "wasserfall") {
-          video = "y7e-GC6oGhg";
-        } else if (natur.szene === "strand") {
-          video = "QgdP2tzaZHc";
-        } else if (natur.szene === "savanne") {
-          video = "27jtwBaYZtI";
-        } else if (natur.szene === "aquarium") {
-          video = "X0vK_57vQ7s";
-        } else if (natur.szene === "sonne") {
-          video = "2yU5CMti5S8";
+        if (natur.szene === "feuer") {
+          cinemagraph = "feuer";
+        } else if (natur.szene === "wind") {
+          cinemagraph = "wind";
+        } else if (natur.szene === "regen") {
+          cinemagraph = "regen";
+        } else if (natur.szene === "nordlicht") {
+          cinemagraph = "nordlicht";
+        } else if (natur.szene === "sonnenuntergang") {
+          cinemagraph = "sonnenuntergang" + getRandomInt(1, 2);
+        } else if (natur.szene === "bach") {
+          cinemagraph = "bach";
+        } else if (natur.szene === "wasserfall") {
+          cinemagraph = "wasserfall" + getRandomInt(1, 2);
+        } else if (natur.szene === "see") {
+          cinemagraph = "see" + getRandomInt(1, 2);
+        } else if (natur.szene === "berg") {
+          cinemagraph = "berg";
+        } else if (natur.szene === "meer") {
+          cinemagraph = "meer";
+        } else if (natur.szene === "windspiel") {
+          cinemagraph = "windspiel";
+        } else if (natur.szene === "bar") {
+          cinemagraph = "bar" + getRandomInt(1, 2);
+        } else if (natur.szene === "windturbine") {
+          cinemagraph = "windturbine";
+        } else if (natur.szene === "bruecke") {
+          cinemagraph = "bruecke" + getRandomInt(1, 2);
+        } else if (natur.szene === "leuchturm") {
+          cinemagraph = "leuchturm" + getRandomInt(1, 2);
+        } else {
+          cinemagraph = "wind";
         }
 
-        backgroundElement = <YoutubeVideo video={video} />;
+        if (cinemagraph === "bar1")
+          backgroundElement = (
+            <Screen
+              layers={[
+                {
+                  effects: [
+                    new RandomAnimatedImageEffect(
+                      `/img/natur/${cinemagraph}.gif`,
+                      5,
+                      20
+                    )
+                  ]
+                }
+              ]}
+            />
+          );
+        else
+          backgroundElement = (
+            <div
+              className={classes.fill}
+              style={{
+                backgroundImage: `url('/img/natur/${cinemagraph}.gif')`,
+                backgroundPosition: "center",
+                backgroundSize: "cover"
+              }}
+            />
+          );
       } else if (bild.kanal === "tour") {
         if (tour.reise === "flug") {
           backgroundElement = <FlugHintergrund />;

@@ -1,6 +1,6 @@
 import * as express from "express";
 import * as bodyParser from "body-parser";
-import { toArray } from "./utils/array";
+import { toArray, shuffle } from "./utils/array";
 import { relative } from "./utils/math";
 import * as SonosHttp from "./modules/node-sonos-http-api";
 import * as HueHttp from "./modules/philips-hue-api";
@@ -83,6 +83,24 @@ const data: {
 };
 
 (async function() {
+  data.kanal["natur"].szene = shuffle([
+    "feuer",
+    "wind",
+    "regen",
+    "nordlicht",
+    "sonnenuntergang",
+    "bach",
+    "wasserfall",
+    "see",
+    "berg",
+    "meer",
+    "windspiel",
+    "bar",
+    "windturbine",
+    "bruecke",
+    "leuchturm"
+  ])[0];
+
   const weather = await WeatherForecast.query();
   data.kanal["wetter"] = weather;
   data.kanal["wetter"].mode = "vorhersage";

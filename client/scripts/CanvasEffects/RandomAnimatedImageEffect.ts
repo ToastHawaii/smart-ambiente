@@ -79,6 +79,8 @@ export default class RandomAnimatedImageEffect implements CanvasEffect {
     deltaT: number,
     _underlyingCanvas: HTMLCanvasElement[]
   ) {
+    if (!this.images) return;
+
     if (this.timeout > 0) this.timeout -= deltaT;
     else this.time += deltaT;
 

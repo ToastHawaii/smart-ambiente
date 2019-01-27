@@ -24,11 +24,19 @@ class Schweiz extends React.Component<
     this.state = {};
   }
 
+  private running: boolean;
+
   public componentDidMount() {
+    this.running = true;
     this.nextCam();
+  }
+  public componentWillUnmount() {
+    this.running = false;
   }
 
   private async nextCam() {
+    if (!this.running) return;
+
     const kameras = [
       {
         duration: 53,

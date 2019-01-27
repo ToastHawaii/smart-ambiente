@@ -2,11 +2,21 @@ import * as React from "react";
 import { StyleRulesCallback, withStyles } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
 import {
-  // WeatherSunny,
-  // Beach,
-  Blackberry,
-  // Brightness5,
-  NotificationClearAll
+  Pinwheel,
+  Fire,
+  WeatherWindy,
+  Water,
+  Waves,
+  WeatherSunset,
+  Leaf,
+  Drag,
+  Fish,
+  Terrain,
+  Docker,
+  ViewParallel,
+  Beer,
+  RadiatorDisabled,
+  LighthouseOn
 } from "mdi-material-ui";
 import ButtonGroup from "./ButtonGroup";
 import { Component } from "./Component";
@@ -45,10 +55,7 @@ const style: StyleRulesCallback<ComponentClassNames> = () => ({
   }
 });
 
-class Aussenansicht extends Component<
-  Props & WithStyles<ComponentClassNames>,
-  State
-> {
+class Natur extends Component<Props & WithStyles<ComponentClassNames>, State> {
   constructor(props: any) {
     super(props);
     this.state = {};
@@ -74,39 +81,117 @@ class Aussenansicht extends Component<
           selection="exclusive"
         >
           <MenuButton
+            title="Feuer"
+            icon={<Fire />}
+            backgroundImage="/img/button/natur/feuer.png"
+            value="feuer"
+          />
+          <MenuButton
+            title="Wind"
+            icon={<WeatherWindy />}
+            backgroundImage="/img/button/natur/wind.png"
+            value="wind"
+          />
+          <MenuButton
+            title="Regen"
+            icon={<Water />}
+            backgroundImage="/img/button/natur/regen.png"
+            value="regen"
+          />
+          <MenuButton
+            title="Nordlicht"
+            icon={<Waves />}
+            backgroundImage="/img/button/natur/nordlicht.png"
+            value="nordlicht"
+          />
+          <MenuButton
+            title="Sonnenuntergang"
+            icon={<WeatherSunset />}
+            backgroundImage="/img/button/natur/sonnenuntergang.png"
+            value="sonnenuntergang"
+          />
+        </ButtonGroup>
+        <ButtonGroup
+          value={szene}
+          onChange={this.handleChange}
+          selection="exclusive"
+          style={{
+            marginTop: "1%"
+          }}
+        >
+          <MenuButton
+            title="Bach"
+            icon={<Leaf />}
+            backgroundImage="/img/button/natur/bach.png"
+            value="bach"
+          />
+          <MenuButton
             title="Wasserfall"
-            icon={<NotificationClearAll />}
-            backgroundImage="/img/button/natur/Wasserfall.jpg"
+            icon={<Drag />}
+            backgroundImage="/img/button/natur/wasserfall.png"
             value="wasserfall"
           />
-          {/* <MenuButton
-            title="Strand"
-            icon={<Beach />}
-            backgroundImage="/img/button/natur/Strand.jpg"
-            value="strand"
+          <MenuButton
+            title="See"
+            icon={<Fish />}
+            backgroundImage="/img/button/natur/see.png"
+            value="see"
           />
           <MenuButton
-            title="Savanne"
-            icon={<Brightness5 />}
-            backgroundImage="/img/button/natur/Savanne.jpg"
-            value="savanne"
-          /> */}
-          <MenuButton
-            title="Aquarium"
-            icon={<Blackberry />}
-            backgroundImage="/img/button/natur/Aquarium.jpg"
-            value="aquarium"
+            title="Berg"
+            icon={<Terrain />}
+            backgroundImage="/img/button/natur/berg.png"
+            value="berg"
           />
-          {/* <MenuButton
-            title="Sonne"
-            icon={<WeatherSunny />}
-            backgroundImage="/img/button/natur/Sonne.jpg"
-            value="sonne"
-          /> */}
+          <MenuButton
+            title="Meer"
+            icon={<Docker />}
+            backgroundImage="/img/button/natur/meer.png"
+            value="meer"
+          />
+        </ButtonGroup>
+        <ButtonGroup
+          value={szene}
+          onChange={this.handleChange}
+          selection="exclusive"
+          style={{
+            marginTop: "1%"
+          }}
+        >
+          <MenuButton
+            title="Windspiel"
+            icon={<ViewParallel />}
+            backgroundImage="/img/button/natur/windspiel.png"
+            value="windspiel"
+          />
+          <MenuButton
+            title="Bar"
+            icon={<Beer />}
+            backgroundImage="/img/button/natur/bar.png"
+            value="bar"
+          />
+          <MenuButton
+            title="Windturbine"
+            icon={<Pinwheel />}
+            backgroundImage="/img/button/natur/windturbine.png"
+            value="windturbine"
+          />
+          <MenuButton
+            title="Brücke"
+            icon={<RadiatorDisabled />}
+            backgroundImage="/img/button/natur/bruecke.png"
+            value="bruecke"
+          />
+          <MenuButton
+            title="Leuchturm"
+            icon={<LighthouseOn />}
+            backgroundImage="/img/button/natur/leuchturm.png"
+            value="leuchturm"
+          />
         </ButtonGroup>
       </div>
     );
   }
 }
 
-export default withStyles(style)(Aussenansicht);
+export default withStyles(style)(Natur);

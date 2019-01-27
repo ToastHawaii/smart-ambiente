@@ -5,8 +5,8 @@ import {
   Earth,
   ImageFilterHdr,
   Star,
-  Calendar
-  // Snowflake
+  Calendar,
+  Blackberry
 } from "mdi-material-ui";
 import ButtonGroup from "./ButtonGroup";
 import { Component } from "./Component";
@@ -45,7 +45,7 @@ const style: StyleRulesCallback<ComponentClassNames> = () => ({
   }
 });
 
-class Aussenansicht extends Component<
+class Ansehen extends Component<
   Props & WithStyles<ComponentClassNames>,
   State
 > {
@@ -73,12 +73,12 @@ class Aussenansicht extends Component<
           onChange={this.handleChange}
           selection="exclusive"
         >
-          {/* <MenuButton
-            title="Winter"
-            icon={<Snowflake />}
-            backgroundGradient="#FFFFFF, DarkBlue"
-            value="winter"
-          /> */}
+          <MenuButton
+            title="Aquarium"
+            icon={<Blackberry />}
+            backgroundImage="/img/button/zusehen/Aquarium.jpg"
+            value="aquarium"
+          />
           <MenuButton
             title="Schweiz"
             icon={<ImageFilterHdr />}
@@ -109,4 +109,4 @@ class Aussenansicht extends Component<
   }
 }
 
-export default withStyles(style)(Aussenansicht);
+export default withStyles(style)(Ansehen);
