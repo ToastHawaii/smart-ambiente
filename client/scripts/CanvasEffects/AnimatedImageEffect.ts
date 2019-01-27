@@ -72,6 +72,8 @@ export default class AnimatedImageEffect implements CanvasEffect {
     deltaT: number,
     _underlyingCanvas: HTMLCanvasElement[]
   ) {
+    if (!this.images) return;
+
     this.time = this.time + (deltaT % this.images.length);
     const currentFrame = seek(this.images, this.time);
     this.draw(this.images.frames[currentFrame].image, canvas); //event.path array containing a reference to the gif

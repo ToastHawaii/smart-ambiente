@@ -287,13 +287,14 @@ class BildHintergrund extends Component<
           );
         else
           backgroundElement = (
-            <div
-              className={classes.fill}
-              style={{
-                backgroundImage: `url('/img/natur/${cinemagraph}.gif')`,
-                backgroundPosition: "center",
-                backgroundSize: "cover"
-              }}
+            <Screen
+              layers={[
+                {
+                  effects: [
+                    new AnimatedImageEffect(`/img/natur/${cinemagraph}.gif`)
+                  ]
+                }
+              ]}
             />
           );
       } else if (bild.kanal === "tour") {
