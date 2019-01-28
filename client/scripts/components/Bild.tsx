@@ -91,16 +91,16 @@ class Bild extends Component<Props & WithStyles<ComponentClassNames>, State> {
               value="wetter"
             />
             <MenuButton
-              title="Ansehen"
-              icon={<Webcam />}
-              backgroundGradient="GreenYellow, ForestGreen"
-              value="ansehen"
-            />
-            <MenuButton
               title="Natur"
               icon={<Tree />}
               backgroundGradient="Peru, Green"
               value="natur"
+            />
+            <MenuButton
+              title="Ansehen"
+              icon={<Webcam />}
+              backgroundGradient="GreenYellow, ForestGreen"
+              value="ansehen"
             />
             <MenuButton
               title="Tour"
@@ -122,15 +122,16 @@ class Bild extends Component<Props & WithStyles<ComponentClassNames>, State> {
             </Collapse>
           }
           {
-            <Collapse in={kanal === "ansehen"}>
-              <Ansehen />
-            </Collapse>
-          }
-          {
             <Collapse in={kanal === "natur"}>
               <Natur />
             </Collapse>
           }
+          {
+            <Collapse in={kanal === "ansehen"}>
+              <Ansehen />
+            </Collapse>
+          }
+
           {
             <Collapse in={kanal === "tour"}>
               <Tour />

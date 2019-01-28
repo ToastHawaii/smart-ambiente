@@ -8,6 +8,7 @@ import { Group } from "./modules/philips-hue-api";
 import * as Events from "./modules/Events/Calendar";
 import * as WeatherForecast from "./modules/Weather/Forecast";
 import * as WeatherRadio from "./modules/Weather/Radio";
+import * as NaturRadio from "./modules/Natur/Radio";
 import "./modules/alarm";
 import "./modules/hue-sonos-link";
 import { chooseGoodMatch } from "./modules/Weather/Image";
@@ -216,7 +217,10 @@ async function controlTon() {
     }
     if (data.sinn["ton"].kanal === "wetter") {
       await WeatherRadio.playSound(data.kanal["wetter"]);
+    } else if (data.sinn["ton"].kanal === "natur") {
+      await NaturRadio.playSound(data.kanal["natur"].scene);
     } else {
+      await NaturRadio.stopSound();
       await WeatherRadio.stopSound();
 
       if (data.sinn["ton"].kanal === "musik") {
@@ -250,6 +254,7 @@ async function controlTon() {
       .do();
 
     await WeatherRadio.stopSound();
+    await NaturRadio.stopSound();
   }
 }
 

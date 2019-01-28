@@ -10,19 +10,21 @@ import {
   Music,
   Newspaper,
   Television,
-  Pistol
+  Pistol,
+  Tree
 } from "mdi-material-ui";
 import Musik from "./Musik";
 import Wetter from "./Wetter";
 import ButtonGroup from "./ButtonGroup";
 import { Component } from "./Component";
 import MenuButton from "./MenuButton";
+import Natur from "./Natur";
 
 export interface Props {}
 
 export interface State {
   lautstaerke?: "aus" | "leise" | "normal" | "laut" | "bild";
-  kanal?: "wetter" | "nachrichten" | "musik";
+  kanal?: "wetter" | "natur" | "nachrichten" | "musik";
 }
 
 type ComponentClassNames = "root";
@@ -43,11 +45,11 @@ class Ton extends Component<Props & WithStyles<ComponentClassNames>, State> {
 
   public handleLautstaerkeChange = (_event: any, lautstaerke: any) => {
     this.publish("sinn/ton", { lautstaerke });
-  };
+  }
 
   public handleKanalChange = async (_event: any, kanal: any) => {
     this.publish("sinn/ton", { kanal });
-  };
+  }
 
   public render() {
     const { classes } = this.props;
@@ -107,6 +109,12 @@ class Ton extends Component<Props & WithStyles<ComponentClassNames>, State> {
               value="wetter"
             />
             <MenuButton
+              title="Natur"
+              icon={<Tree />}
+              backgroundGradient="Peru, Green"
+              value="natur"
+            />
+            <MenuButton
               title="Nachrichten"
               icon={<Newspaper />}
               backgroundGradient="Bisque, DimGray"
@@ -128,6 +136,11 @@ class Ton extends Component<Props & WithStyles<ComponentClassNames>, State> {
           {
             <Collapse in={kanal === "wetter"}>
               <Wetter />
+            </Collapse>
+          }
+          {
+            <Collapse in={kanal === "natur"}>
+              <Natur />
             </Collapse>
           }
           {

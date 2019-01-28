@@ -25,7 +25,22 @@ import MenuButton from "./MenuButton";
 export interface Props {}
 
 export interface State {
-  szene?: "wasserfall" | "strand" | "savanne" | "aquarium" | "sonne";
+  szene?:
+    | "feuer"
+    | "wind"
+    | "regen"
+    | "nordlicht"
+    | "sonnenuntergang"
+    | "bach"
+    | "wasserfall"
+    | "see"
+    | "berg"
+    | "meer"
+    | "windspiel"
+    | "bar"
+    | "windturbine"
+    | "bruecke"
+    | "leuchturm";
 }
 
 type ComponentClassNames = "root";
