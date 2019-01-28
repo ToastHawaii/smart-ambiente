@@ -15,7 +15,7 @@ import { chooseGoodMatch } from "./modules/Weather/Image";
 import debug from "./utils/debug";
 import { saveConfig, loadConfig } from "./utils/config";
 debug.enabled = true;
-const topic = debug("server", true);
+const topic = debug("server", false);
 
 const sonosHttp = SonosHttp.createClient();
 const hueHttp = HueHttp.createHueService(

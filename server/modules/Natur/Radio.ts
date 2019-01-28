@@ -4,7 +4,7 @@ import { postJson, readFile } from "../../utils/request";
 import { split, sortAlternate } from "../../utils/array";
 
 import debug from "../../utils/debug";
-const topic = debug("natur/controller", true);
+const topic = debug("natur/controller", false);
 
 const soundSource = "../../smart-ambiente-media/sound/natur/";
 const channelApiUrls = [
@@ -30,14 +30,12 @@ function matchOrDefault(value: string, name: string, def: string) {
 }
 
 export async function playSound(scene: string) {
-  topic("0" + scene);
   const def = {
     volume: "1",
     pan: "none",
     crossfade: "0",
     random: "0"
   };
-  topic("1");
   const list = (await Promise.all(
     fs.readdirSync(soundSource + scene).map(async f => ({
       ...(await getSource(soundSource + scene, f)),
@@ -48,7 +46,6 @@ export async function playSound(scene: string) {
     }))
   )).filter(f => parseFloat(f.volume) >= 0.1);
 
-  topic("2");
   let i = 0;
   for (const chunk of split(sortAlternate(list), channelOutputUrls.length)) {
     if (i < channelOutputUrls.length - 1) {

@@ -25,7 +25,6 @@ export class Component<P, S> extends React.Component<P, S> {
     await delay(0);
 
     const data = await toData(mapping(this.state));
-    PubSub.publish(topic, data);
     const result = await postJson("/api/" + topic, data);
     PubSub.publish(topic, result);
   }
