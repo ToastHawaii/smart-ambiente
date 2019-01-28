@@ -4,7 +4,7 @@ import { postJson, readFile } from "../../utils/request";
 import { split, sortAlternate } from "../../utils/array";
 
 import debug from "../../utils/debug";
-const topic = debug("natur/controller", false);
+const topic = debug("natur/controller", true);
 
 const soundSource = "../../smart-ambiente-media/sound/natur/";
 const channelApiUrls = [
@@ -29,35 +29,18 @@ function matchOrDefault(value: string, name: string, def: string) {
   else return def;
 }
 
-export async function playSound(
-  scene:
-    | "feuer"
-    | "wind"
-    | "regen"
-    | "nordlicht"
-    | "sonnenuntergang"
-    | "bach"
-    | "wasserfall"
-    | "see"
-    | "berg"
-    | "meer"
-    | "windspiel"
-    | "bar"
-    | "windturbine"
-    | "bruecke"
-    | "leuchturm"
-) {
-  let source = scene;
-
+export async function playSound(scene: string) {
+  topic("0" + scene);
   const def = {
     volume: "1",
     pan: "none",
     crossfade: "0",
     random: "0"
   };
+  topic("1");
   const list = (await Promise.all(
-    fs.readdirSync(soundSource + source).map(async f => ({
-      ...(await getSource(soundSource + source, f)),
+    fs.readdirSync(soundSource + scene).map(async f => ({
+      ...(await getSource(soundSource + scene, f)),
       volume: parseFloat(matchOrDefault(f, "volume", def.volume)).toString(),
       pan: matchOrDefault(f, "pan", def.pan),
       crossfade: matchOrDefault(f, "crossfade", def.crossfade),
@@ -65,6 +48,7 @@ export async function playSound(
     }))
   )).filter(f => parseFloat(f.volume) >= 0.1);
 
+  topic("2");
   let i = 0;
   for (const chunk of split(sortAlternate(list), channelOutputUrls.length)) {
     if (i < channelOutputUrls.length - 1) {

@@ -15,7 +15,7 @@ import { chooseGoodMatch } from "./modules/Weather/Image";
 import debug from "./utils/debug";
 import { saveConfig, loadConfig } from "./utils/config";
 debug.enabled = true;
-const topic = debug("server", false);
+const topic = debug("server", true);
 
 const sonosHttp = SonosHttp.createClient();
 const hueHttp = HueHttp.createHueService(
@@ -160,20 +160,17 @@ export async function setKanal(kanal: string, kanalData: any) {
 
   data.kanal[kanal] = kanalData;
 
-  if (kanal === "musik") {
+  if (kanal === "musik" || kanal === "natur") {
     controlTon();
   } else if (kanal === "wetter") {
     if (data.kanal["wetter"].mode === "vorhersage") {
       const weather = await WeatherForecast.query();
       data.kanal["wetter"] = weather;
       data.kanal["wetter"].mode = "vorhersage";
-
-      controlTon();
-      controlLicht();
-    } else {
-      controlTon();
-      controlLicht();
     }
+
+    controlTon();
+    controlLicht();
   } else if (kanal === "alarm") {
     await saveConfig({
       aufwachen: data.sinn["aufwachen"],
@@ -218,7 +215,7 @@ async function controlTon() {
     if (data.sinn["ton"].kanal === "wetter") {
       await WeatherRadio.playSound(data.kanal["wetter"]);
     } else if (data.sinn["ton"].kanal === "natur") {
-      await NaturRadio.playSound(data.kanal["natur"].scene);
+      await NaturRadio.playSound(data.kanal["natur"].szene);
     } else {
       await NaturRadio.stopSound();
       await WeatherRadio.stopSound();
