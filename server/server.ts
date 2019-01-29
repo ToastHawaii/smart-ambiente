@@ -102,10 +102,6 @@ const data: {
     "leuchturm"
   ])[0];
 
-  const weather = await WeatherForecast.query();
-  data.kanal["wetter"] = weather;
-  data.kanal["wetter"].mode = "vorhersage";
-
   const config = await loadConfig();
   data.sinn["aufwachen"] = config.aufwachen;
   data.kanal["alarm"] = config.alarm;
@@ -114,6 +110,11 @@ const data: {
 app.get("/api/sinn/:sinn", async function(req, res) {
   if (first) {
     first = false;
+
+    const weather = await WeatherForecast.query();
+    data.kanal["wetter"] = weather;
+    data.kanal["wetter"].mode = "vorhersage";
+
     controlTon();
     controlLicht();
   }
