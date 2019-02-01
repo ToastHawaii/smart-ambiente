@@ -49,14 +49,17 @@ export interface State {
       | "feuer"
       | "wind"
       | "regen"
+      | "gewitter"
       | "nordlicht"
       | "sonnenuntergang"
+      | "teich"
       | "bach"
       | "wasserfall"
       | "see"
       | "berg"
       | "meer"
-      | "windspiel"
+      | "haus"
+      | "garten"
       | "bar"
       | "windturbine"
       | "bruecke"
@@ -233,43 +236,9 @@ class BildHintergrund extends Component<
           backgroundElement = <YoutubeVideo video="5_-rh6L1jiU" />;
         else backgroundElement = <Events />;
       } else if (bild.kanal === "natur") {
-        let cinemagraph = "";
+        let cinemagraph = natur.szene;
 
-        if (natur.szene === "feuer") {
-          cinemagraph = "feuer";
-        } else if (natur.szene === "wind") {
-          cinemagraph = "wind";
-        } else if (natur.szene === "regen") {
-          cinemagraph = "regen";
-        } else if (natur.szene === "nordlicht") {
-          cinemagraph = "nordlicht";
-        } else if (natur.szene === "sonnenuntergang") {
-          cinemagraph = "sonnenuntergang" + getRandomInt(1, 2);
-        } else if (natur.szene === "bach") {
-          cinemagraph = "bach";
-        } else if (natur.szene === "wasserfall") {
-          cinemagraph = "wasserfall" + getRandomInt(1, 2);
-        } else if (natur.szene === "see") {
-          cinemagraph = "see" + getRandomInt(1, 2);
-        } else if (natur.szene === "berg") {
-          cinemagraph = "berg";
-        } else if (natur.szene === "meer") {
-          cinemagraph = "meer";
-        } else if (natur.szene === "windspiel") {
-          cinemagraph = "windspiel";
-        } else if (natur.szene === "bar") {
-          cinemagraph = "bar" + getRandomInt(1, 2);
-        } else if (natur.szene === "windturbine") {
-          cinemagraph = "windturbine";
-        } else if (natur.szene === "bruecke") {
-          cinemagraph = "bruecke" + getRandomInt(1, 2);
-        } else if (natur.szene === "leuchturm") {
-          cinemagraph = "leuchturm" + getRandomInt(1, 2);
-        } else {
-          cinemagraph = "wind";
-        }
-
-        if (cinemagraph === "bar1")
+        if (cinemagraph === "bar")
           backgroundElement = (
             <Screen
               layers={[
@@ -278,7 +247,39 @@ class BildHintergrund extends Component<
                     new RandomAnimatedImageEffect(
                       `/img/natur/${cinemagraph}.gif`,
                       5,
+                      25
+                    )
+                  ]
+                }
+              ]}
+            />
+          );
+        else if (cinemagraph === "haus")
+          backgroundElement = (
+            <Screen
+              layers={[
+                {
+                  effects: [
+                    new RandomAnimatedImageEffect(
+                      `/img/natur/${cinemagraph}.gif`,
+                      1,
                       20
+                    )
+                  ]
+                }
+              ]}
+            />
+          );
+        else if (cinemagraph === "teich")
+          backgroundElement = (
+            <Screen
+              layers={[
+                {
+                  effects: [
+                    new RandomAnimatedImageEffect(
+                      `/img/natur/${cinemagraph}.gif`,
+                      0,
+                      15
                     )
                   ]
                 }

@@ -1,6 +1,7 @@
 export interface Frame {
   delay: number;
-  time: number;
+  startTime: number;
+  endTime: number;
   disposalMethod?: number;
   image: HTMLCanvasElement;
   localColourTableFlag: boolean;
@@ -321,8 +322,9 @@ function parseImg(
 
   const frame: Frame = {
     disposalMethod: context.disposalMethod,
-    time: gif.length,
+    startTime: gif.length,
     delay: context.delayTime * 10,
+    endTime: gif.length + context.delayTime * 10,
     transparencyIndex: context.transparencyGiven
       ? context.transparencyIndex
       : undefined,
@@ -520,10 +522,7 @@ export function seek(gif: Gif, time: number) {
   time %= gif.length;
   let frame = 0;
 
-  while (
-    time > gif.frames[frame].time + gif.frames[frame].delay &&
-    frame < gif.frames.length
-  ) {
+  while (time > gif.frames[frame].endTime && frame < gif.frames.length) {
     frame += 1;
   }
 

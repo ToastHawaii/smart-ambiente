@@ -13,10 +13,13 @@ import {
   Fish,
   Terrain,
   Docker,
-  ViewParallel,
   Beer,
   RadiatorDisabled,
-  LighthouseOn
+  LighthouseOn,
+  WeatherLightning,
+  Ladybug,
+  FlowerTulip,
+  Home
 } from "mdi-material-ui";
 import ButtonGroup from "./ButtonGroup";
 import { Component } from "./Component";
@@ -29,14 +32,17 @@ export interface State {
     | "feuer"
     | "wind"
     | "regen"
+    | "gewitter"
     | "nordlicht"
     | "sonnenuntergang"
+    | "teich"
     | "bach"
     | "wasserfall"
     | "see"
     | "berg"
     | "meer"
-    | "windspiel"
+    | "haus"
+    | "garten"
     | "bar"
     | "windturbine"
     | "bruecke"
@@ -114,6 +120,12 @@ class Natur extends Component<Props & WithStyles<ComponentClassNames>, State> {
             value="regen"
           />
           <MenuButton
+            title="Gewitter"
+            icon={<WeatherLightning />}
+            backgroundImage="/img/button/natur/gewitter.png"
+            value="gewitter"
+          />
+          <MenuButton
             title="Nordlicht"
             icon={<Waves />}
             backgroundImage="/img/button/natur/nordlicht.png"
@@ -134,6 +146,12 @@ class Natur extends Component<Props & WithStyles<ComponentClassNames>, State> {
             marginTop: "1%"
           }}
         >
+          <MenuButton
+            title="Teich"
+            icon={<Ladybug />}
+            backgroundImage="/img/button/natur/teich.png"
+            value="teich"
+          />
           <MenuButton
             title="Bach"
             icon={<Leaf />}
@@ -174,10 +192,16 @@ class Natur extends Component<Props & WithStyles<ComponentClassNames>, State> {
           }}
         >
           <MenuButton
-            title="Windspiel"
-            icon={<ViewParallel />}
-            backgroundImage="/img/button/natur/windspiel.png"
-            value="windspiel"
+            title="Haus"
+            icon={<Home />}
+            backgroundImage="/img/button/natur/haus.png"
+            value="haus"
+          />
+          <MenuButton
+            title="Garten"
+            icon={<FlowerTulip />}
+            backgroundImage="/img/button/natur/garten.png"
+            value="garten"
           />
           <MenuButton
             title="Bar"
