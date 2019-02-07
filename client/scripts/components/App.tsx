@@ -3,7 +3,6 @@ import { StyleRulesCallback, withStyles } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
 import { hot } from "react-hot-loader";
 import * as classnames from "classnames";
-
 import HideCursor from "./HideCursor";
 import BildHintergrund from "./BildHintergrund";
 import classNames from "classnames";
@@ -58,7 +57,6 @@ class App extends React.Component<
         <div className={classes.fill}>
           <BildHintergrund />
         </div>
-
         {navigator.userAgent.indexOf("SMART-TV") === -1 ? (
           <React.Fragment>
             <HideCursor>

@@ -72,6 +72,11 @@ export function scale(
 ) {
   return ((to - from) * (val - min)) / (max - min) + from;
 }
+
+export function isVisible(elem: HTMLElement): boolean {
+  return isDisplay(elem) && isInScreen(elem);
+}
+
 function isDisplay(elem: HTMLElement): boolean {
   const style = getComputedStyle(elem);
   if (style.display === "none") return false;
@@ -84,25 +89,18 @@ function isDisplay(elem: HTMLElement): boolean {
   return true;
 }
 
-export function isVisible(elem: HTMLElement): boolean {
+function isInScreen(elem: HTMLElement): boolean {
   const style = getComputedStyle(elem);
-
-  if (!isDisplay(elem)) return false;
 
   if (style.height === "0px" || style.width === "0px") return false;
 
-  if (
-    elem.offsetWidth +
-      elem.offsetHeight +
-      elem.getBoundingClientRect().height +
-      elem.getBoundingClientRect().width ===
-    0
-  ) {
+  const rect = elem.getBoundingClientRect();
+  if (elem.offsetWidth + elem.offsetHeight + rect.height + rect.width === 0) {
     return false;
   }
   const elemCenter = {
-    x: elem.getBoundingClientRect().left + elem.offsetWidth / 2,
-    y: elem.getBoundingClientRect().top + elem.offsetHeight / 2
+    x: rect.left + elem.offsetWidth / 2,
+    y: rect.top + elem.offsetHeight / 2
   };
   if (elemCenter.x < 0) return false;
   if (
@@ -119,7 +117,7 @@ export function isVisible(elem: HTMLElement): boolean {
     if (style.position === "absolute" || style.position === "fixed")
       return true;
 
-    return isVisible(elem.parentElement);
+    return isInScreen(elem.parentElement);
   }
 
   return true;
