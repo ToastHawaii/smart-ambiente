@@ -23,6 +23,8 @@ interface Props {
   toggle?: boolean;
   textColor?: string;
   style?: Partial<React.CSSProperties>;
+  label?: string;
+  labelColor?: string;
 }
 interface State {
   active: boolean;
@@ -35,7 +37,10 @@ type ComponentClassNames =
   | "imageSrc"
   | "imageBackdrop"
   | "imageTitle"
-  | "imageMarked";
+  | "imageMarked"
+  | "label"
+  | "labelBackground"
+  | "labelText";
 
 const style: StyleRulesCallback<ComponentClassNames> = (theme: any) => ({
   root: {
@@ -52,10 +57,7 @@ const style: StyleRulesCallback<ComponentClassNames> = (theme: any) => ({
     position: "relative",
     height: 110,
     width: "100%",
-    transition:
-      theme.transitions.create("box-shadow") +
-      "," +
-      theme.transitions.create("transform"),
+    transition: theme.transitions.create("transform"),
     [theme.breakpoints.down("xs")]: {
       height: 55
     },
@@ -64,7 +66,7 @@ const style: StyleRulesCallback<ComponentClassNames> = (theme: any) => ({
         border: "2px solid white"
       }
     },
-    "&.selected, &:hover": {
+    "&.selected, &:hover, &.focus": {
       zIndex: 1,
       transform: "scale(1.08)",
       [theme.breakpoints.down("xs")]: {
@@ -78,7 +80,7 @@ const style: StyleRulesCallback<ComponentClassNames> = (theme: any) => ({
       opacity: 0
     },
     "&.focus": {
-      boxShadow: "0 0 4px 2px white"
+      boxShadow: "0 0 8px 4px white"
     },
     "&.selected $imageMarked, &.focus $imageMarked, &:hover $imageMarked": {
       opacity: 0
@@ -154,6 +156,34 @@ const style: StyleRulesCallback<ComponentClassNames> = (theme: any) => ({
     [theme.breakpoints.down("xs")]: {
       height: 2
     }
+  },
+  label: {
+    display: "block",
+    top: 0,
+    right: 0,
+    width: 30,
+    height: 30,
+    position: "absolute",
+    backgroundColor: "tranparent",
+    borderTopRightRadius: "4px",
+    overflow: "hidden"
+  },
+  labelBackground: {
+    display: "block",
+    width: 0,
+    height: 0,
+    borderTop: "30px solid #ffcc00",
+    borderBottom: "30px solid transparent",
+    borderLeft: "30px solid transparent"
+  },
+  labelText: {
+    position: "absolute",
+    top: 1,
+    width: "50%",
+    right: "0",
+    textAlign: "center",
+    color: "#FFFFFF",
+    display: "block"
   }
 });
 
@@ -198,7 +228,9 @@ class ComplexButton extends React.Component<
       selected,
       toggle,
       style: styleProp,
-      textColor
+      textColor,
+      label,
+      labelColor
     } = this.props;
 
     let style: any = {};
@@ -246,6 +278,18 @@ class ComplexButton extends React.Component<
             <span className={classes.imageMarked} />
           </Typography>
         </span>
+        {label ? (
+          <span className={classes.label}>
+            <span
+              className={classes.labelBackground}
+              style={{ borderTopColor: labelColor ? labelColor : "" }}
+            >
+              <span className={classes.labelText}>{label}</span>
+            </span>
+          </span>
+        ) : (
+          ""
+        )}
       </ButtonBase>
     );
   }

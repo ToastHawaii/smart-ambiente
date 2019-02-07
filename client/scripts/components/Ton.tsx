@@ -61,6 +61,7 @@ class Ton extends Component<Props & WithStyles<ComponentClassNames>, State> {
           value={lautstaerke}
           onChange={this.handleLautstaerkeChange}
           selection="exclusive"
+          style={{ paddingTop: "1%" }}
         >
           <MenuButton
             title="Aus"

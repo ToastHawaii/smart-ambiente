@@ -72,3 +72,73 @@ export function scale(
 ) {
   return ((to - from) * (val - min)) / (max - min) + from;
 }
+function isDisplay(elem: HTMLElement): boolean {
+  const style = getComputedStyle(elem);
+  if (style.display === "none") return false;
+  if (style.visibility !== "visible") return false;
+  if (style.opacity && parseFloat(style.opacity) < 0.1) return false;
+
+  if (elem.parentElement && !isDisplay(elem.parentElement)) {
+    return false;
+  }
+  return true;
+}
+
+export function isVisible(elem: HTMLElement): boolean {
+  const style = getComputedStyle(elem);
+
+  if (!isDisplay(elem)) return false;
+
+  if (style.height === "0px" || style.width === "0px") return false;
+
+  if (
+    elem.offsetWidth +
+      elem.offsetHeight +
+      elem.getBoundingClientRect().height +
+      elem.getBoundingClientRect().width ===
+    0
+  ) {
+    return false;
+  }
+  const elemCenter = {
+    x: elem.getBoundingClientRect().left + elem.offsetWidth / 2,
+    y: elem.getBoundingClientRect().top + elem.offsetHeight / 2
+  };
+  if (elemCenter.x < 0) return false;
+  if (
+    elemCenter.x > (document.documentElement.clientWidth || window.innerWidth)
+  )
+    return false;
+  if (elemCenter.y < 0) return false;
+  if (
+    elemCenter.y > (document.documentElement.clientHeight || window.innerHeight)
+  )
+    return false;
+
+  if (elem.parentElement) {
+    if (style.position === "absolute" || style.position === "fixed")
+      return true;
+
+    return isVisible(elem.parentElement);
+  }
+
+  return true;
+}
+
+export function scrollIntoViewIfNeeded(target: HTMLElement | null) {
+  if (!target) return;
+
+  let rect = target.getBoundingClientRect();
+  if (rect.bottom > window.innerHeight) {
+    target.scrollIntoView(false);
+  }
+  if (rect.top < 0) {
+    target.scrollIntoView();
+  }
+}
+
+export function isLeftMouseButtonDown(evt: any) {
+  evt = evt || window.event;
+  let button = evt.buttons || evt.which || evt.button;
+  return button === 1;
+}

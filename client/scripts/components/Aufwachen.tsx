@@ -1,11 +1,11 @@
 import * as React from "react";
 import { StyleRulesCallback, withStyles, Collapse } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
-import { LightbulbOutline, LightbulbOn } from "mdi-material-ui";
+import { Alarm, AlarmOff } from "mdi-material-ui";
 import ButtonGroup from "./ButtonGroup";
 import { Component } from "./Component";
 import MenuButton from "./MenuButton";
-import Alarm from "./Alarm";
+import AlarmComponent from "./Alarm";
 
 export interface Props {}
 
@@ -47,16 +47,17 @@ class Aufwachen extends Component<
           value={aktiv}
           onChange={this.handleAktivChange}
           selection="exclusive"
+          style={{ paddingTop: "1%" }}
         >
           <MenuButton
             title="Natürlich"
-            icon={<LightbulbOutline />}
+            icon={<AlarmOff />}
             backgroundGradient="lightgray, black"
             value="aus"
           />
           <MenuButton
             title="Unterstützt"
-            icon={<LightbulbOn />}
+            icon={<Alarm />}
             backgroundGradient="Red, LightYellow"
             value="an"
           />
@@ -68,7 +69,7 @@ class Aufwachen extends Component<
           }}
         >
           <Collapse in={kanal === "alarm"}>
-            <Alarm />
+            <AlarmComponent />
           </Collapse>
         </Collapse>
       </div>

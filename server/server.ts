@@ -35,6 +35,7 @@ const data: {
   kanal: { [name: string]: any };
 } = {
   sinn: {
+    aktiv: "ton",
     ton: {
       lautstaerke: "normal",
       kanal: "wetter"
@@ -109,6 +110,15 @@ const data: {
   data.sinn["aufwachen"] = config.aufwachen;
   data.kanal["alarm"] = config.alarm;
 })();
+
+app.get("/api/sinn", async function(_req, res) {
+  res.json({ sinn: data.sinn["aktiv"] });
+});
+
+app.post("/api/sinn", async function(req, res) {
+  data.sinn["aktiv"] = req.body.sinn;
+  res.json({ sinn: data.sinn["aktiv"] });
+});
 
 app.get("/api/sinn/:sinn", async function(req, res) {
   if (first) {

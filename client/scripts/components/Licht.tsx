@@ -40,11 +40,11 @@ class Licht extends Component<Props & WithStyles<ComponentClassNames>, State> {
 
   public handleHelligkeitChange = (_event: any, helligkeit: any) => {
     this.publish("sinn/licht", { helligkeit });
-  };
+  }
 
   public handleKanalChange = (_event: any, kanal: any) => {
     this.publish("sinn/licht", { kanal });
-  };
+  }
 
   public render() {
     const { classes } = this.props;
@@ -56,6 +56,7 @@ class Licht extends Component<Props & WithStyles<ComponentClassNames>, State> {
           value={helligkeit}
           onChange={this.handleHelligkeitChange}
           selection="exclusive"
+          style={{ paddingTop: "1%" }}
         >
           <MenuButton
             title="Aus"

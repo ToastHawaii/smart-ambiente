@@ -60,7 +60,8 @@ class Bild extends Component<Props & WithStyles<ComponentClassNames>, State> {
           value={bildschirm}
           onChange={this.handleBildschirmChange}
           selection="exclusive"
-        >
+          style={{ paddingTop: "1%" }}
+          >
           <MenuButton
             title="Aus"
             icon={<TelevisionOff />}

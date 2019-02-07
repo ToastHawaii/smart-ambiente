@@ -18,6 +18,8 @@ interface Props {
   selected?: boolean;
   toggle?: boolean;
   style?: Partial<React.CSSProperties>;
+  label?: string;
+  labelColor?: string;
 }
 interface State {}
 
@@ -46,7 +48,9 @@ class MenuButton extends React.Component<
       onClick,
       selected,
       style,
-      toggle
+      toggle,
+      label,
+      labelColor
     } = this.props;
 
     let background: string;
@@ -69,6 +73,8 @@ class MenuButton extends React.Component<
         onClick={onClick}
         selected={selected}
         toggle={toggle}
+        label={label}
+        labelColor={labelColor}
       />
     );
   }

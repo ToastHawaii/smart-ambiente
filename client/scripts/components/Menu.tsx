@@ -3,22 +3,31 @@ import {
   StyleRulesCallback,
   withStyles,
   Collapse,
-  Typography,
   IconButton
 } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
 import Ton from "./Ton";
 import Bild from "./Bild";
 import Licht from "./Licht";
-import { Menu as IconMenu } from "mdi-material-ui";
+import {
+  Television,
+  Alarm,
+  VolumeMedium,
+  Lightbulb,
+  Menu as IconMenu
+} from "mdi-material-ui";
 import classNames from "classnames";
 import * as PubSub from "pubsub-js";
 import Aufwachen from "./Aufwachen";
+import ButtonGroup from "./ButtonGroup";
+import MenuButton from "./MenuButton";
+import { Component } from "./Component";
 
 export interface Props {}
 
 export interface State {
   menu: boolean;
+  sinn: string;
 }
 
 type ComponentClassNames =
@@ -62,68 +71,96 @@ const style: StyleRulesCallback<ComponentClassNames> = () => ({
   }
 });
 
-class Menu extends React.Component<
-  Props & WithStyles<ComponentClassNames>,
-  State
-> {
+class Menu extends Component<Props & WithStyles<ComponentClassNames>, State> {
   constructor(props: any) {
     super(props);
     this.state = {
-      menu: false
+      menu: false,
+      sinn: "ton"
     };
   }
-  private first = true;
 
   public componentDidMount() {
     PubSub.subscribe("menu", () => {
       this.setState({ menu: !this.state.menu });
     });
+    this.subscribe("sinn");
   }
 
+  public handleSinnChange = async (_event: any, sinn: any) => {
+    this.publish("sinn", { sinn });
+    this.setState({
+      menu: true,
+      sinn: sinn
+    });
+  }
+  
   public handleClick = () => {
-    //  if (navigator.userAgent.indexOf("SMART-TV") === -1) {
     this.setState({ menu: !this.state.menu });
-    //}
   }
 
   public render() {
     const { classes } = this.props;
-    const { menu } = this.state;
-
-    if (
-      navigator.userAgent.indexOf("SMART-TV") !== -1 &&
-      !menu &&
-      !this.first
-    ) {
-      if (document.location) document.location.reload();
-    }
-    this.first = false;
+    const { menu, sinn } = this.state;
 
     let collapseClass = classNames(classes.topLayer, classes.fill);
-    // if (navigator.userAgent.indexOf("SMART-TV") !== -1) {
-    //     collapseClass = classNames(classes.topLayer, classes.fill, classes.mouseMoveSelection);
-    // }
+
+    collapseClass = classNames(
+      classes.topLayer,
+      classes.fill,
+      classes.mouseMoveSelection
+    );
 
     return (
       <React.Fragment>
         <Collapse in={menu} className={collapseClass}>
-          <div className={classes.menu} onClick={this.handleClick}>
-            <Typography variant="headline" style={{ margin: "0 1%" }}>
-              Ton
-            </Typography>
-            <Ton />
-            <Typography variant="headline" style={{ margin: "0 1%" }}>
-              Bild
-            </Typography>
-            <Bild />
-            <Typography variant="headline" style={{ margin: "0 1%" }}>
-              Licht
-            </Typography>
-            <Licht />
-            <Typography variant="headline" style={{ margin: "0 1%" }}>
-              Aufwachen
-            </Typography>
-            <Aufwachen />
+          <div
+            className={classes.menu}
+            onClick={this.handleClick}
+            style={{ paddingTop: "1%" }}
+          >
+            <ButtonGroup
+              value={sinn}
+              onChange={this.handleSinnChange}
+              selection="exclusive"
+            >
+              <MenuButton
+                title="Ton"
+                icon={<VolumeMedium />}
+                backgroundGradient="GreenYellow, LimeGreen"
+                value="ton"
+              />
+              <MenuButton
+                title="Bild"
+                icon={<Television />}
+                backgroundGradient="Lightblue, darkblue"
+                value="bild"
+              />
+              <MenuButton
+                title="Licht"
+                icon={<Lightbulb />}
+                backgroundGradient="Moccasin, DarkOrange"
+                value="licht"
+              />
+              <MenuButton
+                title="Aufwachen"
+                icon={<Alarm />}
+                backgroundGradient="Red, LightYellow"
+                value="aufwachen"
+              />
+            </ButtonGroup>
+            <Collapse in={sinn === "ton"}>
+              <Ton />
+            </Collapse>
+            <Collapse in={sinn === "bild"}>
+              <Bild />
+            </Collapse>
+            <Collapse in={sinn === "licht"}>
+              <Licht />
+            </Collapse>
+            <Collapse in={sinn === "aufwachen"}>
+              <Aufwachen />
+            </Collapse>
           </div>
         </Collapse>
         <IconButton

@@ -9,6 +9,8 @@ import BildHintergrund from "./BildHintergrund";
 import classNames from "classnames";
 import * as PubSub from "pubsub-js";
 import Menu from "./Menu";
+import SamsungMenu from "./SamsungMenu";
+import NoneCursor from "./NoneCursor";
 
 export interface Props {}
 
@@ -45,7 +47,7 @@ class App extends React.Component<
 
   public handleClick = () => {
     PubSub.publish("menu", {});
-  };
+  }
 
   public render() {
     const { classes } = this.props;
@@ -56,13 +58,28 @@ class App extends React.Component<
         <div className={classes.fill}>
           <BildHintergrund />
         </div>
-        <HideCursor>
-          <div
-            className={classNames(classes.topLayer, classes.fill)}
-            onClick={this.handleClick}
-          />
-        </HideCursor>
-        <Menu />
+
+        {navigator.userAgent.indexOf("SMART-TV") === -1 ? (
+          <React.Fragment>
+            <HideCursor>
+              <div
+                className={classNames(classes.topLayer, classes.fill)}
+                onClick={this.handleClick}
+              />
+            </HideCursor>
+            <Menu />
+          </React.Fragment>
+        ) : (
+          <React.Fragment>
+            <NoneCursor>
+              <div
+                className={classNames(classes.topLayer, classes.fill)}
+                onClick={this.handleClick}
+              />
+            </NoneCursor>
+            <SamsungMenu />
+          </React.Fragment>
+        )}
       </div>
     );
   }
