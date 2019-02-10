@@ -9,7 +9,6 @@ import classNames from "classnames";
 import * as PubSub from "pubsub-js";
 import Menu from "./Menu";
 import SamsungMenu from "./SamsungMenu";
-import NoneCursor from "./NoneCursor";
 
 export interface Props {}
 
@@ -68,15 +67,7 @@ class App extends React.Component<
             <Menu />
           </React.Fragment>
         ) : (
-          <React.Fragment>
-            <NoneCursor>
-              <div
-                className={classNames(classes.topLayer, classes.fill)}
-                onClick={this.handleClick}
-              />
-            </NoneCursor>
             <SamsungMenu />
-          </React.Fragment>
         )}
       </div>
     );

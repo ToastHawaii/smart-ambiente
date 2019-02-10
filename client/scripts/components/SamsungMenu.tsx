@@ -105,6 +105,8 @@ class Menu extends Component<Props & WithStyles<ComponentClassNames>, State> {
   }
 
   private keyDown = (event: any) => {
+    if (!this.state.menu) return;
+
     let direction: "left" | "up" | "right" | "down";
     switch (event.keyCode) {
       case 37:
@@ -130,6 +132,8 @@ class Menu extends Component<Props & WithStyles<ComponentClassNames>, State> {
   private previousEvent: MouseEvent;
 
   private mouseMove = (event: MouseEvent) => {
+    if (!this.state.menu) return;
+
     let direction: "left" | "up" | "right" | "down";
 
     let movementX =
@@ -150,6 +154,8 @@ class Menu extends Component<Props & WithStyles<ComponentClassNames>, State> {
   }
 
   private mouseDown = (event: any) => {
+    if (!this.state.menu) return;
+
     if (this.activeElement && isLeftMouseButtonDown(event)) {
       this.activeElement.click();
     }
@@ -274,6 +280,8 @@ class Menu extends Component<Props & WithStyles<ComponentClassNames>, State> {
   }
 
   public handleOnKeyDown = (event: any) => {
+    if (!this.state.menu) return;
+
     if (event.keyCode === 457) {
       if (this.state.menu) if (document.location) document.location.reload();
 
