@@ -6,9 +6,11 @@ import { delay } from "../utils";
 
 export interface Props {}
 
-export interface State {}
+export interface State {
+  loaded: boolean;
+}
 
-type ComponentClassNames = "root" | "map" | "pano";
+type ComponentClassNames = "root" | "map" | "pano" | "loadingScreen";
 
 const styles: StyleRulesCallback<ComponentClassNames> = () => ({
   root: {},
@@ -18,7 +20,7 @@ const styles: StyleRulesCallback<ComponentClassNames> = () => ({
     width: "250px",
     top: "80px",
     height: "250px",
-    zIndex: 9
+    zIndex: 8
   },
 
   pano: {
@@ -27,6 +29,18 @@ const styles: StyleRulesCallback<ComponentClassNames> = () => ({
     right: "0",
     bottom: "0",
     top: "0"
+  },
+
+  loadingScreen: {
+    position: "absolute",
+    left: "0",
+    right: "0",
+    bottom: "0",
+    top: "0",
+    backgroundImage: "url('/img/earth.jpg')",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    zIndex: 9
   }
 });
 
@@ -45,7 +59,9 @@ class BildHintergrund extends React.Component<
   constructor(props: any) {
     super(props);
 
-    this.state = {};
+    this.state = {
+      loaded: false
+    };
   }
 
   public componentDidMount() {
@@ -113,6 +129,8 @@ class BildHintergrund extends React.Component<
 
   public processSVData = async (data: any, status: any) => {
     if (status === this.google.maps.StreetViewStatus.OK) {
+      if (!this.state.loaded) this.setState({ loaded: true });
+
       this.map.setCenter(data.location.latLng);
 
       if (this.marker) this.marker.setMap(null);
@@ -150,10 +168,11 @@ class BildHintergrund extends React.Component<
 
   public render() {
     const { classes } = this.props;
-    const {} = this.state;
+    const { loaded } = this.state;
 
     return (
       <div>
+        {!loaded ? <div className={classes.loadingScreen} /> : ""}
         <div className={this.props.classes.pano} ref="pano" />
         <div className={classes.map} ref="map" />
       </div>

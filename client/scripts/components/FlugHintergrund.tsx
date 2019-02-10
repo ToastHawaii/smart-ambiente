@@ -15,9 +15,16 @@ export interface Props {}
 export interface State {
   text: string;
   image: string;
+  loaded: boolean;
 }
 
-type ComponentClassNames = "root" | "map" | "mapSmall" | "text" | "image";
+type ComponentClassNames =
+  | "root"
+  | "map"
+  | "mapSmall"
+  | "text"
+  | "image"
+  | "loadingScreen";
 
 const style: StyleRulesCallback<ComponentClassNames> = () => ({
   root: {},
@@ -34,7 +41,7 @@ const style: StyleRulesCallback<ComponentClassNames> = () => ({
     width: "250px",
     top: "80px",
     height: "250px",
-    zIndex: 9
+    zIndex: 8
   },
   text: {
     position: "absolute",
@@ -52,6 +59,18 @@ const style: StyleRulesCallback<ComponentClassNames> = () => ({
     right: "0px",
     width: "250px",
     top: "80px",
+    zIndex: 8
+  },
+
+  loadingScreen: {
+    position: "absolute",
+    left: "0",
+    right: "0",
+    bottom: "0",
+    top: "0",
+    backgroundImage: "url('/img/earth.jpg')",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
     zIndex: 9
   }
 });
@@ -72,7 +91,8 @@ class BildHintergrund extends React.Component<
 
     this.state = {
       text: "",
-      image: ""
+      image: "",
+      loaded: false
     };
   }
 
@@ -190,6 +210,8 @@ class BildHintergrund extends React.Component<
   }
 
   private startTour() {
+    if (!this.state.loaded) this.setState({ loaded: true });
+
     let counter = 30 * (1000 / 25);
 
     const stepInterval = setInterval(() => {
@@ -290,7 +312,7 @@ class BildHintergrund extends React.Component<
 
   public render() {
     const { classes } = this.props;
-    const { text, image } = this.state;
+    const { text, image, loaded } = this.state;
 
     let info: JSX.Element | null = null;
     if (text)
@@ -306,6 +328,7 @@ class BildHintergrund extends React.Component<
 
     return (
       <div>
+        {!loaded ? <div className={classes.loadingScreen} /> : ""}
         <div className={classes.map} ref="map" />
         <div className={classes.mapSmall} ref="mapSmall" />
         {pic}
