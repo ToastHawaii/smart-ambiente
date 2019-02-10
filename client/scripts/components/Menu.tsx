@@ -66,8 +66,7 @@ const style: StyleRulesCallback<ComponentClassNames> = () => ({
     "-webkit-user-select": "none",
     "-moz-user-select": "none",
     "-ms-user-select": "none",
-    userSelect: "none",
-    cursor: "none"
+    userSelect: "none"
   }
 });
 
@@ -94,7 +93,7 @@ class Menu extends Component<Props & WithStyles<ComponentClassNames>, State> {
       sinn: sinn
     });
   }
-  
+
   public handleClick = () => {
     this.setState({ menu: !this.state.menu });
   }

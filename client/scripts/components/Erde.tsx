@@ -64,12 +64,23 @@ class BildHintergrund extends React.Component<
     };
   }
 
+  private timeout: any;
   public componentDidMount() {
+    if (navigator.userAgent.indexOf("SMART-TV") !== -1) {
+      this.timeout = setTimeout(() => {
+        if (document.location) document.location.reload();
+      }, 5 * 60 * 1000);
+    }
+
     (GoogleMapsLoader as any).KEY = "AIzaSyCCEsIm_EoOS89xEPJVO5LnmXCulyccpsM";
     GoogleMapsLoader.load(google => {
       this.google = google;
       this.initMap();
     });
+  }
+
+  public componentWillUnmount() {
+    if (this.timeout) clearTimeout(this.timeout);
   }
 
   public initMap() {
