@@ -297,6 +297,11 @@ async function controlLicht() {
       data.sinn["licht"].kanal === "sonnenuntergang"
     )
   ) {
+    hueHttp.updateSensorsState("74", { status: 0 });
+    hueHttp.updateSensorsState("75", { status: 0 });
+    hueHttp.updateSensorsState("71", { status: 0 });
+    hueHttp.updateSensorsState("72", { status: 0 });
+
     if (data.sinn["licht"].helligkeit === "viel") {
       if (data.sinn["licht"].kanal === "entspannen") {
         await hueHttp.recallScenes(["Wohnzimmer", "Terrasse"], "Entspannen");
