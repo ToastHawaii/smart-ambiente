@@ -4,11 +4,12 @@ import { WithStyles } from "@material-ui/core";
 import {
   Lightbulb,
   LightbulbOutline,
-  WeatherPartlycloudy,
   ThemeLightDark,
   LightbulbOn,
   WeatherSunsetUp,
-  WeatherSunsetDown
+  WeatherSunsetDown,
+  BatteryCharging,
+  BookOpenPageVariant
 } from "mdi-material-ui";
 import Wetter from "./Wetter";
 import ButtonGroup from "./ButtonGroup";
@@ -89,10 +90,16 @@ class Licht extends Component<Props & WithStyles<ComponentClassNames>, State> {
             selection="exclusive"
           >
             <MenuButton
-              title="Wetter"
-              icon={<WeatherPartlycloudy />}
-              backgroundGradient="LightBlue, Gold"
-              value="wetter"
+              title="Entspannen"
+              icon={<BookOpenPageVariant />}
+              backgroundGradient="#fef8a8, #ffbc61"
+              value="entspannen"
+            />
+            <MenuButton
+              title="Aktivieren"
+              icon={<BatteryCharging />}
+              backgroundGradient="#cdf9fe, #9bcee1"
+              value="aktivieren"
             />
             <MenuButton
               title="Tageslicht"

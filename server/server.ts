@@ -1,10 +1,9 @@
 import * as express from "express";
 import * as bodyParser from "body-parser";
-import { toArray, shuffle } from "./utils/array";
+import { shuffle } from "./utils/array";
 import { relative } from "./utils/math";
 import * as SonosHttp from "./modules/node-sonos-http-api";
 import * as HueHttp from "./modules/philips-hue-api";
-import { Group } from "./modules/philips-hue-api";
 import * as Events from "./modules/Events/Calendar";
 import * as WeatherForecast from "./modules/Weather/Forecast";
 import * as WeatherRadio from "./modules/Weather/Radio";
@@ -292,70 +291,75 @@ async function playSender(name: string) {
 }
 
 async function controlLicht() {
-  if (data.sinn["licht"].helligkeit === "viel") {
-    const result = await hueHttp.queryGroups();
-    const groups = toArray<{ [index: string]: Group }, Group>(result);
-
-    for (const s of groups.filter(
-      g => g.name === "Wohnzimmer" || g.name === "Terrasse"
-    ))
-      hueHttp.updateGroups(s.id, { on: true });
-  } else if (data.sinn["licht"].helligkeit === "wenig") {
-    const result = await hueHttp.queryGroups();
-    const groups = toArray<{ [index: string]: Group }, Group>(result);
-
-    for (const s of groups.filter(g => g.name === "Wohnzimmer"))
-      hueHttp.updateGroups(s.id, { on: false });
-    for (const s of groups.filter(g => g.name === "Terrasse"))
-      hueHttp.updateGroups(s.id, { on: true });
-  } else {
-    const result = await hueHttp.queryGroups();
-    const groups = toArray<{ [index: string]: Group }, Group>(result);
-
-    for (const s of groups.filter(
-      g => g.name === "Wohnzimmer" || g.name === "Terrasse"
-    ))
-      hueHttp.updateGroups(s.id, { on: false });
-  }
-
   if (
-    data.sinn["licht"].kanal === "sonnenaufgang" &&
-    data.sinn["licht"].helligkeit !== "aus"
+    !(
+      data.sinn["licht"].kanal === "sonnenaufgang" ||
+      data.sinn["licht"].kanal === "sonnenuntergang"
+    )
   ) {
-    const result = await hueHttp.queryGroups();
-    const groups = toArray<{ [index: string]: Group }, Group>(result);
-
-    for (const s of groups.filter(g => g.name === "Wohnzimmer"))
-      await hueHttp.updateGroups(s.id, { scene: "rvryxegf85dNSh4" });
-    for (const s of groups.filter(g => g.name === "Terrasse"))
-      await hueHttp.updateGroups(s.id, { scene: "bIt0VNlYGMp9Lz0" });
-    for (const s of groups.filter(g => g.name === "Bad"))
-      await hueHttp.updateGroups(s.id, { scene: "YvcDyf-5EkmsWYO" });
-    for (const s of groups.filter(g => g.name === "Schlafzimmer"))
-      await hueHttp.updateGroups(s.id, { scene: "wf1qGZeZVO13pcO" });
-    hueHttp.updateSensorsState("58", { status: 0 });
+    if (data.sinn["licht"].helligkeit === "viel") {
+      if (data.sinn["licht"].kanal === "entspannen") {
+        await hueHttp.recallScenes(["Wohnzimmer", "Terrasse"], "Entspannen");
+      } else if (data.sinn["licht"].kanal === "aktivieren") {
+        await hueHttp.recallScenes(["Wohnzimmer", "Terrasse"], "Aktivieren");
+      } else {
+        await hueHttp.updateGroupsByName(["Wohnzimmer", "Terrasse"], {
+          on: false,
+          transitiontime: 1
+        });
+        await hueHttp.updateGroupsByName(["Wohnzimmer", "Terrasse"], {
+          on: true
+        });
+      }
+    } else if (data.sinn["licht"].helligkeit === "wenig") {
+      if (data.sinn["licht"].kanal === "entspannen") {
+        await hueHttp.recallScene("Terrasse", "Entspannen");
+      } else if (data.sinn["licht"].kanal === "aktivieren") {
+        await hueHttp.recallScene("Terrasse", "Aktivieren");
+      } else {
+        await hueHttp.updateGroupByName("Terrasse", {
+          on: false,
+          transitiontime: 1
+        });
+        hueHttp.updateGroupByName("Terrasse", { on: true });
+      }
+      await hueHttp.updateGroupByName("Wohnzimmer", { on: false });
+    } else {
+      await hueHttp.updateGroupsByName(["Wohnzimmer", "Terrasse"], {
+        on: false
+      });
+    }
   } else {
-    hueHttp.updateSensorsState("58", { status: 1 });
-  }
+    if (
+      data.sinn["licht"].kanal === "sonnenaufgang" &&
+      data.sinn["licht"].helligkeit !== "aus"
+    ) {
+      hueHttp.recallScene("Wohnzimmer", "Sonnenaufgang (1)");
+      hueHttp.recallScene("Schlafzimmer", "Minimum");
+      await hueHttp.recallScenes(["Terrasse", "Bad"], "Entspannen");
 
-  if (
-    data.sinn["licht"].kanal === "sonnenuntergang" &&
-    data.sinn["licht"].helligkeit !== "aus"
-  ) {
-    const result = await hueHttp.queryGroups();
-    const groups = toArray<{ [index: string]: Group }, Group>(result);
+      hueHttp.updateSensorsState("71", { status: 1 });
+      hueHttp.updateSensorsState("72", { status: 1 });
+    } else {
+      hueHttp.updateSensorsState("71", { status: 0 });
+      hueHttp.updateSensorsState("72", { status: 0 });
+    }
 
-    for (const s of groups.filter(g => g.name === "Wohnzimmer"))
-      await hueHttp.updateGroups(s.id, { scene: "TmGhD5UhpklGlEI" });
-    for (const s of groups.filter(g => g.name === "Terrasse"))
-      await hueHttp.updateGroups(s.id, { scene: "96W725qhw8W8wG7" });
-    for (const s of groups.filter(g => g.name === "Bad"))
-      await hueHttp.updateGroups(s.id, { scene: "YvcDyf-5EkmsWYO" });
-    for (const s of groups.filter(g => g.name === "Schlafzimmer"))
-      await hueHttp.updateGroups(s.id, { scene: "an-71pUpLRiCLNX" });
-    hueHttp.updateSensorsState("38", { status: 0 });
-  } else {
-    hueHttp.updateSensorsState("38", { status: 1 });
+    if (
+      data.sinn["licht"].kanal === "sonnenuntergang" &&
+      data.sinn["licht"].helligkeit !== "aus"
+    ) {
+      await hueHttp.recallScenes(
+        ["Wohnzimmer", "Terrasse", "Bad", "Schlafzimmer"],
+        "Konzentration"
+      );
+
+      hueHttp.updateSensorsState("74", { status: 1 });
+      hueHttp.updateSensorsState("75", { status: 1 });
+    } else {
+      hueHttp.updateSensorsState("74", { status: 0 });
+      hueHttp.updateSensorsState("75", { status: 0 });
+    }
   }
 }
 

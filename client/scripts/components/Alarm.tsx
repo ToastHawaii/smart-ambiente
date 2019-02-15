@@ -6,7 +6,8 @@ import {
   WeatherNight,
   WeatherSunny,
   KeyboardOutline,
-  GamepadVariant
+  GamepadVariant,
+  Beach
 } from "mdi-material-ui";
 import ButtonGroup from "./ButtonGroup";
 import { Component } from "./Component";
@@ -15,7 +16,7 @@ import MenuButton from "./MenuButton";
 export interface Props {}
 
 export interface State {
-  zeit?: "05:56" | "06:56" | "07:56";
+  zeit?: "05:56" | "06:56" | "07:56" | "08:56";
   tage?: "1-5" | "0-6";
 }
 
@@ -73,6 +74,13 @@ class Alarm extends Component<Props & WithStyles<ComponentClassNames>, State> {
             selected={zeit === "07:56"}
             backgroundGradient="Yellow, Orange"
             value="07:56"
+          />
+          <MenuButton
+            icon={<Beach />}
+            title="09:30"
+            selected={zeit === "08:56"}
+            backgroundGradient="LightBlue, Gold"
+            value="08:56"
           />
         </ButtonGroup>
         <ButtonGroup

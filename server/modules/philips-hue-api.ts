@@ -158,6 +158,13 @@ class Hue {
     return groups.filter(g => g.name === name)[0];
   }
 
+  public async getGroupsByName(names: string[]) {
+    const result = await this.queryGroups();
+    const groups = toArray<{ [index: string]: Group }, Group>(result);
+
+    return groups.filter(g => names.indexOf(g.name) >= 0);
+  }
+
   public async queryGroups() {
     return await getJson<{ [index: string]: Group }>(this.baseUrl + "/groups");
   }
@@ -213,7 +220,31 @@ class Hue {
 
     await delay((transitiontime || 4) * 100);
   }
-  
+
+  public async recallScenes(
+    roomNames: string[],
+    sceneName: string,
+    transitiontime?: number
+  ) {
+    let promise: Promise<void> | undefined;
+    for (const roomName of roomNames) {
+      promise = this.recallScene(roomName, sceneName, transitiontime);
+    }
+    if (promise) await promise;
+  }
+
+  public async updateGroupsByName(
+    roomNames: string[],
+    attributes: GroupPartial
+  ) {
+    let promise: Promise<void> | undefined;
+    for (const s of await this.getGroupsByName(roomNames)) {
+      promise = this.updateGroups(s.id, attributes);
+    }
+    if (promise) await promise;
+    await delay((attributes.transitiontime || 4) * 100);
+  }
+
   public async updateGroupByName(roomName: string, attributes: GroupPartial) {
     const group = await this.getGroupByName(roomName);
     await this.updateGroups(group.id, attributes);
