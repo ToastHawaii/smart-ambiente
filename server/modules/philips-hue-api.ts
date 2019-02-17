@@ -25,6 +25,7 @@ export interface Scheduler {
 
 export interface Sensor {
   state: {
+    status?: 0 | 1;
     buttonevent?: 34 | 16 | 17 | 18;
     presence?: boolean;
     lastupdated: string;
