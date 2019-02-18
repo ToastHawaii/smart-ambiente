@@ -386,3 +386,7 @@ app.get("/api/events.ics", function(_req, res) {
 app.get("/api/events/:kategorie.ics", function(req, res) {
   res.end(Events.getIcal(req.params.kategorie));
 });
+
+app.get("/api/config/:name/", async function(req, res) {
+  res.json((await loadConfig())[req.params.name]);
+});

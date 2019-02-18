@@ -2,7 +2,7 @@ import * as React from "react";
 import { StyleRulesCallback, withStyles } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
 import * as GoogleMapsLoader from "google-maps";
-import { delay } from "../utils";
+import { delay, getJson } from "../utils";
 
 export interface Props {}
 
@@ -65,14 +65,14 @@ class BildHintergrund extends React.Component<
   }
 
   private timeout: any;
-  public componentDidMount() {
+  public async componentDidMount() {
     if (navigator.userAgent.indexOf("SMART-TV") !== -1) {
       this.timeout = setTimeout(() => {
         if (document.location) document.location.reload();
       }, 5 * 60 * 1000);
     }
 
-    (GoogleMapsLoader as any).KEY = "AIzaSyCCEsIm_EoOS89xEPJVO5LnmXCulyccpsM";
+    (GoogleMapsLoader as any).KEY = (await getJson("/api/config/erde")).key;
     GoogleMapsLoader.load(google => {
       this.google = google;
       this.initMap();

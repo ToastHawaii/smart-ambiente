@@ -1,6 +1,13 @@
 import * as fs from "fs";
 
 export interface Config {
+  [prop: string]: any;
+  erde: {
+    key: string;
+  };
+  flug: {
+    key: string;
+  };
   aufwachen: {
     aktiv: "aus" | "an";
     kanal: "alarm";
@@ -12,14 +19,18 @@ export interface Config {
   };
 }
 
-const config = "out/config.json";
+const config = "../../smart-ambiente-media/config.json";
 
-export function saveConfig(data: Config) {
-  return new Promise<void>((resolve, reject) => {
-    fs.writeFile(config, JSON.stringify(data), function(err) {
-      if (err) reject(err);
-      else resolve();
-    });
+export function saveConfig(data: Partial<Config>) {
+  return new Promise<void>(async (resolve, reject) => {
+    fs.writeFile(
+      config,
+      JSON.stringify({ ...(await loadConfig()), ...data }),
+      function(err) {
+        if (err) reject(err);
+        else resolve();
+      }
+    );
   });
 }
 

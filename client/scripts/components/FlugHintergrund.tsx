@@ -96,8 +96,8 @@ class BildHintergrund extends React.Component<
     };
   }
 
-  public componentDidMount() {
-    (GoogleMapsLoader as any).KEY = "AIzaSyCCEsIm_EoOS89xEPJVO5LnmXCulyccpsM";
+  public async componentDidMount() {
+    (GoogleMapsLoader as any).KEY = (await getJson("/api/config/flug")) .key;
     GoogleMapsLoader.load(google => {
       this.google = google;
       this.initMap();
