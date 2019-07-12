@@ -83,7 +83,7 @@ const data: {
   }
 };
 
-(async function() {
+(async function () {
   data.kanal["natur"].szene = shuffle([
     "feuer",
     "wind",
@@ -110,16 +110,16 @@ const data: {
   data.kanal["alarm"] = config.alarm;
 })();
 
-app.get("/api/sinn", async function(_req, res) {
+app.get("/api/sinn", async function (_req, res) {
   res.json({ sinn: data.sinn["aktiv"] });
 });
 
-app.post("/api/sinn", async function(req, res) {
+app.post("/api/sinn", async function (req, res) {
   data.sinn["aktiv"] = req.body.sinn;
   res.json({ sinn: data.sinn["aktiv"] });
 });
 
-app.get("/api/sinn/:sinn", async function(req, res) {
+app.get("/api/sinn/:sinn", async function (req, res) {
   if (first) {
     first = false;
 
@@ -134,7 +134,7 @@ app.get("/api/sinn/:sinn", async function(req, res) {
   res.json(data.sinn[req.params.sinn]);
 });
 
-app.post("/api/sinn/:sinn", async function(req, res) {
+app.post("/api/sinn/:sinn", async function (req, res) {
   res.json(await setSinn(req.params.sinn, req.body));
 });
 
@@ -156,15 +156,15 @@ export async function setSinn(sinn: string, sinnData: any) {
   return data.sinn[sinn];
 }
 
-app.get("/api/kanal/:kanal", function(req, res) {
+app.get("/api/kanal/:kanal", function (req, res) {
   res.json(data.kanal[req.params.kanal]);
 });
 
-app.get("/api/kanal/wetter/image", function(_req, res) {
+app.get("/api/kanal/wetter/image", function (_req, res) {
   res.json(chooseGoodMatch(data.kanal["wetter"]));
 });
 
-app.post("/api/kanal/:kanal", async function(req, res) {
+app.post("/api/kanal/:kanal", async function (req, res) {
   res.json(await setKanal(req.params.kanal, req.body));
 });
 
@@ -239,6 +239,8 @@ async function controlTon() {
           playPlaylist("Blues");
         } else if (data.kanal["musik"].stil === "akzeptanz") {
           playPlaylist("Reggea");
+        } else if (data.kanal["musik"].stil === "vertrauen") {
+          playSender("Whisperings: Solo Piano Radio");
         } else if (data.kanal["musik"].stil === "groll") {
           playPlaylist("Punk");
         } else if (data.kanal["musik"].stil === "erwartung") {
@@ -355,7 +357,7 @@ async function controlLicht() {
   }
 }
 
-process.on("uncaughtException", function(err) {
+process.on("uncaughtException", function (err) {
   console.error(err.stack);
   topic("Node NOT Exiting...");
 });
@@ -375,18 +377,18 @@ async function setLautstaerke(volume: number) {
     .do();
 }
 
-app.get("/api/events/", function(_req, res) {
+app.get("/api/events/", function (_req, res) {
   res.json(Events.get());
 });
 
-app.get("/api/events.ics", function(_req, res) {
+app.get("/api/events.ics", function (_req, res) {
   res.end(Events.getIcal());
 });
 
-app.get("/api/events/:kategorie.ics", function(req, res) {
+app.get("/api/events/:kategorie.ics", function (req, res) {
   res.end(Events.getIcal(req.params.kategorie));
 });
 
-app.get("/api/config/:name/", async function(req, res) {
+app.get("/api/config/:name/", async function (req, res) {
   res.json((await loadConfig())[req.params.name]);
 });

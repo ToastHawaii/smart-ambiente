@@ -9,7 +9,8 @@ import {
   Emoticon,
   EmoticonDevil,
   EmoticonExcited,
-  EmoticonCool
+  EmoticonCool,
+  EmoticonWinkOutline
 } from "mdi-material-ui";
 import ButtonGroup from "../os/ButtonGroup";
 import { Component } from "../os/Component";
@@ -60,7 +61,7 @@ class Musik extends Component<Props & WithStyles<ComponentClassNames>, State> {
 
   public handleChange = (_event: any, stil: any) => {
     this.publish("kanal/musik", { stil });
-  }
+  };
 
   public render() {
     const { classes } = this.props;
@@ -116,6 +117,12 @@ class Musik extends Component<Props & WithStyles<ComponentClassNames>, State> {
             icon={<EmoticonExcited />}
             backgroundImage="/img/button/musik/Freude.png"
             value="freude"
+          />
+          <MenuButton
+            title="Vertrauen"
+            icon={<EmoticonWinkOutline />}
+            backgroundImage="/img/button/musik/Vertrauen.jpg"
+            value="vertrauen"
           />
         </ButtonGroup>
         <ButtonGroup
