@@ -64,8 +64,8 @@ export function getIcal(kategorie: string = "") {
         end: !allDay
           ? e.ende
           : e.ende && !e.start.isSame(e.ende, "day")
-          ? moment(e.ende).add(3, "hour")
-          : undefined,
+            ? moment(e.ende).add(3, "hour")
+            : undefined,
         allDay: allDay,
         description: e.beschreibung || undefined,
         location: e.ort || undefined,

@@ -1,4 +1,4 @@
-import { sequenz } from "../utils/timer";
+import { sequenz, delay } from "../utils/timer";
 import * as Hue from "../os/philips-hue-api";
 import * as WeatherForecast from "../kanal/Weather/Forecast";
 import { setKanal, setSinn, getKanal } from "../server";
@@ -11,7 +11,7 @@ const hue = Hue.createHueService(
 const interval = 5;
 const transition = interval * 60 * 10;
 
-(async function() {
+(async function () {
   const config = await loadConfig();
 
   if (config.aufwachen.aktiv !== "an") return;
@@ -31,6 +31,8 @@ const transition = interval * 60 * 10;
       setSinn("ton", { lautstaerke: "1", kanal: "wetter" });
 
       setSinn("licht", { helligkeit: "viel", kanal: "tageslicht" });
+
+      await delay(10 * 60);
 
       if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
         await hue.recallScene("Wohnzimmer", "Minimum", 1);

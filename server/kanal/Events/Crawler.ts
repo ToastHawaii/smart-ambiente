@@ -5,7 +5,7 @@ import { tagesanzeigerChReader } from "./TagesanzeigerReader";
 import { zuriNetReader } from "./ZuriNetReader";
 import { comedyHausReader } from "./ComedyHausReader";
 import { pfirsiReader } from "./PfirsiReader";
-import { casinotheaterReader } from "./CasinotheaterReader";
+//import { casinotheaterReader } from "./CasinotheaterReader";
 import { dynamoVeranstaltungenReader } from "./DynamoVeranstaltungenReader";
 import { dynamoKurseReader } from "./DynamoKurseReader";
 import { gzZhReader } from "./GzZhReader";
@@ -66,7 +66,7 @@ const readers: Reader[] = [
   zuriNetReader,
   comedyHausReader,
   pfirsiReader,
-  casinotheaterReader,
+  //casinotheaterReader,
   dynamoVeranstaltungenReader,
   dynamoKurseReader,
   gzZhReader,
@@ -87,7 +87,7 @@ function params(param: string): string[] {
 }
 
 function selectMany(f: any) {
-  return function(acc: any, b: any) {
+  return function (acc: any, b: any) {
     return acc.concat(f(b));
   };
 }
