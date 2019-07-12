@@ -36,6 +36,8 @@ function typVolume(typ: string, weather: Forecast) {
       return weather.niederschlag;
     case "wind":
       return weather.wind;
+    case "radio":
+      return weather.radio;
     default:
       return 1;
   }

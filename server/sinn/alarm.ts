@@ -23,7 +23,7 @@ const transition = interval * 60 * 10;
       const weather = await WeatherForecast.query();
 
       setSinn("ton", { lautstaerke: "aus", kanal: "wetter" });
-      setKanal("wetter", { mode: "vorhersage", ...weather });
+      setKanal("wetter", { ...weather, mode: "manuell" });
 
       setSinn("licht", { helligkeit: "aus", kanal: "tageslicht" });
     },
@@ -125,8 +125,8 @@ const transition = interval * 60 * 10;
       }
     },
     () => {
-      setSinn("ton", { lautstaerke: "10", kanal: "nachrichten" });
-      setSinn("bild", { bildschirm: "ein", kanal: "ansehen" });
+      setKanal("wetter", { ...getKanal("wetter"), radio: 0.3 });
+      setSinn("ton", { lautstaerke: "10", kanal: "wetter" });
 
       hue.recallScene("Wohnzimmer", "Konzentration", transition);
       hue.recallScene("Terrasse", "Konzentration", transition);
@@ -134,7 +134,8 @@ const transition = interval * 60 * 10;
       hue.recallScene("Schlafzimmer", "Konzentration", transition);
     },
     () => {
-      setSinn("ton", { lautstaerke: "13", kanal: "nachrichten" });
+      setKanal("wetter", { ...getKanal("wetter"), radio: 0.6 });
+      setSinn("ton", { lautstaerke: "13", kanal: "wetter" });
 
       hue.recallScene("Wohnzimmer", "Aktivieren", transition);
       hue.recallScene("Terrasse", "Aktivieren", transition);
@@ -142,7 +143,8 @@ const transition = interval * 60 * 10;
       hue.recallScene("Schlafzimmer", "Aktivieren", transition);
     },
     () => {
-      setSinn("ton", { lautstaerke: "15", kanal: "nachrichten" });
+      setKanal("wetter", { ...getKanal("wetter"), radio: 1 });
+      setSinn("ton", { lautstaerke: "15", kanal: "wetter" });
     }
   ]);
 })();

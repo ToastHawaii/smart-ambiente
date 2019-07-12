@@ -7,6 +7,7 @@ export interface Forecast {
   wolken: number;
   wind: number;
   niederschlag: number;
+  radio: number;
   temperatur: number;
 }
 
@@ -114,6 +115,11 @@ export enum Niederschlag {
   Niederschlag
 }
 
+export enum Radio {
+  An,
+  Aus
+}
+
 export enum Wind {
   Still,
   Windig
@@ -132,6 +138,7 @@ export async function query() {
     zeit: getTime(),
     wolken: getCloudiness(forecast),
     wind: getWind(forecast),
-    niederschlag: getPrecipitation(forecast)
+    niederschlag: getPrecipitation(forecast),
+    radio: 0,
   } as Forecast;
 }

@@ -17,7 +17,8 @@ import {
   WeatherSunny,
   ThemeLightDark,
   GaugeFull,
-  GaugeEmpty
+  GaugeEmpty,
+  Piano
 } from "mdi-material-ui";
 import ButtonGroup from "../os/ButtonGroup";
 import { Component } from "../os/Component";
@@ -30,6 +31,7 @@ export function toViewModel(
     wolken: number;
     wind: number;
     niederschlag: number;
+    radio: number;
     temperatur: number;
     mode: "vorhersage" | "manuell";
   },
@@ -40,6 +42,7 @@ export function toViewModel(
     wolken: model.wolken,
     wind: model.wind,
     niederschlag: model.niederschlag,
+    radio: model.radio,
     temperatur: model.temperatur,
     mode: model.mode,
     image: image
@@ -51,6 +54,7 @@ export function fromViewModel(viewModel: {
   wolken: number;
   wind: number;
   niederschlag: number;
+  radio: number;
   temperatur: number;
   mode: "vorhersage" | "manuell";
 }) {
@@ -59,6 +63,7 @@ export function fromViewModel(viewModel: {
     wolken: viewModel.wolken,
     wind: viewModel.wind,
     niederschlag: viewModel.niederschlag,
+    radio: viewModel.radio,
     temperatur: viewModel.temperatur,
     mode: viewModel.mode
   };
@@ -71,6 +76,7 @@ export interface State {
   wolken?: number;
   wind?: number;
   niederschlag?: number;
+  radio?: number;
   temperatur?: number;
   mode?: "vorhersage" | "manuell";
 }
@@ -116,15 +122,15 @@ class Wetter extends Component<Props & WithStyles<ComponentClassNames>, State> {
 
   public handleModeChange = (_event: any, mode: any) => {
     this.publish("kanal/wetter", { mode }, fromViewModel);
-  }
+  };
 
   public handleWolkenChange = (_event: any, _value: any, wolken: boolean) => {
     this.publish("kanal/wetter", { wolken: wolken ? 1 : 0 }, fromViewModel);
-  }
+  };
 
   public handleWindChange = (_event: any, _value: any, wind: boolean) => {
     this.publish("kanal/wetter", { wind: wind ? 1 : 0 }, fromViewModel);
-  }
+  };
 
   public handleNiederschlagChange = (
     _event: any,
@@ -136,19 +142,23 @@ class Wetter extends Component<Props & WithStyles<ComponentClassNames>, State> {
       { niederschlag: niederschlag ? 1 : 0 },
       fromViewModel
     );
-  }
+  };
+
+  public handleRadioChange = (_event: any, _value: any, radio: boolean) => {
+    this.publish("kanal/wetter", { radio: radio ? 1 : 0 }, fromViewModel);
+  };
 
   public handleTemperaturChange = (_event: any, temperatur: number) => {
     this.publish("kanal/wetter", { temperatur }, fromViewModel);
-  }
+  };
 
   public handleZeitChange = (_event: any, zeit: number) => {
     this.publish("kanal/wetter", { zeit }, fromViewModel);
-  }
+  };
 
   public render() {
     const { classes } = this.props;
-    const { wolken, wind, niederschlag, temperatur, mode } = this.state;
+    const { wolken, wind, niederschlag, radio, temperatur, mode } = this.state;
 
     let zeit: number;
 
@@ -235,6 +245,13 @@ class Wetter extends Component<Props & WithStyles<ComponentClassNames>, State> {
               icon={<WeatherPouring />}
               title="Niederschlag"
               backgroundImage="/img/button/wetter/Niederschlag.jpg"
+            />
+            <MenuButton
+              onChange={this.handleRadioChange}
+              selected={radio && radio >= 0.1}
+              icon={<Piano />}
+              title="Radio"
+              backgroundImage="/img/button/wetter/Radio.jpg"
             />
           </ButtonGroup>
           <ButtonGroup

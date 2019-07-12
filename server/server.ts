@@ -58,6 +58,7 @@ const data: {
       wolken: 0,
       wind: 0,
       niederschlag: 0,
+      radio: 0,
       temperatur: 0,
       mode: "vorhersage"
     },
@@ -123,12 +124,14 @@ app.get("/api/sinn/:sinn", async function (req, res) {
   if (first) {
     first = false;
 
-    const weather = await WeatherForecast.query();
-    data.kanal["wetter"] = weather;
-    data.kanal["wetter"].mode = "vorhersage";
+    if (data.kanal["wetter"] && data.kanal["wetter"].mode === "vorhersage") {
 
-    controlTon();
-    controlLicht();
+      const weather = await WeatherForecast.query();
+      data.kanal["wetter"] = weather;
+
+      controlTon();
+      controlLicht();
+    }
   }
 
   res.json(data.sinn[req.params.sinn]);
