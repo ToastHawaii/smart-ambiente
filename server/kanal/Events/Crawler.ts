@@ -16,6 +16,7 @@ import * as cheerio from "cheerio";
 import { getHtml, getJson, postForm } from "../../utils/request";
 import { inspect } from "util";
 import debug from "../../utils/debug";
+import { kuBaAReader } from "./KuBaAReader";
 const topic = debug("Events/Crawler", true);
 
 export interface Event {
@@ -64,6 +65,7 @@ const readers: Reader[] = [
   eventsChReader,
   tagesanzeigerChReader,
   zuriNetReader,
+  kuBaAReader,
   comedyHausReader,
   pfirsiReader,
   //casinotheaterReader,
