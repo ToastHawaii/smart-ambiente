@@ -13,6 +13,7 @@ import "./os/hue-sonos-link";
 import { chooseGoodMatch } from "./kanal/Weather/Image";
 import debug from "./utils/debug";
 import { saveConfig, loadConfig } from "./utils/config";
+import { delay } from "./utils/timer";
 debug.enabled = true;
 const topic = debug("server", false);
 
@@ -203,6 +204,12 @@ export function getKanal(kanal: string) {
 app.listen(3001);
 
 async function controlTon() {
+
+  await NaturRadio.stopSound();
+  await WeatherRadio.stopSound();
+
+  await delay(5 * 1000);
+
   if (
     data.sinn["ton"].lautstaerke !== "aus" &&
     data.sinn["ton"].lautstaerke !== "bild"
@@ -232,8 +239,6 @@ async function controlTon() {
     } else if (data.sinn["ton"].kanal === "natur") {
       await NaturRadio.playSound(data.kanal["natur"].szene);
     } else {
-      await NaturRadio.stopSound();
-      await WeatherRadio.stopSound();
 
       if (data.sinn["ton"].kanal === "musik") {
         if (data.kanal["musik"].stil === "interesse") {
@@ -266,9 +271,6 @@ async function controlTon() {
       .room("wohnzimmer")
       .pause()
       .do();
-
-    await WeatherRadio.stopSound();
-    await NaturRadio.stopSound();
   }
 }
 
