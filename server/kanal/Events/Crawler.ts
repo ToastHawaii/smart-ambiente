@@ -17,6 +17,8 @@ import { getHtml, getJson, postForm } from "../../utils/request";
 import { inspect } from "util";
 import debug from "../../utils/debug";
 import { kuBaAReader } from "./KuBaAReader";
+import { buehneSReader } from "./BuehneSReader";
+import { mapsZueriAgendaReader } from "./MapsZueriAgendaReader";
 const topic = debug("Events/Crawler", true);
 
 export interface Event {
@@ -72,7 +74,9 @@ const readers: Reader[] = [
   dynamoVeranstaltungenReader,
   dynamoKurseReader,
   gzZhReader,
-  meetupReader
+  meetupReader,
+  mapsZueriAgendaReader,
+  buehneSReader
 ];
 
 function params(param: string): string[] {
