@@ -123,16 +123,14 @@ app.post("/api/sinn", async function (req, res) {
 
 app.get("/api/sinn/:sinn", async function (req, res) {
   if (first) {
+
+    const weather = await WeatherForecast.query();
+    data.kanal["wetter"] = weather;
+    data.kanal["wetter"].mode = "vorhersage";
     first = false;
 
-    if (data.kanal["wetter"] && data.kanal["wetter"].mode === "vorhersage") {
-
-      const weather = await WeatherForecast.query();
-      data.kanal["wetter"] = weather;
-
-      controlTon();
-      controlLicht();
-    }
+    controlTon();
+    controlLicht();
   }
 
   res.json(data.sinn[req.params.sinn]);
@@ -144,6 +142,7 @@ app.post("/api/sinn/:sinn", async function (req, res) {
 
 export async function setSinn(sinn: string, sinnData: any) {
   topic("Sinn", sinnData);
+  first = false;
 
   data.sinn[sinn] = sinnData;
 
@@ -160,7 +159,18 @@ export async function setSinn(sinn: string, sinnData: any) {
   return data.sinn[sinn];
 }
 
-app.get("/api/kanal/:kanal", function (req, res) {
+app.get("/api/kanal/:kanal",async function (req, res) {
+  if (first) {
+
+    const weather = await WeatherForecast.query();
+    data.kanal["wetter"] = weather;
+    data.kanal["wetter"].mode = "vorhersage";
+    first = false;
+
+    controlTon();
+    controlLicht();
+  }
+
   res.json(data.kanal[req.params.kanal]);
 });
 
@@ -174,6 +184,7 @@ app.post("/api/kanal/:kanal", async function (req, res) {
 
 export async function setKanal(kanal: string, kanalData: any) {
   topic("Kanal", kanalData);
+  first = false;
 
   data.kanal[kanal] = kanalData;
 

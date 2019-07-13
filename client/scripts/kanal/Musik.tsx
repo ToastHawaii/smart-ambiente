@@ -10,7 +10,7 @@ import {
   EmoticonDevil,
   EmoticonExcited,
   EmoticonCool,
-  EmoticonWinkOutline
+  EmoticonWink
 } from "mdi-material-ui";
 import ButtonGroup from "../os/ButtonGroup";
 import { Component } from "../os/Component";
@@ -120,7 +120,7 @@ class Musik extends Component<Props & WithStyles<ComponentClassNames>, State> {
           />
           <MenuButton
             title="Vertrauen"
-            icon={<EmoticonWinkOutline />}
+            icon={<EmoticonWink />}
             backgroundImage="/img/button/musik/Vertrauen.jpg"
             value="vertrauen"
           />
