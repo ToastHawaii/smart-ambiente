@@ -14,7 +14,7 @@ export interface Config {
   };
   alarm: {
     aktiv: boolean;
-    zeit: "05:56" | "06:56" | "07:56";
+    zeit: "05:49" | "06:49" | "07:49";
     tage: "1-5" | "0-6";
   };
 }

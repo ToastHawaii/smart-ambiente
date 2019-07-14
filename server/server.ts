@@ -212,6 +212,10 @@ export function getKanal(kanal: string) {
   return data.kanal[kanal];
 }
 
+export function getSinn(sinn: string) {
+  return data.sinn[sinn];
+}
+
 app.listen(3001);
 
 async function controlTon() {
