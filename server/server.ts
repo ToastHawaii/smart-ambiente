@@ -79,7 +79,7 @@ const data: {
       aktivitaet: "bahnverkehr"
     },
     emotion: {
-      emotion: "wut"
+      emotion: "groll"
     },
     alarm: {
       zeit: "06:56",
@@ -373,14 +373,22 @@ async function controlLicht() {
   } else if (data.sinn["licht"].kanal === "aktivieren") {
     await hueHttp.recallScenes(rooms, "Aktivieren");
   } else if (data.sinn["licht"].kanal === "emotion") {
-    if (data.kanal["emotion"].emotion === "wut") await hueHttp.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#d40000") });
-    else if (data.kanal["emotion"].emotion === "umsicht") await hueHttp.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#ff7d00") });
-    else if (data.kanal["emotion"].emotion === "ekstase") await hueHttp.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#ffe854") });
-    else if (data.kanal["emotion"].emotion === "bewunderung") await hueHttp.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#00b400") });
-    else if (data.kanal["emotion"].emotion === "schrecken") await hueHttp.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#007f00") });
-    else if (data.kanal["emotion"].emotion === "erstaunen") await hueHttp.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#0089e0") });
-    else if (data.kanal["emotion"].emotion === "kummer") await hueHttp.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#0000c8") });
-    else if (data.kanal["emotion"].emotion === "abscheu") await hueHttp.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#de00de") });
+    if (data.kanal["emotion"].emotion === "groll")
+      await hueHttp.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#d40000") });
+    else if (data.kanal["emotion"].emotion === "erwartung")
+      await hueHttp.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#ff7d00") });
+    else if (data.kanal["emotion"].emotion === "freude")
+      await hueHttp.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#ffe854") });
+    else if (data.kanal["emotion"].emotion === "vertrauen")
+      await hueHttp.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#00b400") });
+    else if (data.kanal["emotion"].emotion === "angst")
+      await hueHttp.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#007f00") });
+    else if (data.kanal["emotion"].emotion === "überraschung")
+      await hueHttp.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#0089e0") });
+    else if (data.kanal["emotion"].emotion === "traurigkeit")
+      await hueHttp.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#0000c8") });
+    else if (data.kanal["emotion"].emotion === "abneigung")
+      await hueHttp.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#de00de") });
   } else {
     await hueHttp.updateGroupsByName(rooms, {
       on: false

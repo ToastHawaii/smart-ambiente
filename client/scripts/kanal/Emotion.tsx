@@ -4,12 +4,12 @@ import { WithStyles } from "@material-ui/core";
 import {
   EmoticonNeutral,
   EmoticonExcited,
-  EmoticonCool,
-  EmoticonAngry,
-  EmoticonKiss,
   EmoticonDead,
   EmoticonCry,
-  EmoticonDevil
+  EmoticonSad,
+  EmoticonWink,
+  Emoticon,
+  EmoticonPoop
 } from "mdi-material-ui";
 import ButtonGroup from "../os/ButtonGroup";
 import { Component } from "../os/Component";
@@ -78,28 +78,28 @@ class Emotion extends Component<
           style={{ marginTop: "1%" }}
         >
           <MenuButton
-            title="Wut"
-            icon={<EmoticonDevil />}
+            title="Groll"
+            icon={<EmoticonPoop />}
             backgroundGradient="#ff8c8c, #d40000"
-            value="wut"
+            value="groll"
           />
           <MenuButton
-            title="Umsicht"
-            icon={<EmoticonCool />}
+            title="Erwartung"
+            icon={<Emoticon />}
             backgroundGradient="#ffc48c, #ff7d00"
-            value="umsicht"
+            value="erwartung"
           />
           <MenuButton
-            title="Ekstase"
+            title="Freude"
             icon={<EmoticonExcited />}
             backgroundGradient="#ffffb1, #ffe854"
-            value="ekstase"
+            value="freude"
           />
           <MenuButton
-            title="Bewunderung"
-            icon={<EmoticonKiss />}
+            title="Vertrauen"
+            icon={<EmoticonWink />}
             backgroundGradient="#85f285, #00b400"
-            value="bewunderung"
+            value="vertrauen"
           />
         </ButtonGroup>
         <ButtonGroup
@@ -109,28 +109,28 @@ class Emotion extends Component<
           style={{ marginTop: "1%" }}
         >
           <MenuButton
-            title="Schrecken"
+            title="Angst"
             icon={<EmoticonDead />}
             backgroundGradient="#8cc68c, #007f00"
-            value="schrecken"
+            value="angst"
           />
           <MenuButton
-            title="Erstaunen"
+            title="Überraschung"
             icon={<EmoticonNeutral />}
             backgroundGradient="#a5dbff, #0089e0"
-            value="erstaunen"
+            value="überraschung"
           />
           <MenuButton
-            title="Kummer"
+            title="Traurigkeit"
             icon={<EmoticonCry />}
             backgroundGradient="#8c8cff, #0000c8"
-            value="kummer"
+            value="traurigkeit"
           />
           <MenuButton
-            title="Abscheu"
-            icon={<EmoticonAngry />}
+            title="Abneigung"
+            icon={<EmoticonSad />}
             backgroundGradient="#ffc6ff, #de00de"
-            value="abscheu"
+            value="abneigung"
           />
         </ButtonGroup>
       </div>
