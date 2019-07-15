@@ -45,6 +45,7 @@ export interface Light {
 
 export interface Group {
   name: string;
+  lights: string[];
   type: string;
   state: {
     any_on: boolean;
@@ -66,10 +67,10 @@ export interface Scene {
 }
 
 export interface LightPartial {
-  on: boolean;
-  bri: number;
-  ct: number;
-  xy: [number, number];
+  on?: boolean;
+  bri?: number;
+  ct?: number;
+  xy?: [number, number];
   transitiontime?: number;
 }
 
@@ -90,7 +91,7 @@ export interface GroupPartial {
 }
 
 class Hue {
-  public constructor(private baseUrl: string) {}
+  public constructor(private baseUrl: string) { }
 
   public async querySchedules() {
     return await getJson<{ [index: string]: Scheduler }>(
@@ -202,6 +203,14 @@ class Hue {
 
   public async setLightState(id: string, attributes: LightPartial) {
     await putJson(this.baseUrl + "/lights/" + id + "/state", attributes);
+  }
+
+  public async setLightStateByGroupByNames(roomNames: string[], attributes: LightPartial) {
+    for (const group of await this.getGroupsByName(roomNames)) {
+      for (const light of group.lights) {
+        await this.setLightState(light, attributes);
+      }
+    }
   }
 
   public async recallScene(

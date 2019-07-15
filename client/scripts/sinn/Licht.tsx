@@ -9,18 +9,20 @@ import {
   WeatherSunsetUp,
   WeatherSunsetDown,
   BatteryCharging,
-  BookOpenPageVariant
+  BookOpenPageVariant,
+  EmoticonHappy
 } from "mdi-material-ui";
 import Wetter from "../kanal/Wetter";
 import ButtonGroup from "../os/ButtonGroup";
 import { Component } from "../os/Component";
 import MenuButton from "../os/MenuButton";
+import Emotion from "../kanal/Emotion";
 
 export interface Props {}
 
 export interface State {
   helligkeit?: "aus" | "wenig" | "viel";
-  kanal?: "wetter" | "tageslicht";
+  kanal?: "wetter" | "tageslicht" | "emotion";
 }
 
 type ComponentClassNames = "root";
@@ -41,11 +43,11 @@ class Licht extends Component<Props & WithStyles<ComponentClassNames>, State> {
 
   public handleHelligkeitChange = (_event: any, helligkeit: any) => {
     this.publish("sinn/licht", { helligkeit });
-  }
+  };
 
   public handleKanalChange = (_event: any, kanal: any) => {
     this.publish("sinn/licht", { kanal });
-  }
+  };
 
   public render() {
     const { classes } = this.props;
@@ -119,10 +121,21 @@ class Licht extends Component<Props & WithStyles<ComponentClassNames>, State> {
               backgroundGradient="Orange, Red"
               value="sonnenuntergang"
             />
+            <MenuButton
+              title="Emotion"
+              icon={<EmoticonHappy />}
+              backgroundGradient="#0089e0, #ff7d00"
+              value="emotion"
+            />
           </ButtonGroup>
           {
             <Collapse in={kanal === "wetter"}>
               <Wetter />
+            </Collapse>
+          }
+          {
+            <Collapse in={kanal === "emotion"}>
+              <Emotion />
             </Collapse>
           }
         </Collapse>

@@ -1,7 +1,7 @@
 import * as express from "express";
 import * as bodyParser from "body-parser";
 import { shuffle } from "./utils/array";
-import { relative } from "./utils/math";
+import { relative, hexToXy } from "./utils/math";
 import * as SonosHttp from "./os/node-sonos-http-api";
 import * as HueHttp from "./os/philips-hue-api";
 import * as Events from "./kanal/Events/Calendar";
@@ -77,6 +77,9 @@ const data: {
     },
     zusehen: {
       aktivitaet: "bahnverkehr"
+    },
+    emotion: {
+      emotion: "wut"
     },
     alarm: {
       zeit: "06:56",
@@ -159,7 +162,7 @@ export async function setSinn(sinn: string, sinnData: any) {
   return data.sinn[sinn];
 }
 
-app.get("/api/kanal/:kanal",async function (req, res) {
+app.get("/api/kanal/:kanal", async function (req, res) {
   if (first) {
 
     const weather = await WeatherForecast.query();
@@ -203,6 +206,8 @@ export async function setKanal(kanal: string, kanalData: any) {
       aufwachen: data.sinn["aufwachen"],
       alarm: data.kanal["alarm"]
     });
+  } else if (kanal === "emotion") {
+    controlLicht();
   }
 
   return data.kanal[kanal];
@@ -367,6 +372,15 @@ async function controlLicht() {
     await hueHttp.recallScenes(rooms, "Entspannen");
   } else if (data.sinn["licht"].kanal === "aktivieren") {
     await hueHttp.recallScenes(rooms, "Aktivieren");
+  } else if (data.sinn["licht"].kanal === "emotion") {
+    if (data.kanal["emotion"].emotion === "wut") await hueHttp.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#d40000") });
+    else if (data.kanal["emotion"].emotion === "umsicht") await hueHttp.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#ff7d00") });
+    else if (data.kanal["emotion"].emotion === "ekstase") await hueHttp.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#ffe854") });
+    else if (data.kanal["emotion"].emotion === "bewunderung") await hueHttp.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#00b400") });
+    else if (data.kanal["emotion"].emotion === "schrecken") await hueHttp.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#007f00") });
+    else if (data.kanal["emotion"].emotion === "erstaunen") await hueHttp.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#0089e0") });
+    else if (data.kanal["emotion"].emotion === "kummer") await hueHttp.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#0000c8") });
+    else if (data.kanal["emotion"].emotion === "abscheu") await hueHttp.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#de00de") });
   } else {
     await hueHttp.updateGroupsByName(rooms, {
       on: false
