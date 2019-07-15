@@ -109,7 +109,7 @@ const transition = interval * 60 * 10;
       check();
 
       if (tonActiv)
-        setSinn("ton", { lautstaerke: "8", kanal: "wetter" });
+        setSinn("ton", { lautstaerke: "6", kanal: "wetter" });
 
       if (lichtActiv)
         if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
@@ -132,7 +132,7 @@ const transition = interval * 60 * 10;
       check();
 
       if (tonActiv)
-        setSinn("ton", { lautstaerke: "10", kanal: "wetter" });
+        setSinn("ton", { lautstaerke: "8", kanal: "wetter" });
 
       if (lichtActiv)
         if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
@@ -171,7 +171,7 @@ const transition = interval * 60 * 10;
 
       if (tonActiv) {
         setKanal("wetter", { ...getKanal("wetter"), radio: 0.6 });
-        setSinn("ton", { lautstaerke: "13", kanal: "wetter" });
+        setSinn("ton", { lautstaerke: "12", kanal: "wetter" });
       }
 
       if (lichtActiv) {
@@ -186,7 +186,7 @@ const transition = interval * 60 * 10;
 
       if (tonActiv) {
         setKanal("wetter", { ...getKanal("wetter"), radio: 1 });
-        setSinn("ton", { lautstaerke: "15", kanal: "wetter" });
+        setSinn("ton", { lautstaerke: "14", kanal: "wetter" });
       }
     },
     () => {

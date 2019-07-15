@@ -239,11 +239,11 @@ async function controlTon() {
       const lautstaerke = parseInt(data.sinn["ton"].lautstaerke, 10);
       setLautstaerke(lautstaerke);
 
-      if (lautstaerke >= 25) {
+      if (lautstaerke >= 20) {
         data.sinn["ton"].lautstaerke = "laut";
-      } else if (lautstaerke >= 15) {
+      } else if (lautstaerke >= 12) {
         data.sinn["ton"].lautstaerke = "normal";
-      } else if (lautstaerke >= 8) {
+      } else if (lautstaerke >= 1) {
         data.sinn["ton"].lautstaerke = "leise";
       } else {
         data.sinn["ton"].lautstaerke = "aus";
