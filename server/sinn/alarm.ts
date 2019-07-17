@@ -43,7 +43,7 @@ const transition = interval * 60 * 10;
 
       setSinn("licht", { helligkeit: "viel", kanal: "tageslicht" });
 
-      await delay(10 * 60);
+      await delay(3 * 1000);
 
       if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
         await hue.recallScene("Wohnzimmer", "Minimum", 1);
