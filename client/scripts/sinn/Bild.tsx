@@ -4,7 +4,7 @@ import { WithStyles } from "@material-ui/core";
 import {
   Television,
   TelevisionOff,
-  WeatherPartlycloudy,
+  WeatherPartlyCloudy,
   Webcam,
   Routes,
   Coffee,
@@ -87,7 +87,7 @@ class Bild extends Component<Props & WithStyles<ComponentClassNames>, State> {
           >
             <MenuButton
               title="Wetter"
-              icon={<WeatherPartlycloudy />}
+              icon={<WeatherPartlyCloudy />}
               backgroundGradient="lightblue, gold"
               value="wetter"
             />

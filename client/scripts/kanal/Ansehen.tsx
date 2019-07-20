@@ -6,7 +6,8 @@ import {
   ImageFilterHdr,
   Star,
   Calendar,
-  Blackberry
+  Blackberry,
+  Sprout
 } from "mdi-material-ui";
 import ButtonGroup from "../os/ButtonGroup";
 import { Component } from "../os/Component";
@@ -60,7 +61,7 @@ class Ansehen extends Component<
 
   public handleChange = (_event: any, ort: any) => {
     this.publish("kanal/ansehen", { ort });
-  }
+  };
 
   public render() {
     const { classes } = this.props;
@@ -102,6 +103,12 @@ class Ansehen extends Component<
             icon={<Calendar />}
             backgroundGradient="DarkRed, DarkSlateGray"
             value="ereignisse"
+          />
+          <MenuButton
+            title="Saison"
+            icon={<Sprout />}
+            backgroundGradient="DarkGreen, DarkSlateGray"
+            value="saison"
           />
         </ButtonGroup>
       </div>

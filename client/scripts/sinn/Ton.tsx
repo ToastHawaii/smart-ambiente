@@ -6,7 +6,7 @@ import {
   VolumeLow,
   VolumeMedium,
   VolumeHigh,
-  WeatherPartlycloudy,
+  WeatherPartlyCloudy,
   Music,
   Newspaper,
   Television,
@@ -105,7 +105,7 @@ class Ton extends Component<Props & WithStyles<ComponentClassNames>, State> {
           >
             <MenuButton
               title="Wetter"
-              icon={<WeatherPartlycloudy />}
+              icon={<WeatherPartlyCloudy />}
               backgroundGradient="LightBlue, Gold"
               value="wetter"
             />

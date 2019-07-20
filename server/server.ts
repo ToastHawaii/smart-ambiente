@@ -14,6 +14,7 @@ import { chooseGoodMatch } from "./kanal/Weather/Image";
 import debug from "./utils/debug";
 import { saveConfig, loadConfig } from "./utils/config";
 import { delay } from "./utils/timer";
+import moment = require("moment");
 debug.enabled = true;
 const topic = debug("server", false);
 
@@ -430,6 +431,100 @@ app.get("/api/events.ics", function (_req, res) {
 app.get("/api/events/:kategorie.ics", function (req, res) {
   res.end(Events.getIcal(req.params.kategorie));
 });
+
+
+app.get("/api/saison/", function (_req, res) {
+
+  let saison = [
+    { basisKategorie: "Gemüse", titel: "Artischocke ", bild: "/img/saison/Gemuese_Artischocke.jpg", start: 7, ende: 10 },
+    { basisKategorie: "Gemüse", titel: "Aubergine ", bild: "/img/saison/Gemuese_Aubergine.jpg", start: 6, ende: 10 },
+    { basisKategorie: "Gemüse", titel: "Batavia grün/rot ", bild: "/img/saison/Gemuese_Batavia_gruen_rot.jpg", start: 3, ende: 11 },
+    { basisKategorie: "Gemüse", titel: "Blumenkohl ", bild: "/img/saison/Gemuese_Blumenkohl.jpg", start: 5, ende: 11 },
+    { basisKategorie: "Gemüse", titel: "Bodenkohlrabi ", bild: "/img/saison/Gemuese_Bodenkohlrabi.jpg", start: 7, ende: 4 },
+    { basisKategorie: "Gemüse", titel: "Bohnen ", bild: "/img/saison/Gemuese_Bohnen.jpg", start: 6, ende: 10 },
+    { basisKategorie: "Gemüse", titel: "Broccoli ", bild: "/img/saison/Gemuese_Broccoli.jpg", start: 5, ende: 11 },
+    { basisKategorie: "Gemüse", titel: "Catalogna ", bild: "/img/saison/Gemuese_Catalogna.jpg", start: 5, ende: 10 },
+    { basisKategorie: "Gemüse", titel: "Chicorée ", bild: "/img/saison/Gemuese_Chicoree.jpg", start: 1, ende: 12 },
+    { basisKategorie: "Gemüse", titel: "Chinakohl ", bild: "/img/saison/Gemuese_Chinakohl.jpg", start: 5, ende: 3 },
+    { basisKategorie: "Gemüse", titel: "Cicorino Rosso ", bild: "/img/saison/Gemuese_Cicorino_Rosso.jpg", start: 6, ende: 2 },
+    { basisKategorie: "Gemüse", titel: "Eichblatt grün/rot ", bild: "/img/saison/Gemuese_Eichblatt_gruen_rot.jpg", start: 3, ende: 12 },
+    { basisKategorie: "Gemüse", titel: "Eisbergsalat ", bild: "/img/saison/Gemuese_Eisbergsalat.jpg", start: 4, ende: 10 },
+    { basisKategorie: "Gemüse", titel: "Endivie gekraust/glatt ", bild: "/img/saison/Gemuese_Endivie_gekraust_glatt.jpg", start: 5, ende: 11 },
+    { basisKategorie: "Gemüse", titel: "Erbsen (frisch) ", bild: "/img/saison/Gemuese_Erbsen_frisch.jpg", start: 6, ende: 7 },
+    { basisKategorie: "Gemüse", titel: "Federkohl / Grünkohl ", bild: "/img/saison/Gemuese_Federkohl_Gruenkohl.jpg", start: 11, ende: 3 },
+    { basisKategorie: "Gemüse", titel: "Fenchel ", bild: "/img/saison/Gemuese_Fenchel.jpg", start: 5, ende: 11 },
+    { basisKategorie: "Gemüse", titel: "Gurke ", bild: "/img/saison/Gemuese_Gurke.jpg", start: 4, ende: 10 },
+    { basisKategorie: "Gemüse", titel: "Herbstrübe ", bild: "/img/saison/Gemuese_Herbstruebe.jpg", start: 9, ende: 12 },
+    { basisKategorie: "Gemüse", titel: "Kalettes", bild: "/img/saison/Gemuese_Kalettes.jpg", start: 11, ende: 3 },
+    { basisKategorie: "Gemüse", titel: "Kardy ", bild: "/img/saison/Gemuese_Kardy.jpg", start: 10, ende: 11 },
+    { basisKategorie: "Gemüse", titel: "Karotte ", bild: "/img/saison/Gemuese_Karotte.jpg", start: 1, ende: 12 },
+    { basisKategorie: "Gemüse", titel: "Karotte Bund ", bild: "/img/saison/Gemuese_Karotte_Bund.jpg", start: 1, ende: 12 },
+    { basisKategorie: "Gemüse", titel: "Kefen ", bild: "/img/saison/Gemuese_Kefen.jpg", start: 6, ende: 9 },
+    { basisKategorie: "Gemüse", titel: "Knoblauch ", bild: "/img/saison/Gemuese_Knoblauch.jpg", start: 7, ende: 4 },
+    { basisKategorie: "Gemüse", titel: "Knollensellerie ", bild: "/img/saison/Gemuese_Knollensellerie.jpg", start: 1, ende: 12 },
+    { basisKategorie: "Gemüse", titel: "Kohlrabi ", bild: "/img/saison/Gemuese_Kohlrabi.jpg", start: 4, ende: 11 },
+    { basisKategorie: "Gemüse", titel: "Kopfsalat grün/rot ", bild: "/img/saison/Gemuese_Kopfsalat_gruen_rot.jpg", start: 2, ende: 12 },
+    { basisKategorie: "Gemüse", titel: "Krautstiel / Mangold ", bild: "/img/saison/Gemuese_Krautstiel_Mangold.jpg", start: 3, ende: 11 },
+    { basisKategorie: "Gemüse", titel: "Kürbis ", bild: "/img/saison/Gemuese_Kuerbis.jpg", start: 8, ende: 2 },
+    { basisKategorie: "Gemüse", titel: "Lattich ", bild: "/img/saison/Gemuese_Lattich.jpg", start: 5, ende: 10 },
+    { basisKategorie: "Gemüse", titel: "Lauch ", bild: "/img/saison/Gemuese_Lauch.jpg", start: 1, ende: 12 },
+    { basisKategorie: "Gemüse", titel: "Lollo grün / rot ", bild: "/img/saison/Gemuese_Lollo_gruen_rot.jpg", start: 4, ende: 11 },
+    { basisKategorie: "Gemüse", titel: "Mairübe ", bild: "/img/saison/Gemuese_Mairuebe.jpg", start: 4, ende: 6 },
+    { basisKategorie: "Gemüse", titel: "Melone ", bild: "/img/saison/Gemuese_Melone.jpg", start: 6, ende: 9 },
+    { basisKategorie: "Gemüse", titel: "Nüsslisalat ", bild: "/img/saison/Gemuese_Nuesslisalat.jpg", start: 1, ende: 12 },
+    { basisKategorie: "Gemüse", titel: "Pak-Choi ", bild: "/img/saison/Gemuese_Pak-Choi.jpg", start: 4, ende: 11 },
+    { basisKategorie: "Gemüse", titel: "Pastinake ", bild: "/img/saison/Gemuese_Pastinake.jpg", start: 7, ende: 3 },
+    { basisKategorie: "Gemüse", titel: "Peperoni ", bild: "/img/saison/Gemuese_Peperoni.jpg", start: 6, ende: 10 },
+    { basisKategorie: "Gemüse", titel: "Petersilie ", bild: "/img/saison/Gemuese_Petersilie.jpg", start: 4, ende: 11 },
+    { basisKategorie: "Gemüse", titel: "Pfälzerrübe ", bild: "/img/saison/Gemuese_Pfaelzerruebe.jpg", start: 1, ende: 12 },
+    { basisKategorie: "Gemüse", titel: "Portulak ", bild: "/img/saison/Gemuese_Portulak.jpg", start: 1, ende: 12 },
+    { basisKategorie: "Gemüse", titel: "Radieschen ", bild: "/img/saison/Gemuese_Radieschen.jpg", start: 1, ende: 12 },
+    { basisKategorie: "Gemüse", titel: "Rande ", bild: "/img/saison/Gemuese_Rande.jpg", start: 1, ende: 12 },
+    { basisKategorie: "Gemüse", titel: "Rettich ", bild: "/img/saison/Gemuese_Rettich.jpg", start: 3, ende: 12 },
+    { basisKategorie: "Gemüse", titel: "Rhabarber ", bild: "/img/saison/Gemuese_Rhabarber.jpg", start: 4, ende: 6 },
+    { basisKategorie: "Gemüse", titel: "Romanesco ", bild: "/img/saison/Gemuese_Romanesco.jpg", start: 5, ende: 11 },
+    { basisKategorie: "Gemüse", titel: "Rosenkohl ", bild: "/img/saison/Gemuese_Rosenkohl.jpg", start: 9, ende: 2 },
+    { basisKategorie: "Gemüse", titel: "Rotkabis ", bild: "/img/saison/Gemuese_Rotkabis.jpg", start: 1, ende: 12 },
+    { basisKategorie: "Gemüse", titel: "Rucola ", bild: "/img/saison/Gemuese_Rucola.jpg", start: 3, ende: 11 },
+    { basisKategorie: "Gemüse", titel: "Salate aus Hydroproduktion ", bild: "/img/saison/Gemuese_Salate_aus_Hydroproduktion.jpg", start: 1, ende: 12 },
+    { basisKategorie: "Gemüse", titel: "Schalotte ", bild: "/img/saison/Gemuese_Schalotte.jpg", start: 7, ende: 5 },
+    { basisKategorie: "Gemüse", titel: "Schnittlauch ", bild: "/img/saison/Gemuese_Schnittlauch.jpg", start: 1, ende: 12 },
+    { basisKategorie: "Gemüse", titel: "Schnittsalat ", bild: "/img/saison/Gemuese_Schnittsalat.jpg", start: 3, ende: 11 },
+    { basisKategorie: "Gemüse", titel: "Schwarzwurzel ", bild: "/img/saison/Gemuese_Schwarzwurzel.jpg", start: 10, ende: 5 },
+    { basisKategorie: "Gemüse", titel: "Spargel grün/weiss  ", bild: "/img/saison/Gemuese_Spargel_gruen_weiss.jpg", start: 4, ende: 6 },
+    { basisKategorie: "Gemüse", titel: "Spinat ", bild: "/img/saison/Gemuese_Spinat.jpg", start: 3, ende: 11 },
+    { basisKategorie: "Gemüse", titel: "Stangensellerie ", bild: "/img/saison/Gemuese_Stangensellerie.jpg", start: 5, ende: 12 },
+    { basisKategorie: "Gemüse", titel: "Tomate Cherry ", bild: "/img/saison/Gemuese_Tomate_Cherry.jpg", start: 4, ende: 11 },
+    { basisKategorie: "Gemüse", titel: "Tomate Dattel ", bild: "/img/saison/Gemuese_Tomate_Dattel.jpg", start: 4, ende: 11 },
+    { basisKategorie: "Gemüse", titel: "Tomate Peretti ", bild: "/img/saison/Gemuese_Tomate_Peretti.jpg", start: 4, ende: 11 },
+    { basisKategorie: "Gemüse", titel: "Tomate Rispe ", bild: "/img/saison/Gemuese_Tomate_Rispe.jpg", start: 4, ende: 11 },
+    { basisKategorie: "Gemüse", titel: "Tomate rund ", bild: "/img/saison/Gemuese_Tomate_rund.jpg", start: 4, ende: 11 },
+    { basisKategorie: "Gemüse", titel: "Topinambur ", bild: "/img/saison/Gemuese_Topinambur.jpg", start: 11, ende: 3 },
+    { basisKategorie: "Gemüse", titel: "Weisskabis/Kohl", bild: "/img/saison/Gemuese_Weisskabis_Kohl.jpg", start: 1, ende: 12 },
+    { basisKategorie: "Gemüse", titel: "Wirz ", bild: "/img/saison/Gemuese_Wirz.jpg", start: 1, ende: 12 },
+    { basisKategorie: "Gemüse", titel: "Zucchetti ", bild: "/img/saison/Gemuese_Zucchetti.jpg", start: 5, ende: 10 },
+    { basisKategorie: "Gemüse", titel: "Zuckerhut ", bild: "/img/saison/Gemuese_Zuckerhut.jpg", start: 6, ende: 3 },
+    { basisKategorie: "Gemüse", titel: "Zwiebel ", bild: "/img/saison/Gemuese_Zwiebel.jpg", start: 1, ende: 12 },
+    { basisKategorie: "Gemüse", titel: "Zwiebel Bund ", bild: "/img/saison/Gemuese_Zwiebel_Bund.jpg", start: 4, ende: 11 },
+    { basisKategorie: "Gemüse", titel: "Zuckermais", bild: "/img/saison/Gemuese_Zuckermais.jpg", start: 8, ende: 11 },
+
+  ];
+
+  const currentMonth = moment().month() + 1;
+
+  res.json(saison
+    .filter(s => s.start <= s.ende ? currentMonth >= s.start && currentMonth <= s.ende : !(currentMonth > s.ende && currentMonth < s.start))
+    .map(s => {
+      return {
+        basisKategorie: s.basisKategorie,
+        titel: s.titel,
+        bild: s.bild,
+        start: moment().month(s.start - 1),
+        ende: moment().month(s.ende - 1)
+      }
+    }));
+});
+
 
 app.get("/api/config/:name/", async function (req, res) {
   res.json((await loadConfig())[req.params.name]);
