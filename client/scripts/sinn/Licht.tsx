@@ -10,7 +10,8 @@ import {
   WeatherSunsetDown,
   BatteryCharging,
   BookOpenPageVariant,
-  EmoticonHappy
+  EmoticonHappy,
+  Home
 } from "mdi-material-ui";
 import Wetter from "../kanal/Wetter";
 import ButtonGroup from "../os/ButtonGroup";
@@ -21,7 +22,7 @@ import Emotion from "../kanal/Emotion";
 export interface Props {}
 
 export interface State {
-  helligkeit?: "aus" | "wenig" | "viel";
+  helligkeit?: "aus" | "wenig" | "viel" | "überall";
   kanal?: "wetter" | "tageslicht" | "emotion";
 }
 
@@ -78,6 +79,12 @@ class Licht extends Component<Props & WithStyles<ComponentClassNames>, State> {
             icon={<LightbulbOn />}
             backgroundGradient="LightYellow, Yellow"
             value="viel"
+          />
+          <MenuButton
+            title="Überall"
+            icon={<Home />}
+            backgroundGradient="White, LightYellow"
+            value="überall"
           />
         </ButtonGroup>
         <Collapse

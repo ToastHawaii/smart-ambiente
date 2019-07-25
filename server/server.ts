@@ -365,6 +365,10 @@ async function controlLicht() {
 
   if (data.sinn["licht"].helligkeit === "viel") {
     rooms.push("Wohnzimmer");
+  } else if (data.sinn["licht"].helligkeit === "überall") {
+    rooms.push("Wohnzimmer");
+    rooms.push("Toilette");
+    rooms.push("Schlafzimmer");
   } else {
     await hueHttp.updateGroupByName("Wohnzimmer", { on: false });
   }
