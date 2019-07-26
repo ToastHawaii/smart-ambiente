@@ -23,7 +23,7 @@ const transition = interval * 60 * 10;
     if (getSinn("ton").lautstaerke === "aus")
       tonActiv = false;
 
-    if (getSinn("licht").helligkeit === "aus")
+    if (getSinn("licht").helligkeit === "aus" || getSinn("licht").kanal !== "sonnenaufgang")
       lichtActiv = false;
   }
 
@@ -36,12 +36,12 @@ const transition = interval * 60 * 10;
       setSinn("ton", { lautstaerke: "aus", kanal: "wetter" });
       setKanal("wetter", { ...weather, mode: "manuell" });
 
-      setSinn("licht", { helligkeit: "aus", kanal: "tageslicht" });
+      setSinn("licht", { helligkeit: "aus", kanal: "sonnenaufgang" });
+
+      await hue.updateAllHueLabToggle(/Auto\. Dimmen/g, 0);
     },
     async () => {
       setSinn("ton", { lautstaerke: "1", kanal: "wetter" });
-
-      setSinn("licht", { helligkeit: "viel", kanal: "tageslicht" });
 
       await delay(3 * 1000);
 
@@ -188,14 +188,19 @@ const transition = interval * 60 * 10;
         setKanal("wetter", { ...getKanal("wetter"), radio: 1 });
         setSinn("ton", { lautstaerke: "14", kanal: "wetter" });
       }
+
+      if (lichtActiv) {
+        setSinn("licht", { helligkeit: "viel", kanal: "tageslicht" });
+      }
     },
     () => {
       check();
 
-      if (tonActiv){
+      if (tonActiv) {
         setSinn("ton", { lautstaerke: "15", kanal: "nachrichten" });
-        
-      setSinn("bild", { bildschirm: "ein", kanal: "ansehen" });}
+
+        setSinn("bild", { bildschirm: "ein", kanal: "ansehen" });
+      }
     }
   ]);
 })();

@@ -318,6 +318,13 @@ async function playSender(name: string) {
 }
 
 async function controlLicht() {
+
+  if (data.sinn["licht"].kanal === "tageslicht") {
+    await hueHttp.updateAllHueLabToggle(/Auto\. Dimmen/g, 1);
+  } else {
+    await hueHttp.updateAllHueLabToggle(/Auto\. Dimmen/g, 0);
+  }
+
   if (data.sinn["licht"].helligkeit === "aus") {
     await hueHttp.updateSensorsState("71", { status: 0 });
     await hueHttp.updateSensorsState("72", { status: 0 });
