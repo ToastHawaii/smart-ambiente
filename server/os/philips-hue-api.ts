@@ -1,8 +1,6 @@
 import { getJson, putJson } from "../utils/request";
 import { delay } from "../utils/timer";
 import { toArray } from "../utils/array";
-import debug from "../utils/debug";
-const topic = debug("philips-hue-api", true);
 
 export function createHueService(baseUrl: string) {
   return new Hue(baseUrl);
