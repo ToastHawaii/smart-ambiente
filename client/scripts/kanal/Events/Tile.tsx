@@ -18,7 +18,7 @@ import {
 } from "mdi-material-ui";
 import { StyleRulesCallback, withStyles, Typography } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
-import { TileEvent, eventsRepository } from "./Repository";
+import { TileEvent, repository } from "./Repository";
 import { getRandomInt } from "../../utils";
 
 export interface Props {
@@ -90,7 +90,7 @@ class EventTile extends React.Component<
         switch: true
       });
       setTimeout(() => {
-        const newValue = eventsRepository.switch(this.state.val);
+        const newValue = repository.switch(this.state.val);
         this.setState({
           switch: false,
           val: newValue,

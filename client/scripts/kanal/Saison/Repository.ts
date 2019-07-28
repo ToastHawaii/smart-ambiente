@@ -1,7 +1,7 @@
-import { getJson } from "../../utils";
 import * as moment from "moment";
+import { data } from "./Data";
 
-interface Event {
+interface Saison {
   basisKategorie: string;
   kategorie?: string;
   titel: string;
@@ -13,20 +13,20 @@ interface Event {
 
 moment.locale("de");
 
-function convertToEvent(event: Event): TileEvent {
-  const color = textToColor(event.basisKategorie);
-  const beschreibung = event.beschreibung || "";
-  let datum = `${moment(event.start).format("MMM")} - ${moment(event.ende).format("MMM")}`;
+function convertToSaison(saison: Saison): TileSaison {
+  const color = textToColor(saison.basisKategorie);
+  const beschreibung = saison.beschreibung || "";
+  let datum = `${moment(saison.start).format("MMM")} - ${moment(saison.ende).format("MMM")}`;
 
   return {
-    icon: event.basisKategorie,
+    icon: saison.basisKategorie,
     hintergrundFarbe:
       "rgba(" + color.r + "," + color.g + "," + color.b + ", 0.85)",
     textFarbe:
       /*(color.r * 0.299 + color.g * 0.587 + color.b * 0.114) > 186 ? "#000000" :*/ "#ffffff",
-    titel: event.titel,
+    titel: saison.titel,
     datum: datum,
-    bild: event.bild,
+    bild: saison.bild,
     beschreibung:
       beschreibung.length > 250
         ? beschreibung.substring(0, 247) + "..."
@@ -34,7 +34,7 @@ function convertToEvent(event: Event): TileEvent {
     groesse: beschreibung.length > 100 ? 2 : 1,
     hatDetails:
       (beschreibung.replace(/ /g, "").length > 0 &&
-        beschreibung.replace(/ /g, "") !== event.titel.replace(/ /g, ""))
+        beschreibung.replace(/ /g, "") !== saison.titel.replace(/ /g, ""))
   };
 }
 
@@ -50,7 +50,7 @@ function textToColor(s: string) {
   return { r, g, b };
 }
 
-export interface TileEvent {
+export interface TileSaison {
   icon: string;
   hintergrundFarbe: string;
   textFarbe: string;
@@ -62,15 +62,14 @@ export interface TileEvent {
   hatDetails: boolean;
 }
 
-class SaisonRepository {
+class Repository {
   public constructor() { }
 
-  private events: TileEvent[];
+  private saisons: TileSaison[];
 
   public async load() {
-    const data = await getJson("/api/saison");
-    this.events = this.normalize(
-      this.shuffle(data.map((e: any) => convertToEvent(e))),
+    this.saisons = this.normalize(
+      this.shuffle(data.map((e: any) => convertToSaison(e))),
       Math.floor((window.innerWidth - 10) / 190)
     );
   }
@@ -82,19 +81,19 @@ class SaisonRepository {
       Math.floor((window.innerWidth - 10) / 190) *
       Math.ceil((window.innerHeight - 10) / 190);
     let summe = 0;
-    for (const ev of this.events) {
-      summe += ev.groesse;
+    for (const s of this.saisons) {
+      summe += s.groesse;
       if (count <= summe) break;
       i++;
     }
 
-    return this.events.splice(0, i);
+    return this.saisons.splice(0, i);
   }
 
-  public switch(ev: TileEvent) {
-    this.events.push(ev);
-    const nextIndex = this.events.findIndex(e => e.groesse === ev.groesse);
-    return this.events.splice(nextIndex, 1)[0];
+  public switch(s: TileSaison) {
+    this.saisons.push(s);
+    const nextIndex = this.saisons.findIndex(e => e.groesse === s.groesse);
+    return this.saisons.splice(nextIndex, 1)[0];
   }
 
   private shuffle<T>(array: T[]) {
@@ -117,27 +116,27 @@ class SaisonRepository {
     return array;
   }
 
-  private normalize<T extends { groesse: number }>(events: T[], size: number) {
+  private normalize<T extends { groesse: number }>(saisons: T[], size: number) {
     let places = 0;
-    for (let i = 0; i < events.length; i++) {
-      const e1 = events[i];
+    for (let i = 0; i < saisons.length; i++) {
+      const e1 = saisons[i];
       if (places + e1.groesse <= size) {
         places = (places + e1.groesse) % size;
         continue;
       }
 
-      for (let ii = events.length - 1; ii > i; ii--) {
-        const e2 = events[ii];
+      for (let ii = saisons.length - 1; ii > i; ii--) {
+        const e2 = saisons[ii];
         if (places + e2.groesse <= size) {
-          events[i] = e2;
-          events[ii] = e1;
+          saisons[i] = e2;
+          saisons[ii] = e1;
           places = (places + e2.groesse) % size;
           break;
         }
       }
     }
-    return events;
+    return saisons;
   }
 }
 
-export const saisonRepository = new SaisonRepository();
+export const repository = new Repository();

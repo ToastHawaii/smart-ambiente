@@ -1,13 +1,13 @@
 import * as React from "react";
 import { StyleRulesCallback, withStyles } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
-import EventTile from "./Tile";
-import { TileEvent, saisonRepository } from "./Repository";
+import SaisonTile from "./Tile";
+import { TileSaison, repository } from "./Repository";
 
 export interface Props {}
 
 export interface State {
-  events: TileEvent[];
+  saisons: TileSaison[];
 }
 
 type ComponentClassNames = "root";
@@ -16,7 +16,7 @@ const style: StyleRulesCallback<ComponentClassNames> = () => ({
   root: {}
 });
 
-class Events extends React.Component<
+class Saisons extends React.Component<
   Props & WithStyles<ComponentClassNames>,
   State
 > {
@@ -24,32 +24,32 @@ class Events extends React.Component<
     super(props);
 
     this.state = {
-      events: []
+      saisons: []
     };
   }
 
   public async componentDidMount() {
-    const events = await saisonRepository.get();
+    const saisons = await repository.get();
     this.setState({
-      events: events
+      saisons: saisons
     });
   }
 
   public render() {
     const {} = this.props;
-    const { events } = this.state;
+    const { saisons } = this.state;
     return (
       <div
         style={{
           padding: "15px 7px"
         }}
       >
-        {events.map(e => (
-          <EventTile val={e} />
+        {saisons.map(e => (
+          <SaisonTile val={e} />
         ))}
       </div>
     );
   }
 }
 
-export default withStyles(style)(Events);
+export default withStyles(style)(Saisons);

@@ -8,7 +8,7 @@ import { Component } from "./Component";
 import FlugHintergrund from "../kanal/Flug";
 import YoutubeVideo from "../kanal/YoutubeVideo";
 import YoutubePlaylist from "../kanal/YoutubePlaylist";
-import Events from "../kanal/Saison/Component";
+import Saisons from "../kanal/Saison/Component";
 import Saison from "../kanal/Saison/Component";
 import { toViewModel } from "../kanal/Wetter";
 import Screen from "../kanal/Screen";
@@ -241,7 +241,7 @@ class BildHintergrund extends Component<
         else if (ansehen.ort === "erde") backgroundElement = <Erde />;
         else if (ansehen.ort === "weltraum")
           backgroundElement = <YoutubeVideo video="5_-rh6L1jiU" />;
-        else if (ansehen.ort === "ereignisse") backgroundElement = <Events />;
+        else if (ansehen.ort === "ereignisse") backgroundElement = <Saisons />;
         else backgroundElement = <Saison />;
       } else if (bild.kanal === "natur") {
         let cinemagraph = natur.szene;

@@ -95,7 +95,7 @@ export interface TileEvent {
   hatDetails: boolean;
 }
 
-class EventsRepository {
+class Repository {
   public constructor() {}
 
   private events: TileEvent[];
@@ -173,4 +173,4 @@ class EventsRepository {
   }
 }
 
-export const eventsRepository = new EventsRepository();
+export const repository = new Repository();

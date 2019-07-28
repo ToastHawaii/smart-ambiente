@@ -10,18 +10,18 @@ import {
 } from "mdi-material-ui";
 import { StyleRulesCallback, withStyles, Typography } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
-import { TileEvent, saisonRepository } from "./Repository";
+import { TileSaison, repository } from "./Repository";
 import { getRandomInt } from "../../utils";
 
 export interface Props {
-  val: TileEvent;
+  val: TileSaison;
 }
 
 export interface State {
   details: boolean;
   switch: boolean;
   time: number;
-  val: TileEvent;
+  val: TileSaison;
 }
 
 type ComponentClassNames = "root";
@@ -30,7 +30,7 @@ const style: StyleRulesCallback<ComponentClassNames> = () => ({
   root: {}
 });
 
-class EventTile extends React.Component<
+class SaisonTile extends React.Component<
   Props & WithStyles<ComponentClassNames>,
   State
 > {
@@ -68,7 +68,7 @@ class EventTile extends React.Component<
         switch: true
       });
       setTimeout(() => {
-        const newValue = saisonRepository.switch(this.state.val);
+        const newValue = repository.switch(this.state.val);
         this.setState({
           switch: false,
           val: newValue,
@@ -149,11 +149,6 @@ class EventTile extends React.Component<
           style={{
             width: "100%",
             height: "100%",
-            backgroundImage: "url('" + bild + "')",
-            backgroundColor: hintergrundFarbe,
-            backgroundRepeat: "no-repeat",
-            backgroundSize: "contain",
-            backgroundPosition: "center",
             color: textFarbe,
             padding: "10px",
             position: "relative",
@@ -161,10 +156,25 @@ class EventTile extends React.Component<
             boxSizing: "border-box",
             transform:
               "translateY(" + (details && hatDetails ? "-180px" : "0") + ")",
-            transition: "transform 1s",
-            opacity: bild ? 0.75 : 1
+            transition: "transform 1s"
           }}
         >
+          <div
+            style={{
+              left: "0",
+              top: "0",
+              width: "100%",
+              height: "100%",
+              backgroundImage: "url('" + bild + "')",
+              backgroundColor: hintergrundFarbe,
+              backgroundRepeat: "no-repeat",
+              backgroundSize: "contain",
+              backgroundPosition: "center",
+              position: "absolute",
+              opacity: bild ? 0.75 : 1,
+              zIndex: -1
+            }}
+          />
           <Typography
             component="span"
             variant="body1"
@@ -302,4 +312,4 @@ class EventTile extends React.Component<
   }
 }
 
-export default withStyles(style)(EventTile);
+export default withStyles(style)(SaisonTile);

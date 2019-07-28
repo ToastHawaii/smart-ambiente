@@ -2,7 +2,7 @@ import * as React from "react";
 import { StyleRulesCallback, withStyles } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
 import EventTile from "./Tile";
-import { TileEvent, eventsRepository } from "./Repository";
+import { TileEvent, repository } from "./Repository";
 
 export interface Props {}
 
@@ -29,7 +29,7 @@ class Events extends React.Component<
   }
 
   public async componentDidMount() {
-    const events = await eventsRepository.get();
+    const events = await repository.get();
     this.setState({
       events: events
     });
