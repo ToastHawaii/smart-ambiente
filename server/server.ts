@@ -18,8 +18,8 @@ import moment = require("moment");
 debug.enabled = true;
 const topic = debug("server", false);
 
-const sonosHttp = SonosHttp.createClient();
-const hueHttp = HueHttp.createHueService(
+const sonos = SonosHttp.createClient();
+const hue = HueHttp.createHueService(
   "http://192.168.1.101/api/p5u0Ki9EwbUQ330gcMA9-gK3qBKhYWCWJ1NmkNVs"
 );
 
@@ -144,7 +144,7 @@ app.post("/api/sinn/:sinn", async function (req, res) {
   res.json(await setSinn(req.params.sinn, req.body));
 });
 
-export async function setSinn(sinn: string, sinnData: any) {
+export async function setSinn(sinn: string, sinnData: any, mode?: string) {
   topic("Sinn", sinnData);
   first = false;
 
@@ -152,7 +152,7 @@ export async function setSinn(sinn: string, sinnData: any) {
 
   if (sinn === "ton") controlTon();
 
-  if (sinn === "licht") controlLicht();
+  if (sinn === "licht") controlLicht(mode);
 
   if (sinn === "aufwachen")
     await saveConfig({
@@ -288,7 +288,7 @@ async function controlTon() {
       }
     }
   } else {
-    await sonosHttp
+    await sonos
       .room("wohnzimmer")
       .pause()
       .do();
@@ -296,7 +296,7 @@ async function controlTon() {
 }
 
 async function playPlaylist(name: string) {
-  await sonosHttp
+  await sonos
     .room("wohnzimmer")
     .groupMute()
     .pause()
@@ -310,28 +310,28 @@ async function playPlaylist(name: string) {
 }
 
 async function playSender(name: string) {
-  await sonosHttp
+  await sonos
     .room("wohnzimmer")
     .favorite(name)
     .play()
     .do();
 }
 
-async function controlLicht() {
+async function controlLicht(mode?: string) {
 
   if (data.sinn["licht"].kanal === "tageslicht") {
-    await hueHttp.updateAllHueLabToggle(/Auto\. Dimmen/g, 1);
+    await hue.updateAllHueLabToggle(/Auto\. Dimmen/g, 1);
   } else {
-    await hueHttp.updateAllHueLabToggle(/Auto\. Dimmen/g, 0);
+    await hue.updateAllHueLabToggle(/Auto\. Dimmen/g, 0);
   }
 
   if (data.sinn["licht"].helligkeit === "aus") {
-    await hueHttp.updateSensorsState("71", { status: 0 });
-    await hueHttp.updateSensorsState("72", { status: 0 });
-    await hueHttp.updateSensorsState("74", { status: 0 });
-    await hueHttp.updateSensorsState("75", { status: 0 });
+    await hue.updateSensorsState("71", { status: 0 });
+    await hue.updateSensorsState("72", { status: 0 });
+    await hue.updateSensorsState("74", { status: 0 });
+    await hue.updateSensorsState("75", { status: 0 });
 
-    await hueHttp.updateGroupsByName(
+    await hue.updateGroupsByName(
       ["Wohnzimmer", "Terrasse", "Toilette", "Schlafzimmer"],
       {
         on: false
@@ -342,31 +342,34 @@ async function controlLicht() {
   }
 
   if (data.sinn["licht"].kanal === "sonnenaufgang") {
-    await hueHttp.recallScene("Wohnzimmer", "Sonnenaufgang (1)");
-    await hueHttp.recallScene("Schlafzimmer", "Minimum");
-    await hueHttp.recallScenes(["Terrasse", "Toilette"], "Entspannen");
 
-    await hueHttp.updateSensorsState("71", { status: 1 });
-    await hueHttp.updateSensorsState("72", { status: 1 });
+    if (mode === "alarm") return;
+
+    await hue.recallScene("Wohnzimmer", "Sonnenaufgang (1)");
+    await hue.recallScene("Schlafzimmer", "Minimum");
+    await hue.recallScenes(["Terrasse", "Toilette"], "Entspannen");
+
+    await hue.updateSensorsState("71", { status: 1 });
+    await hue.updateSensorsState("72", { status: 1 });
 
     return;
   }
 
   if (data.sinn["licht"].kanal === "sonnenuntergang") {
-    await hueHttp.recallScenes(
+    await hue.recallScenes(
       ["Wohnzimmer", "Terrasse", "Toilette", "Schlafzimmer"],
       "Konzentration"
     );
 
-    await hueHttp.updateSensorsState("74", { status: 1 });
-    await hueHttp.updateSensorsState("75", { status: 1 });
+    await hue.updateSensorsState("74", { status: 1 });
+    await hue.updateSensorsState("75", { status: 1 });
 
     return;
   }
 
   const rooms = ["Terrasse"];
 
-  await hueHttp.updateGroupsByName(["Toilette", "Schlafzimmer"], {
+  await hue.updateGroupsByName(["Toilette", "Schlafzimmer"], {
     on: false
   });
 
@@ -377,35 +380,35 @@ async function controlLicht() {
     rooms.push("Toilette");
     rooms.push("Schlafzimmer");
   } else {
-    await hueHttp.updateGroupByName("Wohnzimmer", { on: false });
+    await hue.updateGroupByName("Wohnzimmer", { on: false });
   }
 
   if (data.sinn["licht"].kanal === "entspannen") {
-    await hueHttp.recallScenes(rooms, "Entspannen");
+    await hue.recallScenes(rooms, "Entspannen");
   } else if (data.sinn["licht"].kanal === "aktivieren") {
-    await hueHttp.recallScenes(rooms, "Aktivieren");
+    await hue.recallScenes(rooms, "Aktivieren");
   } else if (data.sinn["licht"].kanal === "emotion") {
     if (data.kanal["emotion"].emotion === "groll")
-      await hueHttp.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#d40000") });
+      await hue.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#d40000") });
     else if (data.kanal["emotion"].emotion === "erwartung")
-      await hueHttp.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#ff7d00") });
+      await hue.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#ff7d00") });
     else if (data.kanal["emotion"].emotion === "freude")
-      await hueHttp.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#ffe854") });
+      await hue.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#ffe854") });
     else if (data.kanal["emotion"].emotion === "vertrauen")
-      await hueHttp.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#00b400") });
+      await hue.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#00b400") });
     else if (data.kanal["emotion"].emotion === "angst")
-      await hueHttp.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#007f00") });
+      await hue.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#007f00") });
     else if (data.kanal["emotion"].emotion === "überraschung")
-      await hueHttp.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#0089e0") });
+      await hue.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#0089e0") });
     else if (data.kanal["emotion"].emotion === "traurigkeit")
-      await hueHttp.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#0000c8") });
+      await hue.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#0000c8") });
     else if (data.kanal["emotion"].emotion === "abneigung")
-      await hueHttp.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#de00de") });
+      await hue.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#de00de") });
   } else {
-    await hueHttp.updateGroupsByName(rooms, {
+    await hue.updateGroupsByName(rooms, {
       on: false
     });
-    await hueHttp.updateGroupsByName(rooms, {
+    await hue.updateGroupsByName(rooms, {
       on: true
     });
   }
@@ -417,15 +420,15 @@ process.on("uncaughtException", function (err) {
 });
 
 async function setLautstaerke(volume: number) {
-  await sonosHttp
+  await sonos
     .room("Wohnzimmer")
     .volume(volume)
     .do();
-  await sonosHttp
+  await sonos
     .room("Bad")
     .volume(relative(volume, 25, 15))
     .do();
-  await sonosHttp
+  await sonos
     .room("Schlafzimmer")
     .volume(relative(volume, 25, 80))
     .do();

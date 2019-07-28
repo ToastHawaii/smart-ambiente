@@ -1,4 +1,4 @@
-import { sequenz, delay } from "../utils/timer";
+import { sequenz } from "../utils/timer";
 import * as Hue from "../os/philips-hue-api";
 import * as WeatherForecast from "../kanal/Weather/Forecast";
 import { setKanal, setSinn, getKanal, getSinn } from "../server";
@@ -20,7 +20,8 @@ const transition = interval * 60 * 10;
   let lichtActiv = true;
 
   function check() {
-    if (getSinn("ton").lautstaerke === "aus")
+    if (getSinn("ton").lautstaerke === "aus" ||
+      (getSinn("ton").kanal !== "wetter" && getSinn("ton").kanal !== "nachrichten"))
       tonActiv = false;
 
     if (getSinn("licht").helligkeit === "aus" || getSinn("licht").kanal !== "sonnenaufgang")
@@ -43,26 +44,13 @@ const transition = interval * 60 * 10;
     async () => {
       setSinn("ton", { lautstaerke: "1", kanal: "wetter" });
 
-      await delay(3 * 1000);
+      setSinn("licht", { helligkeit: "überall", kanal: "sonnenaufgang" }, "alarm");
 
       if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
-        await hue.recallScene("Wohnzimmer", "Minimum", 1);
         hue.recallScene("Wohnzimmer", "Minimum", 1);
-
-        await hue.recallScene("Terrasse", "Nachtlicht", 1);
-        hue.recallScene("Terrasse", "Nachtlicht", 1);
-
-        await hue.recallScene("Toilette", "Nachtlicht", 1);
-        hue.recallScene("Toilette", "Nachtlicht", 1);
+        hue.recallScenes(["Terrasse", "Toilette"], "Nachtlicht", 1);
       } else {
-        await hue.recallScene("Wohnzimmer", "Minimum (Heiter)", 1);
-        hue.recallScene("Wohnzimmer", "Minimum (Heiter)", 1);
-
-        await hue.recallScene("Terrasse", "Minimum (Heiter)", 1);
-        hue.recallScene("Terrasse", "Minimum (Heiter)", 1);
-
-        await hue.recallScene("Toilette", "Minimum (Heiter)", 1);
-        hue.recallScene("Toilette", "Minimum (Heiter)", 1);
+        hue.recallScenes(["Wohnzimmer", "Terrasse", "Toilette"], "Minimum (Heiter)", 1);
       }
     },
     () => {
@@ -74,8 +62,7 @@ const transition = interval * 60 * 10;
       if (lichtActiv)
         if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
           hue.recallScene("Wohnzimmer", "Sonnenaufgang (1)", transition);
-          hue.recallScene("Terrasse", "Nachtlicht", transition);
-          hue.recallScene("Toilette", "Nachtlicht", transition);
+          hue.recallScenes(["Terrasse", "Toilette"], "Nachtlicht", transition);
         } else {
           hue.recallScene("Wohnzimmer", "Sonnenaufgang 1 (Heiter)", transition);
           hue.recallScene("Terrasse", "Sonnenaufgang 1. (Heiter)", transition);
@@ -90,18 +77,15 @@ const transition = interval * 60 * 10;
 
       if (lichtActiv)
         if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
-          hue.recallScene("Wohnzimmer", "Sonnenaufgang (2)", transition);
-          hue.recallScene("Terrasse", "Sonnenaufgang (2)", transition);
+          hue.recallScenes(["Wohnzimmer", "Terrasse"], "Sonnenaufgang (2)", transition);
           hue.recallScene("Toilette", "Nachtlicht", transition);
 
-          await hue.recallScene("Schlafzimmer", "Minimum", 1);
           hue.recallScene("Schlafzimmer", "Minimum", 1);
         } else {
           hue.recallScene("Wohnzimmer", "Sonnenaufgang 2 (Heiter)", transition);
           hue.recallScene("Terrasse", "Sonnenaufgang 2. (Heiter)", transition);
           hue.recallScene("Toilette", "Minimum (Heiter)", transition);
 
-          await hue.recallScene("Schlafzimmer", "Minimum (Heiter)", 1);
           hue.recallScene("Schlafzimmer", "Minimum (Heiter)", 1);
         }
     },
@@ -113,19 +97,13 @@ const transition = interval * 60 * 10;
 
       if (lichtActiv)
         if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
-          hue.recallScene("Wohnzimmer", "Sonnenaufgang (3)", transition);
-          hue.recallScene("Terrasse", "Sonnenaufgang (3)", transition);
+          hue.recallScenes(["Wohnzimmer", "Terrasse"], "Sonnenaufgang (3)", transition);
           hue.recallScene("Toilette", "Gedimmt", transition);
           hue.recallScene("Schlafzimmer", "Nachtlicht", transition);
         } else {
           hue.recallScene("Wohnzimmer", "Sonnenaufgang 3 (Heiter)", transition);
-          hue.recallScene("Terrasse", "Sonnenaufgang 3. (Heiter)", transition);
-          hue.recallScene("Toilette", "Sonnenaufgang 3. (Heiter)", transition);
-          hue.recallScene(
-            "Schlafzimmer",
-            "Sonnenaufgang 3. (Heiter)",
-            transition
-          );
+          hue.recallScenes(["Terrasse", "Toilette", "Schlafzimmer"], "Sonnenaufgang 3. (Heiter)", transition);
+
         }
     },
     () => {
@@ -136,19 +114,11 @@ const transition = interval * 60 * 10;
 
       if (lichtActiv)
         if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
-          hue.recallScene("Wohnzimmer", "Sonnenaufgang (4)", transition);
-          hue.recallScene("Terrasse", "Sonnenaufgang (4)", transition);
-          hue.recallScene("Toilette", "Entspannen", transition);
-          hue.recallScene("Schlafzimmer", "Entspannen", transition);
+          hue.recallScenes(["Wohnzimmer", "Terrasse"], "Sonnenaufgang (4)", transition);
+          hue.recallScenes(["Toilette", "Schlafzimmer"], "Entspannen", transition);
         } else {
           hue.recallScene("Wohnzimmer", "Sonnenaufgang 4 (Heiter)", transition);
-          hue.recallScene("Terrasse", "Sonnenaufgang 4. (Heiter)", transition);
-          hue.recallScene("Toilette", "Sonnenaufgang 4. (Heiter)", transition);
-          hue.recallScene(
-            "Schlafzimmer",
-            "Sonnenaufgang 4. (Heiter)",
-            transition
-          );
+          hue.recallScenes(["Terrasse", "Toilette", "Schlafzimmer"], "Sonnenaufgang 4. (Heiter)", transition);
         }
     },
     () => {
@@ -160,10 +130,8 @@ const transition = interval * 60 * 10;
       }
 
       if (lichtActiv) {
-        hue.recallScene("Wohnzimmer", "Konzentration", transition);
-        hue.recallScene("Terrasse", "Konzentration", transition);
-        hue.recallScene("Toilette", "Konzentration", transition);
-        hue.recallScene("Schlafzimmer", "Konzentration", transition);
+        hue.recallScenes(["Wohnzimmer", "Terrasse", "Toilette", "Schlafzimmer"], "Konzentration", transition);
+
       }
     },
     () => {
@@ -175,10 +143,7 @@ const transition = interval * 60 * 10;
       }
 
       if (lichtActiv) {
-        hue.recallScene("Wohnzimmer", "Aktivieren", transition);
-        hue.recallScene("Terrasse", "Aktivieren", transition);
-        hue.recallScene("Toilette", "Aktivieren", transition);
-        hue.recallScene("Schlafzimmer", "Aktivieren", transition);
+        hue.recallScenes(["Wohnzimmer", "Terrasse", "Toilette", "Schlafzimmer"], "Aktivieren", transition);
       }
     },
     () => {
@@ -198,7 +163,6 @@ const transition = interval * 60 * 10;
 
       if (tonActiv) {
         setSinn("ton", { lautstaerke: "15", kanal: "nachrichten" });
-
         setSinn("bild", { bildschirm: "ein", kanal: "ansehen" });
       }
     }
