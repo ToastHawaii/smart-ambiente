@@ -5,6 +5,7 @@ interface Event {
   basisKategorie: string;
   kategorie?: string;
   titel: string;
+  beschreibung?: string;
   bild?: string;
   start: moment.Moment;
   ende: moment.Moment;
@@ -14,6 +15,7 @@ moment.locale("de");
 
 function convertToEvent(event: Event): TileEvent {
   const color = textToColor(event.basisKategorie);
+  const beschreibung = event.beschreibung || "";
   let datum = `${moment(event.start).format("MMM")} - ${moment(event.ende).format("MMM")}`;
 
   return {
@@ -23,8 +25,16 @@ function convertToEvent(event: Event): TileEvent {
     textFarbe:
       /*(color.r * 0.299 + color.g * 0.587 + color.b * 0.114) > 186 ? "#000000" :*/ "#ffffff",
     titel: event.titel,
+    datum: datum,
     bild: event.bild,
-    datum: datum
+    beschreibung:
+      beschreibung.length > 250
+        ? beschreibung.substring(0, 247) + "..."
+        : beschreibung,
+    groesse: beschreibung.length > 100 ? 2 : 1,
+    hatDetails:
+      (beschreibung.replace(/ /g, "").length > 0 &&
+        beschreibung.replace(/ /g, "") !== event.titel.replace(/ /g, ""))
   };
 }
 
@@ -47,6 +57,9 @@ export interface TileEvent {
   titel: string;
   datum: string;
   bild?: string;
+  beschreibung?: string;
+  groesse: 1 | 2;
+  hatDetails: boolean;
 }
 
 class SaisonRepository {
@@ -56,21 +69,32 @@ class SaisonRepository {
 
   public async load() {
     const data = await getJson("/api/saison");
-    this.events = this.shuffle(data.map((e: any) => convertToEvent(e)));
+    this.events = this.normalize(
+      this.shuffle(data.map((e: any) => convertToEvent(e))),
+      Math.floor((window.innerWidth - 10) / 190)
+    );
   }
 
   public async get() {
     await this.load();
+    let i = 1;
     const count =
       Math.floor((window.innerWidth - 10) / 190) *
       Math.ceil((window.innerHeight - 10) / 190);
+    let summe = 0;
+    for (const ev of this.events) {
+      summe += ev.groesse;
+      if (count <= summe) break;
+      i++;
+    }
 
-    return count <= this.events.length ? this.events.splice(0, count) : this.events;
+    return this.events.splice(0, i);
   }
 
   public switch(ev: TileEvent) {
     this.events.push(ev);
-    return this.events.splice(0, 1)[0];
+    const nextIndex = this.events.findIndex(e => e.groesse === ev.groesse);
+    return this.events.splice(nextIndex, 1)[0];
   }
 
   private shuffle<T>(array: T[]) {
@@ -91,6 +115,28 @@ class SaisonRepository {
     }
 
     return array;
+  }
+
+  private normalize<T extends { groesse: number }>(events: T[], size: number) {
+    let places = 0;
+    for (let i = 0; i < events.length; i++) {
+      const e1 = events[i];
+      if (places + e1.groesse <= size) {
+        places = (places + e1.groesse) % size;
+        continue;
+      }
+
+      for (let ii = events.length - 1; ii > i; ii--) {
+        const e2 = events[ii];
+        if (places + e2.groesse <= size) {
+          events[i] = e2;
+          events[ii] = e1;
+          places = (places + e2.groesse) % size;
+          break;
+        }
+      }
+    }
+    return events;
   }
 }
 

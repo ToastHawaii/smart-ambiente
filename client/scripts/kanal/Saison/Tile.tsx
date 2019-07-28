@@ -1,5 +1,13 @@
 import * as React from "react";
-import { Sprout, Theater, TransitTransfer } from "mdi-material-ui";
+import {
+  Sprout,
+  Mushroom,
+  Spa,
+  Carrot,
+  Barley,
+  FoodApple,
+  ScatterPlot
+} from "mdi-material-ui";
 import { StyleRulesCallback, withStyles, Typography } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
 import { TileEvent, saisonRepository } from "./Repository";
@@ -10,8 +18,8 @@ export interface Props {
 }
 
 export interface State {
+  details: boolean;
   switch: boolean;
-  hintergrundPosition: string;
   time: number;
   val: TileEvent;
 }
@@ -30,8 +38,8 @@ class EventTile extends React.Component<
     super(props);
 
     this.state = {
+      details: false,
       switch: false,
-      hintergrundPosition: "top left",
       time: 0,
       val: props.val
     };
@@ -46,19 +54,9 @@ class EventTile extends React.Component<
   private timeoutId: any;
 
   public timer() {
-    const time = getRandomInt(1, 2) * 10000;
-
-    let hintergrundPosition: string;
-
-    if (this.counter % 4 === 0) {
-      hintergrundPosition = "center center";
-    } else if (this.counter % 4 === 1) {
-      hintergrundPosition = "center center";
-    } else if (this.counter % 4 === 2) {
-      hintergrundPosition = "bottom right";
-    } else {
-      hintergrundPosition = "top left";
-    }
+    const time =
+      getRandomInt(1, 2) *
+      (this.state.val.groesse === 1 || !!this.state.details ? 10000 : 20000);
 
     this.timeoutId = setTimeout(() => {
       this.timer();
@@ -73,13 +71,14 @@ class EventTile extends React.Component<
         const newValue = saisonRepository.switch(this.state.val);
         this.setState({
           switch: false,
-          val: newValue
+          val: newValue,
+          details: false
         });
         this.counter = 0;
       }, 500);
     } else {
       this.setState({
-        hintergrundPosition: hintergrundPosition,
+        details: !this.state.details,
         time: time
       });
     }
@@ -94,24 +93,42 @@ class EventTile extends React.Component<
 
   public render() {
     const {
+      groesse,
+      hatDetails,
       titel,
+      beschreibung,
       hintergrundFarbe,
       textFarbe,
       datum,
       icon,
       bild
     } = this.state.val;
-    const { hintergrundPosition, time } = this.state;
+    const { details } = this.state;
     let i: any;
     switch (icon) {
+      case "Apfel":
+        i = <FoodApple />;
+        break;
+      case "Beere":
+        i = <ScatterPlot />;
+        break;
+      case "Frucht":
+        i = <FoodApple />;
+        break;
       case "Gemüse":
+        i = <Carrot />;
+        break;
+      case "Kartoffel":
         i = <Sprout />;
         break;
-      case "Theater":
-        i = <Theater />;
+      case "Kraut/Blüte":
+        i = <Barley />;
         break;
-      case "Führung":
-        i = <TransitTransfer />;
+      case "Pilz":
+        i = <Mushroom />;
+        break;
+      case "Salat":
+        i = <Spa />;
         break;
     }
 
@@ -120,7 +137,7 @@ class EventTile extends React.Component<
         style={{
           float: "left",
           margin: "5px",
-          width: "180px",
+          width: groesse === 1 ? "180px" : "370px",
           height: "180px",
           overflow: "hidden",
           boxSizing: "border-box",
@@ -132,30 +149,22 @@ class EventTile extends React.Component<
           style={{
             width: "100%",
             height: "100%",
+            backgroundImage: "url('" + bild + "')",
+            backgroundColor: hintergrundFarbe,
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "contain",
+            backgroundPosition: "center",
             color: textFarbe,
             padding: "10px",
             position: "relative",
             display: "table",
             boxSizing: "border-box",
-            transition: "transform 1s"
+            transform:
+              "translateY(" + (details && hatDetails ? "-180px" : "0") + ")",
+            transition: "transform 1s",
+            opacity: bild ? 0.75 : 1
           }}
         >
-          <div
-            style={{
-              left: "0",
-              top: "0",
-              width: "100%",
-              height: "100%",
-              backgroundImage: "url('" + bild + "')",
-              backgroundColor: hintergrundFarbe,
-              backgroundSize: "cover",
-              position: "absolute",
-              opacity: bild ? 0.75 : 1,
-              zIndex: -1,
-              transition: "background-position " + time / 1000 + "s linear",
-              backgroundPosition: hintergrundPosition
-            }}
-          />
           <Typography
             component="span"
             variant="body1"
@@ -185,6 +194,91 @@ class EventTile extends React.Component<
             }}
           >
             {titel}
+          </Typography>
+
+          <Typography
+            component="span"
+            variant="body1"
+            color="inherit"
+            style={{
+              display: "block",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              left: "5px",
+              bottom: "5px",
+              position: "absolute"
+            }}
+          >
+            {datum}
+          </Typography>
+        </div>
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            color: textFarbe,
+            padding: "10px",
+            position: "relative",
+            display: "table",
+            boxSizing: "border-box",
+            transform:
+              "translateY(" + (details && hatDetails ? "-180px" : "0") + ")",
+            transition: "transform 1s"
+          }}
+        >
+          <div
+            style={{
+              left: "0",
+              top: "0",
+              width: "100%",
+              height: "100%",
+              backgroundImage: "url('" + bild + "')",
+              backgroundColor: hintergrundFarbe,
+              backgroundRepeat: "no-repeat",
+              backgroundSize: "contain",
+              backgroundPosition: "center",
+              position: "absolute",
+              opacity: bild ? 0.75 : 1,
+              zIndex: -1
+            }}
+          />
+          <Typography
+            component="span"
+            variant="body1"
+            color="inherit"
+            style={{
+              display: "block",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              width: "calc(100% - 10px)",
+              left: "5px",
+              top: "5px",
+              position: "absolute"
+            }}
+          >
+            {titel}
+          </Typography>
+          <Typography
+            component="p"
+            variant="body1"
+            color="inherit"
+            style={{
+              verticalAlign: "middle",
+              display: "table-cell",
+              textAlign: "center",
+              paddingTop: "10px",
+              paddingBottom: "10px",
+              msWordBreak: "break-all",
+              wordBreak: "break-all",
+              WebkitHyphens: "auto",
+              MozHyphens: "auto",
+              msHyphens: "auto",
+              hyphens: "auto"
+            }}
+          >
+            {beschreibung}
           </Typography>
           <Typography
             component="span"
