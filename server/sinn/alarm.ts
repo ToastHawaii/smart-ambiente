@@ -64,8 +64,7 @@ const transition = interval * 60 * 10;
           hue.recallScene("Wohnzimmer", "Sonnenaufgang (1)", transition);
           hue.recallScenes(["Terrasse", "Toilette"], "Nachtlicht", transition);
         } else {
-          hue.recallScene("Wohnzimmer", "Sonnenaufgang 1 (Heiter)", transition);
-          hue.recallScene("Terrasse", "Sonnenaufgang 1. (Heiter)", transition);
+          hue.recallScenes(["Wohnzimmer", "Terrasse"], "Sonnenaufgang 1 (Heiter)", transition);
           hue.recallScene("Toilette", "Minimum (Heiter)", transition);
         }
     },
@@ -82,8 +81,7 @@ const transition = interval * 60 * 10;
 
           hue.recallScene("Schlafzimmer", "Minimum", 1);
         } else {
-          hue.recallScene("Wohnzimmer", "Sonnenaufgang 2 (Heiter)", transition);
-          hue.recallScene("Terrasse", "Sonnenaufgang 2. (Heiter)", transition);
+          hue.recallScenes(["Wohnzimmer", "Terrasse"], "Sonnenaufgang 2 (Heiter)", transition);
           hue.recallScene("Toilette", "Minimum (Heiter)", transition);
 
           hue.recallScene("Schlafzimmer", "Minimum (Heiter)", 1);
@@ -101,8 +99,10 @@ const transition = interval * 60 * 10;
           hue.recallScene("Toilette", "Gedimmt", transition);
           hue.recallScene("Schlafzimmer", "Nachtlicht", transition);
         } else {
-          hue.recallScene("Wohnzimmer", "Sonnenaufgang 3 (Heiter)", transition);
-          hue.recallScenes(["Terrasse", "Toilette", "Schlafzimmer"], "Sonnenaufgang 3. (Heiter)", transition);
+          hue.recallScenes(["Wohnzimmer",
+            "Terrasse",
+            "Toilette",
+            "Schlafzimmer"], "Sonnenaufgang 3 (Heiter)", transition);
 
         }
     },
@@ -117,8 +117,10 @@ const transition = interval * 60 * 10;
           hue.recallScenes(["Wohnzimmer", "Terrasse"], "Sonnenaufgang (4)", transition);
           hue.recallScenes(["Toilette", "Schlafzimmer"], "Entspannen", transition);
         } else {
-          hue.recallScene("Wohnzimmer", "Sonnenaufgang 4 (Heiter)", transition);
-          hue.recallScenes(["Terrasse", "Toilette", "Schlafzimmer"], "Sonnenaufgang 4. (Heiter)", transition);
+          hue.recallScenes(["Wohnzimmer",
+            "Terrasse",
+            "Toilette",
+            "Schlafzimmer"], "Sonnenaufgang 4 (Heiter)", transition);
         }
     },
     () => {
