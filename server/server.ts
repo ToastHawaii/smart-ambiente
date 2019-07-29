@@ -1,7 +1,7 @@
 import * as express from "express";
 import * as bodyParser from "body-parser";
 import { shuffle } from "./utils/array";
-import { relative, hexToXy } from "./utils/math";
+import { relative, hexToXy, getRandomInt } from "./utils/math";
 import * as SonosHttp from "./os/node-sonos-http-api";
 import * as HueHttp from "./os/philips-hue-api";
 import * as Events from "./kanal/Events/Calendar";
@@ -77,6 +77,9 @@ const data: {
     },
     zusehen: {
       aktivitaet: "bahnverkehr"
+    },
+    szene: {
+      szene: "wind"
     },
     emotion: {
       emotion: "groll"
@@ -206,6 +209,8 @@ export async function setKanal(kanal: string, kanalData: any) {
       aufwachen: data.sinn["aufwachen"],
       alarm: data.kanal["alarm"]
     });
+  } else if (kanal === "szene") {
+    controlLicht();
   } else if (kanal === "emotion") {
     controlLicht();
   }
@@ -340,28 +345,38 @@ async function controlLicht(mode?: string) {
     return;
   }
 
-  if (data.sinn["licht"].kanal === "sonnenaufgang") {
+  if (data.sinn["licht"].kanal === "szene") {
+    if (data.kanal["szene"].szene === "sonnenaufgang") {
 
-    if (mode === "alarm") return;
+      if (mode === "alarm") return;
 
-    await hue.recallScene("Wohnzimmer", "Sonnenaufgang (1)");
-    await hue.recallScene("Schlafzimmer", "Minimum");
-    await hue.recallScenes(["Terrasse", "Toilette"], "Entspannen");
+      await hue.recallScene("Wohnzimmer", "Sonnenaufgang (1)");
+      await hue.recallScene("Schlafzimmer", "Minimum");
+      await hue.recallScenes(["Terrasse", "Toilette"], "Entspannen");
 
-    await hue.updateSensorsState("71", { status: 1 });
-    await hue.updateSensorsState("72", { status: 1 });
+      await hue.updateSensorsState("71", { status: 1 });
+      await hue.updateSensorsState("72", { status: 1 });
 
-    return;
-  }
+    } else if (data.kanal["szene"].szene === "sonnenuntergang") {
+      await hue.recallScenes(
+        ["Wohnzimmer", "Terrasse", "Toilette", "Schlafzimmer"],
+        "Konzentration"
+      );
 
-  if (data.sinn["licht"].kanal === "sonnenuntergang") {
-    await hue.recallScenes(
-      ["Wohnzimmer", "Terrasse", "Toilette", "Schlafzimmer"],
-      "Konzentration"
-    );
+      await hue.updateSensorsState("74", { status: 1 });
+      await hue.updateSensorsState("75", { status: 1 });
 
-    await hue.updateSensorsState("74", { status: 1 });
-    await hue.updateSensorsState("75", { status: 1 });
+    } else if (data.kanal["szene"].szene === "wind") {
+
+      hue.recallScene("Terrasse", "Blätterdach");
+      wind();
+
+    } else if (data.kanal["szene"].szene === "leuchturm") {
+
+      leuchturm();
+      wasser();
+
+    }
 
     return;
   }
@@ -448,3 +463,41 @@ app.get("/api/events/:kategorie.ics", function (req, res) {
 app.get("/api/config/:name/", async function (req, res) {
   res.json((await loadConfig())[req.params.name]);
 });
+
+
+async function leuchturm(trigger: boolean = true) {
+  if (trigger) {
+    await hue.recallScene("Wohnzimmer", "Leuchturm (Ein)", 30);
+  } else {
+    await hue.recallScene("Wohnzimmer", "Leuchturm (Aus)", 30);
+  }
+
+  if (data.sinn["licht"].helligkeit !== "aus"
+    && data.sinn["licht"].kanal === "szene"
+    && data.kanal["szene"].szene === "leuchturm")
+    leuchturm(!trigger);
+}
+
+
+async function wasser(trigger: boolean = true) {
+  if (trigger) {
+    await hue.recallScene("Terrasse", "Minimum (Heiter)", 60);
+  } else {
+    await hue.recallScene("Terrasse", "Meer", 60);
+  }
+
+  if (data.sinn["licht"].helligkeit !== "aus"
+    && data.sinn["licht"].kanal === "szene"
+    && data.kanal["szene"].szene === "leuchturm")
+    wasser(!trigger);
+}
+
+async function wind() {
+
+  await hue.recallScene("Wohnzimmer", "Wind " + getRandomInt(1, 4), 40);
+
+  if (data.sinn["licht"].helligkeit !== "aus"
+    && data.sinn["licht"].kanal === "szene"
+    && data.kanal["szene"].szene === "wind")
+    wind();
+}

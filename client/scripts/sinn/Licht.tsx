@@ -6,24 +6,24 @@ import {
   LightbulbOutline,
   ThemeLightDark,
   LightbulbOn,
-  WeatherSunsetUp,
-  WeatherSunsetDown,
   BatteryCharging,
   BookOpenPageVariant,
   EmoticonHappy,
-  Home
+  Home,
+  WeatherSunset
 } from "mdi-material-ui";
 import Wetter from "../kanal/Wetter";
 import ButtonGroup from "../os/ButtonGroup";
 import { Component } from "../os/Component";
 import MenuButton from "../os/MenuButton";
 import Emotion from "../kanal/Emotion";
+import Szene from "../kanal/Szene";
 
 export interface Props {}
 
 export interface State {
   helligkeit?: "aus" | "wenig" | "viel" | "überall";
-  kanal?: "wetter" | "tageslicht" | "emotion";
+  kanal?: "wetter" | "tageslicht" | "szene" | "emotion";
 }
 
 type ComponentClassNames = "root";
@@ -117,16 +117,10 @@ class Licht extends Component<Props & WithStyles<ComponentClassNames>, State> {
               value="tageslicht"
             />
             <MenuButton
-              title="Sonnenaufgang"
-              icon={<WeatherSunsetUp />}
-              backgroundGradient="Red, LightYellow"
-              value="sonnenaufgang"
-            />
-            <MenuButton
-              title="Sonnenuntergang"
-              icon={<WeatherSunsetDown />}
+              title="Szene"
+              icon={<WeatherSunset />}
               backgroundGradient="Orange, Red"
-              value="sonnenuntergang"
+              value="szene"
             />
             <MenuButton
               title="Emotion"
@@ -138,6 +132,11 @@ class Licht extends Component<Props & WithStyles<ComponentClassNames>, State> {
           {
             <Collapse in={kanal === "wetter"}>
               <Wetter />
+            </Collapse>
+          }
+          {
+            <Collapse in={kanal === "szene"}>
+              <Szene />
             </Collapse>
           }
           {
