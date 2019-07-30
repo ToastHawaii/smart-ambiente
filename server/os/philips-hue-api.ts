@@ -127,14 +127,18 @@ class Hue {
       .map(a => (/\/sensors\/([0-9]*)\/state\/status/gi.exec(a) || [])[1])[0];
   }
 
-  public async updateHueLabToggle(name: string, state: number) {
-    const sensor = await this.getHueLabToggleSensor(name);
-    await this.updateSensorsState(sensor, {
-      status: state,
-    });
+  public async updateHueLabToggle(id: string, state: number) {
+    const sensor = await this.getSensors(id);
+    if (sensor.state.status !== state)
+      await this.updateSensorsState(id, { status: state });
   }
 
-  public async updateAllHueLabToggle(name: RegExp, state: number) {
+  public async updateHueLabToggleByName(name: string, state: number) {
+    const sensor = await this.getHueLabToggleSensor(name);
+    await this.updateHueLabToggle(sensor, state);
+  }
+
+  public async updateAllHueLabToggleByName(name: RegExp, state: number) {
     const allSchedulers = toArray<{ [index: string]: Scheduler }, Scheduler>(await this.querySchedules());
     const schedulers = allSchedulers
       .filter(s => name.test(s.name))
@@ -153,9 +157,7 @@ class Hue {
         .filter(a => a !== scheduler)
         .map(a => (/\/sensors\/([0-9]*)\/state\/status/gi.exec(a) || [])[1])[0];
 
-      await this.updateSensorsState(sensor, {
-        status: state,
-      });
+      await this.updateHueLabToggle(sensor, state);
     }
   }
 

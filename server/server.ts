@@ -188,7 +188,7 @@ app.post("/api/kanal/:kanal", async function (req, res) {
   res.json(await setKanal(req.params.kanal, req.body));
 });
 
-export async function setKanal(kanal: string, kanalData: any) {
+export async function setKanal(kanal: string, kanalData: any, mode?: string) {
   topic("Kanal", kanalData);
   first = false;
 
@@ -210,9 +210,9 @@ export async function setKanal(kanal: string, kanalData: any) {
       alarm: data.kanal["alarm"]
     });
   } else if (kanal === "szene") {
-    controlLicht();
+    controlLicht(mode);
   } else if (kanal === "emotion") {
-    controlLicht();
+    controlLicht(mode);
   }
 
   return data.kanal[kanal];
@@ -323,108 +323,111 @@ async function playSender(name: string) {
 
 async function controlLicht(mode?: string) {
 
-  if (data.sinn["licht"].kanal === "tageslicht") {
-    await hue.updateAllHueLabToggle(/Auto\. Dimmen/g, 1);
-  } else {
-    await hue.updateAllHueLabToggle(/Auto\. Dimmen/g, 0);
-  }
+  const roomsOn = [];
+  const roomsOff = [];
 
   if (data.sinn["licht"].helligkeit === "aus") {
-    await hue.updateSensorsState("71", { status: 0 });
-    await hue.updateSensorsState("72", { status: 0 });
-    await hue.updateSensorsState("74", { status: 0 });
-    await hue.updateSensorsState("75", { status: 0 });
+    roomsOff.push("Terrasse");
+    roomsOff.push("Wohnzimmer");
+    roomsOff.push("Toilette");
+    roomsOff.push("Schlafzimmer");
+  } else if (data.sinn["licht"].helligkeit === "wenig") {
+    roomsOn.push("Terrasse");
+    roomsOff.push("Wohnzimmer");
+    roomsOff.push("Toilette");
+    roomsOff.push("Schlafzimmer");
+  } else if (data.sinn["licht"].helligkeit === "viel") {
+    roomsOn.push("Terrasse");
+    roomsOn.push("Wohnzimmer");
+    roomsOff.push("Toilette");
+    roomsOff.push("Schlafzimmer");
+  } else /* data.sinn["licht"].helligkeit === "überall" */ {
+    roomsOn.push("Terrasse");
+    roomsOn.push("Wohnzimmer");
+    roomsOn.push("Toilette");
+    roomsOn.push("Schlafzimmer");
+  }
 
-    await hue.updateGroupsByName(
-      ["Wohnzimmer", "Terrasse", "Toilette", "Schlafzimmer"],
-      {
-        on: false
-      }
-    );
+  if (data.sinn["licht"].kanal !== "tageslicht") {
+    if (data.sinn["licht"].helligkeit !== "aus" || mode === "alarm")
+      await hue.updateAllHueLabToggleByName(/Auto\. Dimmen/g, 0);
+    else
+      // Default: Tageslicht
+      await hue.updateAllHueLabToggleByName(/Auto\. Dimmen/g, 1);
+  }
 
+  if (data.kanal["szene"].szene !== "sonnenaufgang" || data.sinn["licht"].helligkeit === "aus") {
+    await hue.updateHueLabToggle("71", 0);
+    await hue.updateHueLabToggle("72", 0);
+  }
+
+  if (data.kanal["szene"].szene !== "sonnenuntergang" || data.sinn["licht"].helligkeit === "aus") {
+    await hue.updateHueLabToggle("74", 0);
+    await hue.updateHueLabToggle("75", 0);
+  }
+
+  await hue.updateGroupsByName(roomsOff, { on: false });
+
+  if (data.sinn["licht"].helligkeit === "aus") {
     return;
   }
 
-  if (data.sinn["licht"].kanal === "szene") {
-    if (data.kanal["szene"].szene === "sonnenaufgang") {
+  if (data.sinn["licht"].kanal === "entspannen") {
+    await hue.recallScenes(roomsOn, "Entspannen");
+  } else if (data.sinn["licht"].kanal === "aktivieren") {
+    await hue.recallScenes(roomsOn, "Aktivieren");
+  } else if (data.sinn["licht"].kanal === "tageslicht") {
+    if (mode === "alarm") {
+      await hue.updateAllHueLabToggleByName(/Auto\. Dimmen/g, 1);
+      return;
+    }
 
+    await hue.updateGroupsByName(roomsOn, { on: false });
+    await hue.updateAllHueLabToggleByName(/Auto\. Dimmen/g, 1);
+    await hue.updateGroupsByName(roomsOff, { on: false });
+    await hue.updateGroupsByName(roomsOn, { on: true });
+  } else if (data.sinn["licht"].kanal === "szene") {
+    if (data.kanal["szene"].szene === "sonnenaufgang") {
       if (mode === "alarm") return;
 
       await hue.recallScene("Wohnzimmer", "Sonnenaufgang (1)");
       await hue.recallScene("Schlafzimmer", "Minimum");
       await hue.recallScenes(["Terrasse", "Toilette"], "Entspannen");
 
-      await hue.updateSensorsState("71", { status: 1 });
-      await hue.updateSensorsState("72", { status: 1 });
-
+      await hue.updateHueLabToggle("71", 1);
+      await hue.updateHueLabToggle("72", 1);
     } else if (data.kanal["szene"].szene === "sonnenuntergang") {
       await hue.recallScenes(
         ["Wohnzimmer", "Terrasse", "Toilette", "Schlafzimmer"],
         "Konzentration"
       );
 
-      await hue.updateSensorsState("74", { status: 1 });
-      await hue.updateSensorsState("75", { status: 1 });
-
+      await hue.updateHueLabToggle("74", 1);
+      await hue.updateHueLabToggle("75", 1);
     } else if (data.kanal["szene"].szene === "wind") {
-
       hue.recallScene("Terrasse", "Blätterdach");
       wind();
-
     } else if (data.kanal["szene"].szene === "leuchturm") {
-
       leuchturm();
       wasser();
-
     }
-
-    return;
-  }
-
-  const rooms = ["Terrasse"];
-
-  await hue.updateGroupsByName(["Toilette", "Schlafzimmer"], {
-    on: false
-  });
-
-  if (data.sinn["licht"].helligkeit === "viel") {
-    rooms.push("Wohnzimmer");
-  } else if (data.sinn["licht"].helligkeit === "überall") {
-    rooms.push("Wohnzimmer");
-    rooms.push("Toilette");
-    rooms.push("Schlafzimmer");
-  } else {
-    await hue.updateGroupByName("Wohnzimmer", { on: false });
-  }
-
-  if (data.sinn["licht"].kanal === "entspannen") {
-    await hue.recallScenes(rooms, "Entspannen");
-  } else if (data.sinn["licht"].kanal === "aktivieren") {
-    await hue.recallScenes(rooms, "Aktivieren");
-  } else if (data.sinn["licht"].kanal === "emotion") {
+  } else /* data.sinn["licht"].kanal === "emotion" */ {
     if (data.kanal["emotion"].emotion === "groll")
-      await hue.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#d40000") });
+      await hue.setLightStateByGroupByNames(roomsOn, { on: true, xy: hexToXy("#d40000") });
     else if (data.kanal["emotion"].emotion === "erwartung")
-      await hue.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#ff7d00") });
+      await hue.setLightStateByGroupByNames(roomsOn, { on: true, xy: hexToXy("#ff7d00") });
     else if (data.kanal["emotion"].emotion === "freude")
-      await hue.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#ffe854") });
+      await hue.setLightStateByGroupByNames(roomsOn, { on: true, xy: hexToXy("#ffe854") });
     else if (data.kanal["emotion"].emotion === "vertrauen")
-      await hue.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#00b400") });
+      await hue.setLightStateByGroupByNames(roomsOn, { on: true, xy: hexToXy("#00b400") });
     else if (data.kanal["emotion"].emotion === "angst")
-      await hue.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#007f00") });
+      await hue.setLightStateByGroupByNames(roomsOn, { on: true, xy: hexToXy("#007f00") });
     else if (data.kanal["emotion"].emotion === "überraschung")
-      await hue.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#0089e0") });
+      await hue.setLightStateByGroupByNames(roomsOn, { on: true, xy: hexToXy("#0089e0") });
     else if (data.kanal["emotion"].emotion === "traurigkeit")
-      await hue.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#0000c8") });
+      await hue.setLightStateByGroupByNames(roomsOn, { on: true, xy: hexToXy("#0000c8") });
     else if (data.kanal["emotion"].emotion === "abneigung")
-      await hue.setLightStateByGroupByNames(rooms, { on: true, xy: hexToXy("#de00de") });
-  } else {
-    await hue.updateGroupsByName(rooms, {
-      on: false
-    });
-    await hue.updateGroupsByName(rooms, {
-      on: true
-    });
+      await hue.setLightStateByGroupByNames(roomsOn, { on: true, xy: hexToXy("#de00de") });
   }
 }
 
