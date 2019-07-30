@@ -19,6 +19,7 @@ import debug from "../../utils/debug";
 import { kuBaAReader } from "./KuBaAReader";
 import { buehneSReader } from "./BuehneSReader";
 import { mapsZueriAgendaReader } from "./MapsZueriAgendaReader";
+import { stadtZuerichSozialdepartementReader } from "./StadtZuerichSozialdepartementReader";
 const topic = debug("Events/Crawler", true);
 
 export interface Event {
@@ -31,7 +32,13 @@ export interface Event {
   ort?: string;
 }
 
-type Reader = HtmlReader | JsonReader<any, any> | FormReader<any, any>;
+type Reader = StaticReader | HtmlReader | JsonReader<any, any> | FormReader<any, any>;
+
+export interface StaticReader {
+  typ: "static";
+  sourceName: string;
+  get: () => Event[];
+}
 
 export interface HtmlReader {
   typ: "html";
@@ -62,6 +69,7 @@ export interface FormReader<A, I> {
 }
 
 const readers: Reader[] = [
+  stadtZuerichSozialdepartementReader,
   stadtZuerichChReader,
   zuerichUnbezahlbarReader,
   eventsChReader,
@@ -104,6 +112,7 @@ export async function crawel(
   for (const reader of readers) {
     if (reader.typ === "html") await crawelHtml(reader, persist);
     else if (reader.typ === "json") await crawelJson(reader, persist);
+    else if (reader.typ === "static") await crawelStatic(reader, persist);
     else await crawelForm(reader, persist);
   }
 }
@@ -365,6 +374,12 @@ async function crawelJson<T>(
     topic("Error", error);
     await persist(error);
   }
+}
+async function crawelStatic(
+  reader: StaticReader,
+  persist: (event: Calendar.Event) => Promise<void>
+) {
+  transformPersist(persist, reader, reader.get());
 }
 
 async function transformPersist(
