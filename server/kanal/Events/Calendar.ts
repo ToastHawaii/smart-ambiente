@@ -279,7 +279,8 @@ const baseKategorieSchlagwoerter = [
       "humor",
       "komödie",
       "theatersport",
-      "satire"
+      "satire",
+      "clown"
     ]
   },
   {
