@@ -230,10 +230,10 @@ app.listen(3001);
 
 async function controlTon() {
 
-  await NaturRadio.stopSound();
   await WeatherRadio.stopSound();
+  await NaturRadio.stopSound();
 
-  await delay(5 * 1000);
+  await delay(6 * 1000);
 
   if (
     data.sinn["ton"].lautstaerke !== "aus" &&
