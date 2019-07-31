@@ -1,20 +1,17 @@
 import * as React from "react";
 import {
-  Music,
-  Theater,
-  BookOpenPageVariant,
-  FoodApple,
-  TransitTransfer,
-  Untappd,
-  GlassCocktail,
-  Tree,
-  EmoticonExcited,
-  VideoVintage,
-  Silverware,
-  ImageOutline,
-  Run,
-  Brush,
-  Voice
+  CircleOutline,
+  CurrentAc,
+  PencilPlus,
+  ProgressWrench,
+  Gift,
+  Forum,
+  EmoticonHappy,
+  AccountGroup,
+  Charity,
+  ScaleBalance,
+  Balloon,
+  Nature
 } from "mdi-material-ui";
 import { StyleRulesCallback, withStyles, Typography } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
@@ -120,7 +117,7 @@ class EventTile extends React.Component<
       hatDetails,
       titel,
       beschreibung,
-      hintergrundFarbe,
+      hintergrundFarbe: hintergrundFarbeBase,
       textFarbe,
       datum,
       zeit,
@@ -132,51 +129,57 @@ class EventTile extends React.Component<
     } = this.state.val;
     const { details, hintergrundPosition, time } = this.state;
     let i: any;
+
+    let hintergrundFarbe = hintergrundFarbeBase;
+
     switch (icon) {
-      case "Musik":
-        i = <Music />;
+      case "Leichtigkeit":
+        i = <Balloon />;
+        hintergrundFarbe = "#336D19";
         break;
-      case "Theater":
-        i = <Theater />;
+      case "Balance":
+        i = <Nature />;
+        hintergrundFarbe = "#39A535";
         break;
-      case "Führung":
-        i = <TransitTransfer />;
+      case "Gerechtigkeit":
+        i = <ScaleBalance />;
+        hintergrundFarbe = "#46C6AF";
         break;
-      case "Einkaufen":
-        i = <FoodApple />;
+      case "Unterstützung":
+        i = <Charity />;
+        hintergrundFarbe = "#F69804";
         break;
-      case "Bildung":
-        i = <BookOpenPageVariant />;
+      case "Dazugehören":
+        i = <AccountGroup />;
+        hintergrundFarbe = "#A77193";
         break;
-      case "Film":
-        i = <VideoVintage />;
+      case "Wertschätzung":
+        i = <EmoticonHappy />;
+        hintergrundFarbe = "#508AB8";
         break;
-      case "Festival":
-        i = <Untappd />;
+      case "Austausch":
+        i = <Forum />;
+        hintergrundFarbe = "#21B5CF";
         break;
-      case "Party":
-        i = <GlassCocktail />;
+      case "Beitragen":
+        i = <Gift />;
+        hintergrundFarbe = "#CF1F50";
         break;
-      case "Essen":
-        i = <Silverware />;
+      case "Entwicklung":
+        i = <ProgressWrench />;
+        hintergrundFarbe = "#755390";
         break;
-      case "Bewegung":
-        i = <Run />;
+      case "Wirksam sein":
+        i = <PencilPlus />;
+        hintergrundFarbe = "#C3613E";
         break;
-      case "Ausstellung":
-        i = <ImageOutline />;
+      case "Abwechslung":
+        i = <CurrentAc />;
+        hintergrundFarbe = "#EBB5C3";
         break;
-      case "Comedy":
-        i = <EmoticonExcited />;
-        break;
-      case "Natur":
-        i = <Tree />;
-        break;
-      case "Gestalten":
-        i = <Brush />;
-        break;
-      case "Sprache":
-        i = <Voice />;
+      case "Schönheit":
+        i = <CircleOutline />;
+        hintergrundFarbe = "#BED062";
         break;
     }
 

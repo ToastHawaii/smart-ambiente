@@ -241,14 +241,61 @@ function isAllDay(e: { start: moment.Moment; ende?: moment.Moment }) {
 }
 
 const baseKategorieSchlagwoerter = [
-  { name: "Film", schlagwoerter: ["film", "kino"] },
   {
-    name: "Einkaufen",
-    schlagwoerter: ["markt", "shop", "börse", "märkte", "börsen"]
+    name: "Leichtigkeit",
+    schlagwoerter: [
+      "comedy",
+      "kabarett",
+      "poetry-slam",
+      "poetry slam",
+      "poetryslam",
+      "witz",
+      "humor",
+      "komödie",
+      "theatersport",
+      "satire",
+      "clown",
+      "lachen"
+    ]
   },
-  { name: "Führung", schlagwoerter: ["führung"] },
+  { name: "Leichtigkeit", schlagwoerter: ["leichtigkeit", "spiel", "spass", "freude", "humor", "lebendigkeit", "bequemlichkeit", "erholung", "gelassenheit", "gemütlichkeit", "leicht", "lebendig", "bequem", "gelassen", "gemütlich"] },
+  { name: "Gerechtigkeit", schlagwoerter: ["gerechtigkeit", "gleichwertigkeit", "gleichbehandlung", "privatsphäre", "gerecht", "gleichwertig", "privat"] },
+  { name: "Balance", schlagwoerter: ["balance", "gleichgewicht", "gleichwertigkeit", "gegenseitigkeit", "ausgewogenheit", "ausgeglichenheit", "ausgleich", "achtsamkeit", "beständigkeit", "gegenseitig", "ausgewogen", "ausgeglichen", "achtsamkeit", "beständig"] },
+  { name: "Unterstützung", schlagwoerter: ["unterstützung", "hilfe", "fürsorge", "rückhalt", "zusammenarbeit", "zuspruch", "ermutigung", "diskretion", "geborgenheit", "verbindlichkeit", "orientierung", "geborgen", "verbindlich"] },
+  { name: "Dazugehören", schlagwoerter: ["dazugehören", "verständnis", "gemeinschaft", "einbezogen sein", "eigenen platz haben", "aufrichtigkeit", "ehrlichkeit", "vertraulichkeit", "vertrauen", "klarheit", "nähe", "intimität", "akzeptanz", "aufmerksamkeit", "aufrichtig", "ehrlich", "vertaulich", "klar", "aufmerksam"] },
+  { name: "Wertschätzung", schlagwoerter: ["wertschätzung", "anerkennung", "bewunderung", "dankbarkeit", "bestätigung", "respekt", "einfühlung", "verlässlichkeit", "transparenz", "dankbar", "verlässlich"] },
+  { name: "Austausch", schlagwoerter: ["austausch", "verständnis", "verständigung", "kommunikation", "wahrgenommen werden", "sex", "tiefe", "kontakt"] },
+  { name: "Beitragen", schlagwoerter: ["sinnhaftigkeit", "authentizität", "authentisch"] },
+  { name: "Entwicklung", schlagwoerter: ["entwicklung", "anregung", "inspiration", "selbstentfaltung", "entfaltung", "lernen", "verbesserung", "wachstum", "individualität", "unabhängigkeit", "unabhängig"] },
+  { name: "Wirksam sein", schlagwoerter: ["wirksam sein", "selbstwirksamkeit", "effektivität", "kompetenz", "erfolg", "autonomie", "freiwilligkeit", "selbstwirksam", "freiwillig"] },
+  { name: "Abwechslung", schlagwoerter: ["abwechslung", "vielfalt", "abenteuer", "unterhaltung"] },
+  { name: "Schönheit", schlagwoerter: ["schönheit", "ästhetik", "harmonie", "ordnung", "ruhe", "frieden", "stille", "rückzug", "schön"] },
   {
-    name: "Bildung",
+    name: "Abwechslung", schlagwoerter: [
+      "film",
+      "kino",
+      "einkaufen",
+      "markt",
+      "shop",
+      "börse",
+      "märkte",
+      "börsen",
+      "führung",
+    ]
+  },
+  {
+    name: "Balance",
+    schlagwoerter: [
+      "bewegung",
+      "sport",
+      "fitness",
+      "tanz",
+      "yoga",
+      "dance"
+    ]
+  },
+  {
+    name: "Entwicklung",
     schlagwoerter: [
       "vortrag",
       "erfahrungsaustausch",
@@ -268,49 +315,37 @@ const baseKategorieSchlagwoerter = [
     ]
   },
   {
-    name: "Comedy",
+    name: "Balance",
     schlagwoerter: [
-      "comedy",
-      "kabarett",
-      "poetry-slam",
-      "poetry slam",
-      "poetryslam",
-      "witz",
-      "humor",
-      "komödie",
-      "theatersport",
-      "satire",
-      "clown"
-    ]
-  },
-  {
-    name: "Bewegung",
-    schlagwoerter: [
-      "sport",
-      "fitness",
       "traning",
-      "marathon",
-      "tanz",
-      "yoga",
-      "dance"
+      "marathon"
     ]
   },
-  { name: "Theater", schlagwoerter: ["theater", "zirkus", "musical", "oper"] },
-  { name: "Party", schlagwoerter: ["party", "fest", "disco", "club"] },
+  { name: "Abwechslung", schlagwoerter: ["theater", "zirkus", "musical", "oper"] },
   {
-    name: "Festival",
-    schlagwoerter: ["festival", "messe", "sozial", "game", "spiele"]
+    name: "Austausch", schlagwoerter: [
+      "party",
+      "fest",
+      "disco",
+      "club",
+      "festival",
+      "messe",
+      "sozial",
+      "game",
+      "spiele"
+    ]
   },
   {
-    name: "Ausstellung",
-    schlagwoerter: ["ausstellung", "museum", "museen", "kunst", "fotografie"]
+    name: "Entwicklung",
+    schlagwoerter: ["ausstellung", "museum", "museen"]
   },
   {
-    name: "Musik",
+    name: "Schönheit",
     schlagwoerter: [
+      "kunst",
+      "fotografie",
       "musik",
       "konzert",
-      "tanz",
       "jazz",
       "melodien",
       "band",
@@ -323,7 +358,7 @@ const baseKategorieSchlagwoerter = [
     ]
   },
   {
-    name: "Essen",
+    name: "Abwechslung",
     schlagwoerter: [
       "essen",
       "fleisch",
@@ -337,35 +372,46 @@ const baseKategorieSchlagwoerter = [
       "food"
     ]
   },
-  { name: "Natur", schlagwoerter: ["tier", "natur", "garten", "zoo"] },
+  { name: "Balance", schlagwoerter: ["tier", "natur", "garten", "zoo"] },
   {
-    name: "Gestalten",
-    schlagwoerter: ["zeichnen", "werken", "gestalten", "workshop", "photoshop"]
+    name: "Entwicklung",
+    schlagwoerter: ["zeichnen",
+      "werken",
+      "gestalten",
+      "workshop",
+      "photoshop",
+      "lesung",
+      "literatur",
+      "sprache"
+    ]
   },
   {
-    name: "Sprache",
+    name: "Schönheit",
     schlagwoerter: [
-      "lesung",
       "gedichte",
-      "lyrik",
-      "sprache",
+      "lyrik"
+    ]
+  },
+  {
+    name: "Austausch",
+    schlagwoerter: [
       "konversation",
-      "literatur",
       "englisch",
-      "kommunikation",
       "conversation"
     ]
   },
   {
-    name: "Bildung",
+    name: "Entwicklung",
     schlagwoerter: ["diskussion", "discussion"]
   },
+  { name: "Beitragen", schlagwoerter: ["beitragen", "sinn", "kreativität", "dienen", "geben"] },
+  { name: "Entwicklung", schlagwoerter: ["wissen", "sinn", "freiheit", "frei",] },
   {
-    name: "Comedy",
+    name: "Leichtigkeit",
     schlagwoerter: ["impro"]
   },
   {
-    name: "Essen",
+    name: "Abwechslung",
     schlagwoerter: ["bar"]
   },
   {
