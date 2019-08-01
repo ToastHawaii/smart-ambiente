@@ -240,14 +240,14 @@ async function controlTon() {
     data.sinn["ton"].lautstaerke !== "bild"
   ) {
     if (data.sinn["ton"].lautstaerke === "leise") {
-      setLautstaerke(8);
+      await setLautstaerke(8);
     } else if (data.sinn["ton"].lautstaerke === "normal") {
-      setLautstaerke(15);
+      await setLautstaerke(15);
     } else if (data.sinn["ton"].lautstaerke === "laut") {
-      setLautstaerke(25);
+      await setLautstaerke(25);
     } else {
       const lautstaerke = parseInt(data.sinn["ton"].lautstaerke, 10);
-      setLautstaerke(lautstaerke);
+      await setLautstaerke(lautstaerke);
 
       if (lautstaerke >= 20) {
         data.sinn["ton"].lautstaerke = "laut";
@@ -267,28 +267,28 @@ async function controlTon() {
 
       if (data.sinn["ton"].kanal === "musik") {
         if (data.kanal["musik"].stil === "interesse") {
-          playSender("Radio Swiss Jazz (Jazz)");
+          await playSender("Radio Swiss Jazz (Jazz)");
         } else if (data.kanal["musik"].stil === "gelassenheit") {
-          playPlaylist("Blues");
+          await playPlaylist("Blues");
         } else if (data.kanal["musik"].stil === "akzeptanz") {
-          playPlaylist("Reggea");
+          await playPlaylist("Reggea");
         } else if (data.kanal["musik"].stil === "vertrauen") {
-          playSender("Whisperings: Solo Piano Radio");
+          await playSender("Whisperings: Solo Piano Radio");
         } else if (data.kanal["musik"].stil === "groll") {
-          playPlaylist("Punk");
+          await playPlaylist("Punk");
         } else if (data.kanal["musik"].stil === "erwartung") {
-          playSender("Ska World");
+          await playSender("Ska World");
         } else if (data.kanal["musik"].stil === "freude") {
-          playSender("Electro Swing Revolution Radio");
+          await playSender("Electro Swing Revolution Radio");
         } else if (data.kanal["musik"].stil === "wut") {
-          playPlaylist("Metal");
+          await playPlaylist("Metal");
         } else if (data.kanal["musik"].stil === "umsicht") {
-          playPlaylist("Rock");
+          await playPlaylist("Rock");
         }
       } else if (data.sinn["ton"].kanal === "nachrichten") {
-        playSender("SRF 4 News (Nachrichten)");
+        await playSender("SRF 4 News (Nachrichten)");
       } else if (data.sinn["ton"].kanal === "krimi") {
-        playPlaylist("Die haarstraeubenden Faelle des Philip Maloney");
+        await playPlaylist("Die haarstraeubenden Faelle des Philip Maloney");
       }
     }
   } else {

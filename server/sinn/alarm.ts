@@ -44,7 +44,7 @@ const transition = interval * 60 * 10;
     async () => {
       setSinn("ton", { lautstaerke: "1", kanal: "wetter" }, "alarm");
 
-      setSinn("licht", { helligkeit: "überall", kanal: "sonnenaufgang" }, "alarm");
+      setSinn("licht", { helligkeit: "überall", kanal: "szene" }, "alarm");
 
       if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
         hue.recallScene("Wohnzimmer", "Minimum", 1);
