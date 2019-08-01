@@ -20,6 +20,7 @@ import { kuBaAReader } from "./KuBaAReader";
 import { buehneSReader } from "./BuehneSReader";
 import { mapsZueriAgendaReader } from "./MapsZueriAgendaReader";
 import { stadtZuerichSozialdepartementReader } from "./StadtZuerichSozialdepartementReader";
+import { doodleReader } from "./DoodleReader";
 const topic = debug("Events/Crawler", true);
 
 export interface Event {
@@ -84,7 +85,8 @@ const readers: Reader[] = [
   gzZhReader,
   meetupReader,
   mapsZueriAgendaReader,
-  buehneSReader
+  buehneSReader,
+  doodleReader
 ];
 
 function params(param: string): string[] {
