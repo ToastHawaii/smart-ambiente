@@ -24,7 +24,9 @@ const transition = interval * 60 * 10;
       (getSinn("ton").kanal !== "wetter" && getSinn("ton").kanal !== "nachrichten"))
       tonActiv = false;
 
-    if (getSinn("licht").helligkeit === "aus" || getSinn("licht").kanal !== "sonnenaufgang")
+    if (getSinn("licht").helligkeit === "aus"
+      || getSinn("licht").kanal !== "szene"
+      || getKanal("szene").szene !== "sonnenaufgang")
       lichtActiv = false;
   }
 
