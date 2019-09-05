@@ -5,7 +5,7 @@ import { tagesanzeigerChReader } from "./TagesanzeigerReader";
 import { zuriNetReader } from "./ZuriNetReader";
 import { comedyHausReader } from "./ComedyHausReader";
 import { pfirsiReader } from "./PfirsiReader";
-//import { casinotheaterReader } from "./CasinotheaterReader";
+import { casinotheaterReader } from "./CasinotheaterReader";
 import { dynamoVeranstaltungenReader } from "./DynamoVeranstaltungenReader";
 import { dynamoKurseReader } from "./DynamoKurseReader";
 import { gzZhReader } from "./GzZhReader";
@@ -79,7 +79,7 @@ const readers: Reader[] = [
   kuBaAReader,
   comedyHausReader,
   pfirsiReader,
-  //casinotheaterReader,
+  casinotheaterReader,
   dynamoVeranstaltungenReader,
   dynamoKurseReader,
   gzZhReader,
