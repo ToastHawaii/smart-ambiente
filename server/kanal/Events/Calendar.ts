@@ -202,11 +202,16 @@ function shouldBeIgnored(event: { titel: string; beschreibung?: string }) {
     "titel der veranstaltung",
     "audiowalk für kinder",
     "indoor spielplatz",
-    " 45+",
-    " 50+",
-    " 55+",
-    " 60+",
-    " 65+"
+    " 45+ ",
+    " 50+ ",
+    " 55+ ",
+    " 60+ ",
+    " 65+ ",
+    "deutschkurs",
+    "deutsch kurs",
+    "mädelsflohmarkt",
+    "seniorentreff",
+    "vater-kind-treff"
   ].some(
     f =>
       event.titel.toUpperCase().indexOf(f.toUpperCase()) > -1 ||
@@ -262,7 +267,7 @@ const baseKategorieSchlagwoerter = [
   { name: "Gerechtigkeit", schlagwoerter: ["gerechtigkeit", "gleichwertigkeit", "gleichbehandlung", "privatsphäre", "gerecht", "gleichwertig", "privat"] },
   { name: "Balance", schlagwoerter: ["balance", "gleichgewicht", "gleichwertigkeit", "gegenseitigkeit", "ausgewogenheit", "ausgeglichenheit", "ausgleich", "achtsamkeit", "beständigkeit", "gegenseitig", "ausgewogen", "ausgeglichen", "achtsamkeit", "beständig"] },
   { name: "Unterstützung", schlagwoerter: ["unterstützung", "hilfe", "fürsorge", "rückhalt", "zusammenarbeit", "zuspruch", "ermutigung", "diskretion", "geborgenheit", "verbindlichkeit", "orientierung", "geborgen", "verbindlich"] },
-  { name: "Dazugehören", schlagwoerter: ["dazugehören", "verständnis", "gemeinschaft", "einbezogen sein", "eigenen platz haben", "aufrichtigkeit", "ehrlichkeit", "vertraulichkeit", "vertrauen", "klarheit", "nähe", "intimität", "akzeptanz", "aufmerksamkeit", "aufrichtig", "ehrlich", "vertaulich", "klar", "aufmerksam"] },
+  { name: "Dazugehören", schlagwoerter: ["dazugehören", "verständnis", "gemeinschaft", "einbezogen sein", "eigenen platz haben", "aufrichtigkeit", "ehrlichkeit", "vertraulichkeit", "vertrauen", "klarheit", "nähe", "intimität", "akzeptanz", "aufmerksamkeit", "aufrichtig", "ehrlich", "vertaulich", "aufmerksam"] },
   { name: "Wertschätzung", schlagwoerter: ["wertschätzung", "anerkennung", "bewunderung", "dankbarkeit", "bestätigung", "respekt", "einfühlung", "verlässlichkeit", "transparenz", "dankbar", "verlässlich"] },
   { name: "Austausch", schlagwoerter: ["austausch", "verständnis", "verständigung", "kommunikation", "wahrgenommen werden", "sex", "tiefe", "kontakt"] },
   { name: "Beitragen", schlagwoerter: ["sinnhaftigkeit", "authentizität", "authentisch"] },
@@ -271,7 +276,8 @@ const baseKategorieSchlagwoerter = [
   { name: "Abwechslung", schlagwoerter: ["abwechslung", "vielfalt", "abenteuer", "unterhaltung"] },
   { name: "Schönheit", schlagwoerter: ["schönheit", "ästhetik", "harmonie", "ordnung", "ruhe", "frieden", "stille", "rückzug", "schön"] },
   {
-    name: "Abwechslung", schlagwoerter: [
+    name: "Abwechslung",
+    schlagwoerter: [
       "film",
       "kino",
       "einkaufen",
@@ -295,23 +301,37 @@ const baseKategorieSchlagwoerter = [
     ]
   },
   {
+    name: "Unterstützung",
+    schlagwoerter: [
+      "stammtisch",
+      "beratung",
+      "offenen werkstatt",
+      "offene werkstatt",
+      "offene werkstatt",
+      "repair café"
+    ]
+  },
+  {
+    name: "Austausch",
+    schlagwoerter: [
+      "erfahrungsaustausch",
+      "zusammenarbeit",
+      "networking"
+    ]
+  },
+  {
     name: "Entwicklung",
     schlagwoerter: [
       "vortrag",
-      "erfahrungsaustausch",
       "informationsveranstaltung",
       "infoanlass",
-      "stammtisch",
       "bildung",
       "informationsabend",
-      "beratung",
       "wissen",
-      "diskussion",
       "technologie",
       "softwareentwicklung",
       "programmieren",
       "weiterentwicklung",
-      "zusammenarbeit"
     ]
   },
   {
@@ -345,6 +365,7 @@ const baseKategorieSchlagwoerter = [
       "kunst",
       "fotografie",
       "musik",
+      "musig",
       "konzert",
       "jazz",
       "melodien",
@@ -355,6 +376,13 @@ const baseKategorieSchlagwoerter = [
       "hip-hop",
       "hip hop",
       "music"
+    ]
+  },
+  {
+    name: "Wertschätzung",
+    schlagwoerter: [
+      "single",
+      "freund"
     ]
   },
   {
@@ -375,7 +403,8 @@ const baseKategorieSchlagwoerter = [
   { name: "Balance", schlagwoerter: ["tier", "natur", "garten", "zoo"] },
   {
     name: "Entwicklung",
-    schlagwoerter: ["zeichnen",
+    schlagwoerter: [
+      "zeichnen",
       "werken",
       "gestalten",
       "workshop",
@@ -401,18 +430,34 @@ const baseKategorieSchlagwoerter = [
     ]
   },
   {
-    name: "Entwicklung",
+    name: "Austausch",
     schlagwoerter: ["diskussion", "discussion"]
   },
-  { name: "Beitragen", schlagwoerter: ["beitragen", "sinn", "kreativität", "dienen", "geben"] },
-  { name: "Entwicklung", schlagwoerter: ["wissen", "sinn", "freiheit", "frei",] },
+  { name: "Beitragen", schlagwoerter: ["beitragen", "sinn", "kreativität", "dienen", "geben", "helf"] },
+  { name: "Entwicklung", schlagwoerter: ["wissen", "sinn", "freiheit", "frei"] },
+  {
+    name: "Wertschätzung",
+    schlagwoerter: [
+      "dating",
+      "date",
+      "beziehung"
+    ]
+  },
+  {
+    name: "Dazugehören",
+    schlagwoerter: [
+      "verein",
+      "gruppe",
+      "klar"
+    ]
+  },
   {
     name: "Leichtigkeit",
-    schlagwoerter: ["impro"]
+    schlagwoerter: ["impro", "fun"]
   },
   {
     name: "Abwechslung",
-    schlagwoerter: ["bar"]
+    schlagwoerter: ["bar", "show"]
   },
   {
     name: "Error",

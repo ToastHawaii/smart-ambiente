@@ -82,7 +82,7 @@ export const dynamoKurseReader: HtmlReader = {
 
       if (timeTo.length < 5) timeTo = "0" + timeTo;
 
-      if(timeTo === "00:00") timeTo = "23:59";
+      if (timeTo === "00:00") timeTo = "23:59";
     }
 
     if (dateTo) {
@@ -105,9 +105,9 @@ export const dynamoKurseReader: HtmlReader = {
           ),
           ende: timeTo
             ? moment(
-                currentDate.format("YYYY-MM-DD") + " " + timeTo,
-                "YYYY-MM-DD HH:mm"
-              )
+              currentDate.format("YYYY-MM-DD") + " " + timeTo,
+              "YYYY-MM-DD HH:mm"
+            )
             : undefined,
           ort: "Jugendkulturhaus Dynamo, Wasserwerkstrasse 21, 8006 Zürich",
           bild: img

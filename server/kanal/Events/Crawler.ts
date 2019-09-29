@@ -21,6 +21,8 @@ import { buehneSReader } from "./BuehneSReader";
 import { mapsZueriAgendaReader } from "./MapsZueriAgendaReader";
 import { stadtZuerichSozialdepartementReader } from "./StadtZuerichSozialdepartementReader";
 import { doodleReader } from "./DoodleReader";
+import { spontactsReader } from "./SpontactsReader";
+import { opkenkiReader } from "./OpkenkiReader";
 const topic = debug("Events/Crawler", true);
 
 export interface Event {
@@ -84,6 +86,8 @@ const readers: Reader[] = [
   dynamoKurseReader,
   gzZhReader,
   meetupReader,
+  spontactsReader,
+  opkenkiReader,
   mapsZueriAgendaReader,
   buehneSReader,
   doodleReader

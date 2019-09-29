@@ -4,7 +4,7 @@ import * as moment from "moment";
 moment.locale("de");
 
 export const pfirsiReader: HtmlReader = {
-  typ:"html",
+  typ: "html",
   sourceName: "pfirsi",
   sourceUrl: ["https://www.pfirsi.ch/events/anundpfirsich/"],
   itemSelector: ".et_pb_row a.et_pb_button",
@@ -33,7 +33,7 @@ export const pfirsiReader: HtmlReader = {
             .find(".aupev-day")
             .text()
             .split(", ")[1] +
-            $detailItem.find(".aupev-day")[0].nextSibling.nodeValue,
+          $detailItem.find(".aupev-day")[0].nextSibling.nodeValue,
           "Do MMMM YYYY HH:mm [Uhr]"
         ),
         ort:
@@ -48,7 +48,7 @@ export const pfirsiReader: HtmlReader = {
           .substring(
             5,
             $detailItem.find(".et_parallax_bg").css("background-image").length -
-              2
+            2
           )
       }
     ];
