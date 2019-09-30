@@ -27,8 +27,15 @@ sudo apt-get install -y nodejs
 cd /home/pi/smart-ambiente
 npm install ToastHawaii/smart-ambiente --production
 
+sudo apt-get install libavahi-compat-libdnssd-dev
+npm install @johneas10/airsonos -g
+
 cd /etc
 sudo nano rc.local
+
+    su - pi -c "
+    airsonos
+    " >>/dev/smart-ambiente-airsonos.log 2>>/dev/smart-ambiente-airsonos.err &
 
     cd /home/pi/smart-ambiente/node_modules/sonos-http-api
     node server.js >>/dev/smart-ambiente-sound.log 2>>/dev/smart-ambiente-sound.err &

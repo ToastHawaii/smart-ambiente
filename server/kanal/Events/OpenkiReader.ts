@@ -17,7 +17,7 @@ type Item = {
   venue: { name: string; };
 };
 
-export const opkenkiReader: JsonReader<Items, Item> = {
+export const openkiReader: JsonReader<Items, Item> = {
   typ: "json",
   sourceName: "Openki",
   sourceUrl: ["[https://openki.net/api/0/json/events?after=]YYYY-MM-DD[T00:00&before=]YYYY-MM-DD[T23:59&region=J6GDhEEvdmdSMzPPF]"],

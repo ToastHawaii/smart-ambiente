@@ -22,7 +22,7 @@ import { mapsZueriAgendaReader } from "./MapsZueriAgendaReader";
 import { stadtZuerichSozialdepartementReader } from "./StadtZuerichSozialdepartementReader";
 import { doodleReader } from "./DoodleReader";
 import { spontactsReader } from "./SpontactsReader";
-import { opkenkiReader } from "./OpkenkiReader";
+import { openkiReader } from "./OpenkiReader";
 const topic = debug("Events/Crawler", true);
 
 export interface Event {
@@ -87,7 +87,7 @@ const readers: Reader[] = [
   gzZhReader,
   meetupReader,
   spontactsReader,
-  opkenkiReader,
+  openkiReader,
   mapsZueriAgendaReader,
   buehneSReader,
   doodleReader
