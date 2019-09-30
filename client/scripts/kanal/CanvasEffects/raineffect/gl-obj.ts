@@ -15,7 +15,7 @@ export default class GL {
     this.canvas = canvas;
     this.width = canvas.width;
     this.height = canvas.height;
-    this.gl = WebGL.getContext(canvas, options);
+    this.gl = WebGL.getContext(canvas, options) as any;
     this.program = this.createProgram(vert, frag);
     this.useProgram(this.program);
   }

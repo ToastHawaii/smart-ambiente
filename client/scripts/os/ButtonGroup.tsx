@@ -48,7 +48,7 @@ class ButtonGroup extends React.Component<
           }
         : styleProp;
 
-    const children = React.Children.map<any>(childrenProp, child => {
+    const children = React.Children.map<any, any>(childrenProp, child => {
       if (!React.isValidElement(child)) {
         return null;
       }
