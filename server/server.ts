@@ -19,7 +19,7 @@ const topic = debug("server", false);
 
 const sonos = SonosHttp.createClient();
 const hue = HueHttp.createHueService(
-  "http://192.168.1.101/api/p5u0Ki9EwbUQ330gcMA9-gK3qBKhYWCWJ1NmkNVs"
+  "http://192.168.178.101/api/p5u0Ki9EwbUQ330gcMA9-gK3qBKhYWCWJ1NmkNVs"
 );
 
 const app = express();

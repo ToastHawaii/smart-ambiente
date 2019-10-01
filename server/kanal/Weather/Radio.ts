@@ -9,8 +9,8 @@ const topic = debug("weather/controller", false);
 
 const soundSource = "../../smart-ambiente-media/sound/weather/";
 const channelApiUrls = [
-  "http://192.168.1.112:8001/smart-ambiente/scene",
-  "http://192.168.1.112:8002/smart-ambiente/scene"
+  "http://192.168.178.112:8001/smart-ambiente/scene",
+  "http://192.168.178.112:8002/smart-ambiente/scene"
 ];
 
 const channelOutputUrls = [

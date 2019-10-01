@@ -5,7 +5,7 @@ import { setKanal, setSinn, getKanal, getSinn } from "../server";
 import { loadConfig } from "../utils/config";
 
 const hue = Hue.createHueService(
-  "http://192.168.1.101/api/p5u0Ki9EwbUQ330gcMA9-gK3qBKhYWCWJ1NmkNVs"
+  "http://192.168.178.101/api/p5u0Ki9EwbUQ330gcMA9-gK3qBKhYWCWJ1NmkNVs"
 );
 
 const interval = 6;
