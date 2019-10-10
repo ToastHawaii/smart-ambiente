@@ -101,7 +101,7 @@ if (args["--RELEASE"]) {
 }
 
 async function init() {
-  await delay(30 * 1000);
+  await delay(5 * 60 * 1000);
 
   try {
     topic("Crawel");
