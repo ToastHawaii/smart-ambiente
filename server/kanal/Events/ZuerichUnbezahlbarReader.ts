@@ -15,11 +15,7 @@ export const zuerichUnbezahlbarReader: HtmlReader = {
   },
   mapper: (_$listItem: Cheerio, $detailItem?: Cheerio) => {
     if (!$detailItem) return [];
-    if (
-      ($detailItem.html() || "").indexOf(
-        "Entschuldige, leider"
-      ) >= 0
-    )
+    if (($detailItem.html() || "").indexOf("Entschuldige, leider") >= 0)
       return [];
 
     const date = $detailItem.find(".detailpost__date time").attr("datetime");
@@ -39,9 +35,11 @@ export const zuerichUnbezahlbarReader: HtmlReader = {
         .nextSibling.nodeValue.split("-")[1]
         .replace(/\s+/gi, " ")
         .trim();
+
     let img = $detailItem.find(".poster__image").attr("src");
-    if (img.indexOf("/static/") === 0)
+    if (img && img.indexOf("/static/") === 0)
       img = "http://www.zuerichunbezahlbar.ch" + img;
+
     return [
       {
         kategorie: $detailItem.find(".detailpost__taglist").text(),

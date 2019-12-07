@@ -11,7 +11,7 @@ export const meetupReader: HtmlReader = {
   ],
   itemSelector: '[itemtype="http://data-vocabulary.org/Event"]',
   sourceDetailUrl: $item => {
-    return $item.find('.event[itemprop="url"]').attr("href");
+    return $item.find('.event[itemprop="url"]').attr("href") || "";
   },
   mapper: (_$listItem: Cheerio, $detailItem?: Cheerio) => {
     if (!$detailItem) return [];
@@ -33,11 +33,12 @@ export const meetupReader: HtmlReader = {
 
     if (!(startDate && startDate[1])) return [];
 
-    let kategories = $detailItem
-      .parent()
-      .find("meta[name=keywords]")
-      .attr("content")
-      .split(",");
+    let kategories = (
+      $detailItem
+        .parent()
+        .find("meta[name=keywords]")
+        .attr("content") || ""
+    ).split(",");
 
     kategories = kategories.slice(0, kategories.length - 3);
 

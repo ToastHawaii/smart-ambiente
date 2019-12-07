@@ -1,6 +1,8 @@
 import { getJson, putJson } from "../utils/request";
 import { delay } from "../utils/timer";
 import { toArray } from "../utils/array";
+import debug from "../utils/debug";
+const topic = debug("philips-hue-api", false);
 
 export function createHueService(baseUrl: string) {
   return new Hue(baseUrl);
@@ -99,19 +101,18 @@ export interface GroupPartial {
 }
 
 class Hue {
-  public constructor(private baseUrl: string) { }
+  public constructor(private baseUrl: string) {}
 
   public async queryRules() {
-    return await getJson<{ [index: string]: Rule }>(
-      this.baseUrl + "/rules"
-    );
+    return await getJson<{ [index: string]: Rule }>(this.baseUrl + "/rules");
   }
 
   public async getRulesByConditionAddress(address: string): Promise<Rule> {
     const result = await this.queryRules();
     const rule = toArray<{ [index: string]: Rule }, Rule>(result);
 
-    return rule.filter((g: Rule) => g.conditions.filter(c => c.address === address).length > 0
+    return rule.filter(
+      (g: Rule) => g.conditions.filter(c => c.address === address).length > 0
     )[0];
   }
 
@@ -121,7 +122,8 @@ class Hue {
 
     await delay(100);
     const rule = await this.getRulesByConditionAddress(address);
-    return rule.conditions.map(c => c.address)
+    return rule.conditions
+      .map(c => c.address)
       .filter(a => /\/sensors\/([0-9]*)\/state\/status/gi.test(a))
       .filter(a => a !== address)
       .map(a => (/\/sensors\/([0-9]*)\/state\/status/gi.exec(a) || [])[1])[0];
@@ -139,20 +141,30 @@ class Hue {
   }
 
   public async updateAllHueLabToggleByName(name: RegExp, state: number) {
-    const allSchedulers = toArray<{ [index: string]: Scheduler }, Scheduler>(await this.querySchedules());
+    topic("updateAllHueLabToggleByName" + name);
+    const allSchedulers = toArray<{ [index: string]: Scheduler }, Scheduler>(
+      await this.querySchedules()
+    );
     const schedulers = allSchedulers
       .filter(s => name.test(s.name))
       .map(s => s.command.address.substr(14) + "/status")
       .filter((v, i, a) => a.indexOf(v) === i);
 
     await delay(100);
-    const allRules = toArray<{ [index: string]: Rule }, Rule>(await this.queryRules());
+    const allRules = toArray<{ [index: string]: Rule }, Rule>(
+      await this.queryRules()
+    );
 
     for (const scheduler of schedulers) {
       const rule = allRules.filter(
-        (r: Rule) => r.conditions.filter(c => c.address === scheduler).length > 0
+        (r: Rule) =>
+          r &&
+          r.conditions.filter(c => {
+            return c.address.endsWith(scheduler);
+          }).length > 0
       )[0];
-      const sensor = rule.conditions.map(c => c.address)
+      const sensor = rule.conditions
+        .map(c => c.address)
         .filter(a => /\/sensors\/([0-9]*)\/state\/status/gi.test(a))
         .filter(a => a !== scheduler)
         .map(a => (/\/sensors\/([0-9]*)\/state\/status/gi.exec(a) || [])[1])[0];
@@ -173,7 +185,9 @@ class Hue {
 
   public async getSchedulesByName(name: string): Promise<Scheduler> {
     const result = await this.querySchedules();
-    const scheduler = toArray<{ [index: string]: Scheduler }, Scheduler>(result);
+    const scheduler = toArray<{ [index: string]: Scheduler }, Scheduler>(
+      result
+    );
     return scheduler.filter(g => g.name === name)[0];
   }
 
@@ -279,7 +293,10 @@ class Hue {
     await putJson(this.baseUrl + "/lights/" + id + "/state", attributes);
   }
 
-  public async setLightStateByGroupByNames(roomNames: string[], attributes: LightPartial) {
+  public async setLightStateByGroupByNames(
+    roomNames: string[],
+    attributes: LightPartial
+  ) {
     for (const group of await this.getGroupsByName(roomNames)) {
       for (const light of group.lights) {
         await this.setLightState(light, attributes);

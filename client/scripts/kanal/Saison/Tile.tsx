@@ -8,7 +8,7 @@ import {
   FoodApple,
   ScatterPlot
 } from "mdi-material-ui";
-import { StyleRulesCallback, withStyles, Typography } from "@material-ui/core";
+import { StyleRulesCallback, withStyles, Typography, Theme } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
 import { TileSaison, repository } from "./Repository";
 import { getRandomInt } from "../../utils";
@@ -26,7 +26,7 @@ export interface State {
 
 type ComponentClassNames = "root";
 
-const style: StyleRulesCallback<ComponentClassNames> = () => ({
+const style: StyleRulesCallback<Theme, any, ComponentClassNames> = () => ({
   root: {}
 });
 
@@ -193,7 +193,7 @@ class SaisonTile extends React.Component<
           </Typography>
           <Typography
             component="span"
-            variant="subheading"
+            variant="subtitle1"
             color="inherit"
             style={{
               verticalAlign: "middle",

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { StyleRulesCallback, withStyles, Collapse } from "@material-ui/core";
+import { StyleRulesCallback, withStyles, Collapse, Theme } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
 import { Alarm, AlarmOff } from "mdi-material-ui";
 import ButtonGroup from "../os/ButtonGroup";
@@ -16,7 +16,7 @@ export interface State {
 
 type ComponentClassNames = "root";
 
-const style: StyleRulesCallback<ComponentClassNames> = () => ({
+const style: StyleRulesCallback<Theme, any, ComponentClassNames> = () => ({
   root: {}
 });
 

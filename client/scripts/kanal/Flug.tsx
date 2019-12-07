@@ -1,5 +1,5 @@
 import * as React from "react";
-import { StyleRulesCallback, withStyles, Typography } from "@material-ui/core";
+import { StyleRulesCallback, withStyles, Typography, Theme } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
 import * as GoogleMapsLoader from "google-maps";
 import { setInterval } from "timers";
@@ -26,7 +26,7 @@ type ComponentClassNames =
   | "image"
   | "loadingScreen";
 
-const style: StyleRulesCallback<ComponentClassNames> = () => ({
+const style: StyleRulesCallback<Theme, any, ComponentClassNames> = () => ({
   root: {},
   map: {
     position: "absolute",

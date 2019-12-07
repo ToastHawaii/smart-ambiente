@@ -9,7 +9,7 @@ export const pfirsiReader: HtmlReader = {
   sourceUrl: ["https://www.pfirsi.ch/events/anundpfirsich/"],
   itemSelector: ".et_pb_row a.et_pb_button",
   sourceDetailUrl: $item => {
-    return $item.attr("href");
+    return $item.attr("href") || "";
   },
   mapper: (_$listItem: Cheerio, $detailItem?: Cheerio) => {
     if (!$detailItem) return [];

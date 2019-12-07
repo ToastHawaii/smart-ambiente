@@ -19,8 +19,10 @@ export const kuBaAReader: HtmlReader = {
     };
 
     const $img = $item.find("img");
-    if ($img && $img.first() && $img.first().attr("src"))
-      event.bild = $img.first().attr("src").replace(/\\"/gi, "");
+    if ($img && $img.first()) {
+      const src = $img.first().attr("src");
+      if (src) event.bild = src.replace(/\\"/gi, "");
+    }
 
     return [event];
   }

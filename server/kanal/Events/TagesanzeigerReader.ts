@@ -3,17 +3,19 @@ import * as moment from "moment";
 import * as $ from "cheerio";
 
 export const tagesanzeigerChReader: HtmlReader = {
-  typ:"html",
+  typ: "html",
   sourceName: "tagesanzeiger.ch",
   sourceUrl: [
     "[https://agenda.tagesanzeiger.ch/veranstaltungen/suche/neu/?postcode=ZH&search_from=]DD.MM.YYYY[&search_to=]DD.MM.YYYY"
   ],
   itemSelector: '.leo_event,meta[HTTP-EQUIV="REFRESH"]',
   sourceDetailUrl: $item => {
-    if ($item.is('meta[HTTP-EQUIV="REFRESH"]'))
-      return $item.attr("content").substr(7, $item.attr("content").length - 7);
+    if ($item.is('meta[HTTP-EQUIV="REFRESH"]')) {
+      const content = $item.attr("content");
+      if (content) return content.substr(7, content.length - 7);
+    }
 
-    return $item.find(".leo_h3 a").attr("href");
+    return $item.find(".leo_h3 a").attr("href") || "";
   },
   mapper: (_$listItem: Cheerio, $detailItem?: Cheerio) => {
     if (!$detailItem) return [];

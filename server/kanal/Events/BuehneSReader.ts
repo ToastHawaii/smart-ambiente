@@ -9,7 +9,15 @@ export const buehneSReader: HtmlReader = {
   mapper: ($item: Cheerio) => {
     if ($item.find("th").text() || !$item.find(".date a").attr("name"))
       return [];
-    const date = $item.find(".date a").attr("name").split("-").slice(1).join("-");
+
+    const name = $item.find(".date a").attr("name");
+
+    if (!name) throw "name is null";
+
+    const date = name
+      .split("-")
+      .slice(1)
+      .join("-");
 
     const start = moment(
       date + " " + $item.find("td.date > p + p + p").text(),
@@ -19,7 +27,10 @@ export const buehneSReader: HtmlReader = {
 
     const event: Event = {
       titel: $item.find("td + td > h2").text(),
-      beschreibung: $item.find("td + td > p").text() + " " + $item.find("td + td > .ticketinfo").text(),
+      beschreibung:
+        $item.find("td + td > p").text() +
+        " " +
+        $item.find("td + td > .ticketinfo").text(),
       ort: "Bühne S",
       start: start
     };

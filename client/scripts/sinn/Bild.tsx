@@ -1,5 +1,10 @@
 import * as React from "react";
-import { StyleRulesCallback, withStyles, Collapse } from "@material-ui/core";
+import {
+  StyleRulesCallback,
+  withStyles,
+  Collapse,
+  Theme
+} from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
 import {
   Television,
@@ -28,7 +33,7 @@ export interface State {
 
 type ComponentClassNames = "root";
 
-const style: StyleRulesCallback<ComponentClassNames> = () => ({
+const style: StyleRulesCallback<Theme, any, ComponentClassNames> = () => ({
   root: {}
 });
 
@@ -44,11 +49,11 @@ class Bild extends Component<Props & WithStyles<ComponentClassNames>, State> {
 
   public handleBildschirmChange = (_event: any, bildschirm: any) => {
     this.publish("sinn/bild", { bildschirm });
-  }
+  };
 
   public handleKanalChange = (_event: any, kanal: any) => {
     this.publish("sinn/bild", { kanal });
-  }
+  };
 
   public render() {
     const { classes } = this.props;
@@ -61,7 +66,7 @@ class Bild extends Component<Props & WithStyles<ComponentClassNames>, State> {
           onChange={this.handleBildschirmChange}
           selection="exclusive"
           style={{ paddingTop: "1%" }}
-          >
+        >
           <MenuButton
             title="Aus"
             icon={<TelevisionOff />}

@@ -21,9 +21,7 @@ export const gzZhReader: FormReader<Items, Item> = {
     topic("match", match || {});
     if (!(match && match[1])) throw "nonce not found";
     return [
-      `[action=more_post_ajax&nonce=${
-        match[1]
-      }&params%5Bpage%5D=1&params%5Bdates%5D%5B%5D=]DD.MM.YYYY[&params%5Bterms%5D%5Bzielgruppen%5D%5B%5D=erwachsene&params%5Btype%5D=angebote&params%5Bqty%5D=100&params%5Bpeople%5D=0]`
+      `[action=more_post_ajax&nonce=${match[1]}&params%5Bpage%5D=1&params%5Bdates%5D%5B%5D=]DD.MM.YYYY[&params%5Bterms%5D%5Bzielgruppen%5D%5B%5D=erwachsene&params%5Btype%5D=angebote&params%5Bqty%5D=100&params%5Bpeople%5D=0]`
     ];
   },
   itemSelector: (listItems: Items) => {
@@ -36,7 +34,7 @@ export const gzZhReader: FormReader<Items, Item> = {
     return elements;
   },
   sourceDetailUrl: (item: Item) => {
-    return item.attr("data-link");
+    return item.attr("data-link") || "";
   },
   mapper: (_listItem: Item, $detailItem?: Cheerio) => {
     if (!$detailItem) return [];

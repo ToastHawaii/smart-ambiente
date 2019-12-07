@@ -1,6 +1,7 @@
 import * as React from "react";
 import {
   StyleRulesCallback,
+  Theme,
   withStyles,
   Typography,
   ButtonBase
@@ -42,7 +43,9 @@ type ComponentClassNames =
   | "labelBackground"
   | "labelText";
 
-const style: StyleRulesCallback<ComponentClassNames> = (theme: any) => ({
+const style: StyleRulesCallback<Theme, any, ComponentClassNames> = (
+  theme: any
+) => ({
   root: {
     display: "flex",
     flexWrap: "wrap",
@@ -217,7 +220,7 @@ class ComplexButton extends React.Component<
       onClick(event);
     }
     event.stopPropagation();
-  }
+  };
 
   public render() {
     const {
@@ -268,7 +271,7 @@ class ComplexButton extends React.Component<
         <span className={classes.imageButton}>
           <Typography
             component="span"
-            variant="subheading"
+            variant="subtitle1"
             color="inherit"
             className={classes.imageTitle}
           >

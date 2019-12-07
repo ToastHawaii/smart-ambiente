@@ -1,5 +1,5 @@
 import * as React from "react";
-import { StyleRulesCallback, withStyles } from "@material-ui/core";
+import { StyleRulesCallback, withStyles, Theme } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
 import Erde from "../kanal/Erde";
 import Schweiz from "../kanal/Schweiz";
@@ -84,7 +84,7 @@ export interface State {
 
 type ComponentClassNames = "root" | "fill";
 
-const style: StyleRulesCallback<ComponentClassNames> = () => ({
+const style: StyleRulesCallback<Theme, any, ComponentClassNames> = () => ({
   root: {},
   fill: {
     top: "0",

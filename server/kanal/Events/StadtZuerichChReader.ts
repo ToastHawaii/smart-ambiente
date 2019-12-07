@@ -16,10 +16,9 @@ export const stadtZuerichChReader: HtmlReader = {
   mapper: ($listItem: Cheerio, $detailItem?: Cheerio) => {
     if (!$detailItem) return [];
 
-    const date = $listItem
-      .find(".mod_eventinfo__date")
-      .attr("datetime")
-      .split("T")[0];
+    const date = (
+      $listItem.find(".mod_eventinfo__date").attr("datetime") || ""
+    ).split("T")[0];
     const time = $listItem
       .find(".mod_eventinfo__time")
       .text()

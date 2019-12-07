@@ -1,5 +1,10 @@
 import * as React from "react";
-import { StyleRulesCallback, withStyles, Collapse } from "@material-ui/core";
+import {
+  StyleRulesCallback,
+  withStyles,
+  Collapse,
+  Theme
+} from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
 import {
   VolumeOff,
@@ -29,7 +34,7 @@ export interface State {
 
 type ComponentClassNames = "root";
 
-const style: StyleRulesCallback<ComponentClassNames> = () => ({
+const style: StyleRulesCallback<Theme, any, ComponentClassNames> = () => ({
   root: {}
 });
 
@@ -45,11 +50,11 @@ class Ton extends Component<Props & WithStyles<ComponentClassNames>, State> {
 
   public handleLautstaerkeChange = (_event: any, lautstaerke: any) => {
     this.publish("sinn/ton", { lautstaerke });
-  }
+  };
 
   public handleKanalChange = async (_event: any, kanal: any) => {
     this.publish("sinn/ton", { kanal });
-  }
+  };
 
   public render() {
     const { classes } = this.props;

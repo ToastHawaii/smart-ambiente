@@ -1,5 +1,5 @@
 import * as React from "react";
-import { StyleRulesCallback, withStyles } from "@material-ui/core";
+import { StyleRulesCallback, withStyles, Theme } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
 import {
   Earth,
@@ -21,7 +21,7 @@ export interface State {
 
 type ComponentClassNames = "root";
 
-const style: StyleRulesCallback<ComponentClassNames> = () => ({
+const style: StyleRulesCallback<Theme, any, ComponentClassNames> = () => ({
   root: {
     marginTop: "0.5%",
     marginBottom: "0.5%",

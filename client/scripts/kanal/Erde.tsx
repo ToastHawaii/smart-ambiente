@@ -1,5 +1,5 @@
 import * as React from "react";
-import { StyleRulesCallback, withStyles } from "@material-ui/core";
+import { StyleRulesCallback, withStyles, Theme } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
 import * as GoogleMapsLoader from "google-maps";
 import { delay, getJson } from "../utils";
@@ -12,7 +12,7 @@ export interface State {
 
 type ComponentClassNames = "root" | "map" | "pano" | "loadingScreen";
 
-const styles: StyleRulesCallback<ComponentClassNames> = () => ({
+const styles: StyleRulesCallback<Theme, any, ComponentClassNames> = () => ({
   root: {},
   map: {
     position: "absolute",
@@ -175,7 +175,7 @@ class BildHintergrund extends React.Component<
       await delay(50);
       this.generateRandomPoint();
     }
-  }
+  };
 
   public render() {
     const { classes } = this.props;

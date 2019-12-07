@@ -1,5 +1,5 @@
 import * as React from "react";
-import { StyleRulesCallback, withStyles, Collapse } from "@material-ui/core";
+import { StyleRulesCallback, withStyles, Collapse, Theme } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
 import Ton from "../sinn/Ton";
 import Bild from "../sinn/Bild";
@@ -34,7 +34,7 @@ type ComponentClassNames =
   | "backgroundImage"
   | "mouseMoveSelection";
 
-const style: StyleRulesCallback<ComponentClassNames> = () => ({
+const style: StyleRulesCallback<Theme, any, ComponentClassNames> = () => ({
   menu: {
     background: "rgba(255,255,255, 0.6)",
     height: "100vh",

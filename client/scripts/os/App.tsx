@@ -1,5 +1,5 @@
 import * as React from "react";
-import { StyleRulesCallback, withStyles } from "@material-ui/core";
+import { StyleRulesCallback, withStyles, Theme } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
 import { hot } from "react-hot-loader";
 import * as classnames from "classnames";
@@ -16,7 +16,7 @@ export interface State {}
 
 type ComponentClassNames = "app" | "topLayer" | "fill";
 
-const style: StyleRulesCallback<ComponentClassNames> = () => ({
+const style: StyleRulesCallback<Theme, any, ComponentClassNames> = () => ({
   app: {
     overflow: "hidden",
     background: "#333"

@@ -1,5 +1,10 @@
 import * as React from "react";
-import { StyleRulesCallback, withStyles, Collapse } from "@material-ui/core";
+import {
+  StyleRulesCallback,
+  withStyles,
+  Collapse,
+  Theme
+} from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
 import {
   WeatherCloudy,
@@ -83,7 +88,7 @@ export interface State {
 
 type ComponentClassNames = "root";
 
-const style: StyleRulesCallback<ComponentClassNames> = () => ({
+const style: StyleRulesCallback<Theme, any, ComponentClassNames> = () => ({
   root: {
     marginTop: "0.5%",
     marginBottom: "0.5%",
@@ -227,28 +232,28 @@ class Wetter extends Component<Props & WithStyles<ComponentClassNames>, State> {
           >
             <MenuButton
               onChange={this.handleWolkenChange}
-              selected={wolken && wolken >= 0.1}
+              selected={typeof wolken !== "undefined" && wolken >= 0.1}
               icon={<WeatherCloudy />}
               title="Wolken"
               backgroundImage="/img/button/wetter/Wolken.jpg"
             />
             <MenuButton
               onChange={this.handleWindChange}
-              selected={wind && wind >= 0.1}
+              selected={typeof wind !== "undefined" && wind >= 0.1}
               icon={<WeatherWindy />}
               title="Wind"
               backgroundImage="/img/button/wetter/Wind.gif"
             />
             <MenuButton
               onChange={this.handleNiederschlagChange}
-              selected={niederschlag && niederschlag >= 0.1}
+              selected={typeof niederschlag !== "undefined" && niederschlag >= 0.1}
               icon={<WeatherPouring />}
               title="Niederschlag"
               backgroundImage="/img/button/wetter/Niederschlag.jpg"
             />
             <MenuButton
               onChange={this.handleRadioChange}
-              selected={radio && radio >= 0.1}
+              selected={typeof radio !== "undefined" && radio >= 0.1}
               icon={<Piano />}
               title="Radio"
               backgroundImage="/img/button/wetter/Radio.jpg"
