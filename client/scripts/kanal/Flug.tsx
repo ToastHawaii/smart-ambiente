@@ -1,5 +1,10 @@
 import * as React from "react";
-import { StyleRulesCallback, withStyles, Typography, Theme } from "@material-ui/core";
+import {
+  StyleRulesCallback,
+  withStyles,
+  Typography,
+  Theme
+} from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
 import * as GoogleMapsLoader from "google-maps";
 import { setInterval } from "timers";
@@ -97,7 +102,7 @@ class BildHintergrund extends React.Component<
   }
 
   public async componentDidMount() {
-    (GoogleMapsLoader as any).KEY = (await getJson("/api/config/flug")) .key;
+    (GoogleMapsLoader as any).KEY = (await getJson("/api/config/flug")).key;
     GoogleMapsLoader.load(google => {
       this.google = google;
       this.initMap();

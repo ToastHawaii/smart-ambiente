@@ -36,15 +36,17 @@ export async function playSound(scene: string) {
     crossfade: "0",
     random: "0"
   };
-  const list = (await Promise.all(
-    fs.readdirSync(soundSource + scene).map(async f => ({
-      ...(await getSource(soundSource + scene, f)),
-      volume: parseFloat(matchOrDefault(f, "volume", def.volume)).toString(),
-      pan: matchOrDefault(f, "pan", def.pan),
-      crossfade: matchOrDefault(f, "crossfade", def.crossfade),
-      random: matchOrDefault(f, "random", def.random)
-    }))
-  )).filter(f => parseFloat(f.volume) >= 0.1);
+  const list = (
+    await Promise.all(
+      fs.readdirSync(soundSource + scene).map(async f => ({
+        ...(await getSource(soundSource + scene, f)),
+        volume: parseFloat(matchOrDefault(f, "volume", def.volume)).toString(),
+        pan: matchOrDefault(f, "pan", def.pan),
+        crossfade: matchOrDefault(f, "crossfade", def.crossfade),
+        random: matchOrDefault(f, "random", def.random)
+      }))
+    )
+  ).filter(f => parseFloat(f.volume) >= 0.1);
 
   let i = 0;
   for (const chunk of split(sortAlternate(list), channelOutputUrls.length)) {

@@ -22,7 +22,7 @@ export interface State {
 
 type ComponentClassNames = "root";
 
-const style: StyleRulesCallback<Theme, any,ComponentClassNames> = () => ({
+const style: StyleRulesCallback<Theme, any, ComponentClassNames> = () => ({
   root: {}
 });
 
@@ -38,10 +38,10 @@ class Alarm extends Component<Props & WithStyles<ComponentClassNames>, State> {
 
   public handleZeitChange = (_event: any, zeit: any) => {
     this.publish("kanal/alarm", { zeit });
-  }
+  };
   public handleTageChange = (_event: any, tage: any) => {
     this.publish("kanal/alarm", { tage });
-  }
+  };
 
   public render() {
     const { classes } = this.props;

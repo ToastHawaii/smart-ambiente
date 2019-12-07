@@ -50,7 +50,7 @@ export function getHtml(sourceUrl: string) {
 
 export function readFile(path: string) {
   return new Promise<string>(resolve => {
-    fs.readFile(path, "utf8", function (_err, data) {
+    fs.readFile(path, "utf8", function(_err, data) {
       resolve(data);
     });
   });

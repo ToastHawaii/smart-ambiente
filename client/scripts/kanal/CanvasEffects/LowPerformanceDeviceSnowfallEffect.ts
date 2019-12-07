@@ -1,6 +1,7 @@
 import { CanvasEffect } from "./ImageEffect";
 
-export default class LowPerformanceDeviceSnowfallEffect implements CanvasEffect {
+export default class LowPerformanceDeviceSnowfallEffect
+  implements CanvasEffect {
   public snowflakes: Snowflake[] = [];
   public windSpeed = 0;
   public parent = document.body;
@@ -8,7 +9,7 @@ export default class LowPerformanceDeviceSnowfallEffect implements CanvasEffect 
   public maxWindSpeed = 4;
   private deltaT: number;
 
-  public maxNumberOfSnowFlakes =  40;
+  public maxNumberOfSnowFlakes = 40;
   public step(canvas: HTMLCanvasElement, deltaT: number) {
     this.deltaT += deltaT;
     if (this.i === 0) {
@@ -59,7 +60,7 @@ function normalDistributionInt(min: number, max: number) {
 }
 
 export class Snowflake {
-  public minSnowFlakeDensity =  4;
+  public minSnowFlakeDensity = 4;
   public maxSnowFlakeDensity = 10;
   public maxSpeedRotation = 5;
 
@@ -134,8 +135,6 @@ export class Snowflake {
       this.element.remove();
       this.removed = true;
     } else
-      this.element.style.transform = `translate(${this.x}px, ${
-        this.y
-      }px) rotate(${this.rotation}deg)`;
+      this.element.style.transform = `translate(${this.x}px, ${this.y}px) rotate(${this.rotation}deg)`;
   }
 }

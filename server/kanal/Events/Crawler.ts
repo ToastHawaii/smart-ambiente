@@ -35,7 +35,11 @@ export interface Event {
   ort?: string;
 }
 
-type Reader = StaticReader | HtmlReader | JsonReader<any, any> | FormReader<any, any>;
+type Reader =
+  | StaticReader
+  | HtmlReader
+  | JsonReader<any, any>
+  | FormReader<any, any>;
 
 export interface StaticReader {
   typ: "static";
@@ -107,7 +111,7 @@ function params(param: string): string[] {
 }
 
 function selectMany(f: any) {
-  return function (acc: any, b: any) {
+  return function(acc: any, b: any) {
     return acc.concat(f(b));
   };
 }
@@ -130,7 +134,10 @@ async function crawelHtml(
   topic(reader.sourceName);
   const sourceUrls = reader.sourceUrl
     .map(u => params(u))
-    .reduce(selectMany((x: any) => x), []);
+    .reduce(
+      selectMany((x: any) => x),
+      []
+    );
 
   let count = 0;
   for (const sourceUrl of sourceUrls) {
@@ -219,11 +226,17 @@ async function crawelForm<T>(
   topic(reader.sourceName);
   const sourceUrls = reader.sourceUrl
     .map(u => params(u))
-    .reduce(selectMany((x: any) => x), []);
+    .reduce(
+      selectMany((x: any) => x),
+      []
+    );
 
   const sourceBodys = (await reader.sourceBody())
     .map(u => params(u))
-    .reduce(selectMany((x: any) => x), []);
+    .reduce(
+      selectMany((x: any) => x),
+      []
+    );
 
   let count = 0;
   for (const sourceUrl of sourceUrls) {
@@ -307,7 +320,10 @@ async function crawelJson<T>(
   topic(reader.sourceName);
   const sourceUrls = reader.sourceUrl
     .map(u => params(u))
-    .reduce(selectMany((x: any) => x), []);
+    .reduce(
+      selectMany((x: any) => x),
+      []
+    );
 
   let count = 0;
   for (const sourceUrl of sourceUrls) {

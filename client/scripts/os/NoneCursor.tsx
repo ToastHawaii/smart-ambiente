@@ -67,7 +67,7 @@ class NoneCursor extends React.Component<Props, State> {
         this.setState({ cursor: false });
       }, 1000);
     }, 1000);
-  }
+  };
 
   public render() {
     const { children } = this.props;

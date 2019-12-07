@@ -8,7 +8,12 @@ import {
   FoodApple,
   ScatterPlot
 } from "mdi-material-ui";
-import { StyleRulesCallback, withStyles, Typography, Theme } from "@material-ui/core";
+import {
+  StyleRulesCallback,
+  withStyles,
+  Typography,
+  Theme
+} from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
 import { TileSaison, repository } from "./Repository";
 import { getRandomInt } from "../../utils";

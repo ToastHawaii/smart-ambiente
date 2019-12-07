@@ -246,7 +246,9 @@ class Wetter extends Component<Props & WithStyles<ComponentClassNames>, State> {
             />
             <MenuButton
               onChange={this.handleNiederschlagChange}
-              selected={typeof niederschlag !== "undefined" && niederschlag >= 0.1}
+              selected={
+                typeof niederschlag !== "undefined" && niederschlag >= 0.1
+              }
               icon={<WeatherPouring />}
               title="Niederschlag"
               backgroundImage="/img/button/wetter/Niederschlag.jpg"

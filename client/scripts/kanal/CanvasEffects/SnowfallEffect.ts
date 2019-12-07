@@ -124,8 +124,6 @@ export class Snowflake {
       this.element.remove();
       this.removed = true;
     } else
-      this.element.style.transform = `translate(${this.x}px, ${
-        this.y
-      }px) rotate(${this.rotation}deg)`;
+      this.element.style.transform = `translate(${this.x}px, ${this.y}px) rotate(${this.rotation}deg)`;
   }
 }

@@ -30,17 +30,11 @@ export default async function init(
     }
   );
 
- new RainRenderer(
-    canvas,
-    raindrops.canvas,
-    texture,
-    undefined,
-    {
-      brightness: 1.04,
-      alphaMultiply: 6,
-      alphaSubtract: 3
-      // minRefraction:256,
-      // maxRefraction:512
-    }
-  );
+  new RainRenderer(canvas, raindrops.canvas, texture, undefined, {
+    brightness: 1.04,
+    alphaMultiply: 6,
+    alphaSubtract: 3
+    // minRefraction:256,
+    // maxRefraction:512
+  });
 }

@@ -23,7 +23,7 @@ class HideCursor extends React.Component<Props, State> {
     this.timeout = setTimeout(() => {
       this.setState({ cursor: "none" });
     }, 2000);
-  }
+  };
 
   public render() {
     const { children } = this.props;

@@ -93,11 +93,11 @@ class Menu extends Component<Props & WithStyles<ComponentClassNames>, State> {
       menu: true,
       sinn: sinn
     });
-  }
+  };
 
   public handleClick = () => {
     this.setState({ menu: !this.state.menu });
-  }
+  };
 
   public render() {
     const { classes } = this.props;

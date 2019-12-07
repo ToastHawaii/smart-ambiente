@@ -102,7 +102,7 @@ class Circle {
 }
 
 export default class InsectEffect implements CanvasEffect {
-  private pixies: Circle[] ;
+  private pixies: Circle[];
   constructor() {}
 
   public async render(canvas: HTMLCanvasElement) {

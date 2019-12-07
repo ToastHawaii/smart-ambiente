@@ -2,16 +2,26 @@ import * as WebGL from "./webgl";
 
 export default class GL {
   public canvas: HTMLCanvasElement;
-  public gl:  WebGLRenderingContext;
+  public gl: WebGLRenderingContext;
   public program: WebGLProgram;
   public width: number;
   public height: number;
 
-  constructor(canvas: HTMLCanvasElement, options: WebGLContextAttributes, vert: string, frag: string) {
+  constructor(
+    canvas: HTMLCanvasElement,
+    options: WebGLContextAttributes,
+    vert: string,
+    frag: string
+  ) {
     this.init(canvas, options, vert, frag);
   }
 
-  public init(canvas: HTMLCanvasElement, options: WebGLContextAttributes, vert: string, frag: string) {
+  public init(
+    canvas: HTMLCanvasElement,
+    options: WebGLContextAttributes,
+    vert: string,
+    frag: string
+  ) {
     this.canvas = canvas;
     this.width = canvas.width;
     this.height = canvas.height;
@@ -44,5 +54,3 @@ export default class GL {
     this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
   }
 }
-
-

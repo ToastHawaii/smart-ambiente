@@ -88,7 +88,7 @@ class Natur extends Component<Props & WithStyles<ComponentClassNames>, State> {
 
   public handleChange = (_event: any, szene: any) => {
     this.publish("kanal/natur", { szene });
-  }
+  };
 
   public render() {
     const { classes } = this.props;

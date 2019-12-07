@@ -95,7 +95,7 @@ class Screen extends React.Component<Props, State> {
       canvas.push(c);
       i++;
     }
-  }
+  };
 
   public render() {
     this.refreshed = true;

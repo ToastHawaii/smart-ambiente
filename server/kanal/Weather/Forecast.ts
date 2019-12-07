@@ -139,6 +139,6 @@ export async function query() {
     wolken: getCloudiness(forecast),
     wind: getWind(forecast),
     niederschlag: getPrecipitation(forecast),
-    radio: 0,
+    radio: 0
   } as Forecast;
 }

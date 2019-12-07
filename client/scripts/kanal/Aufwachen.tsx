@@ -1,5 +1,10 @@
 import * as React from "react";
-import { StyleRulesCallback, withStyles, Collapse, Theme } from "@material-ui/core";
+import {
+  StyleRulesCallback,
+  withStyles,
+  Collapse,
+  Theme
+} from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
 import { Alarm, AlarmOff } from "mdi-material-ui";
 import ButtonGroup from "../os/ButtonGroup";
@@ -35,7 +40,7 @@ class Aufwachen extends Component<
 
   public handleAktivChange = (_event: any, aktiv: any) => {
     this.publish("sinn/aufwachen", { aktiv });
-  }
+  };
 
   public render() {
     const { classes } = this.props;

@@ -91,7 +91,7 @@ const data: {
   }
 };
 
-(async function () {
+(async function() {
   data.kanal["natur"].szene = shuffle([
     "feuer",
     "wind",
@@ -118,18 +118,17 @@ const data: {
   data.kanal["alarm"] = config.alarm;
 })();
 
-app.get("/api/sinn", async function (_req, res) {
+app.get("/api/sinn", async function(_req, res) {
   res.json({ sinn: data.sinn["aktiv"] });
 });
 
-app.post("/api/sinn", async function (req, res) {
+app.post("/api/sinn", async function(req, res) {
   data.sinn["aktiv"] = req.body.sinn;
   res.json({ sinn: data.sinn["aktiv"] });
 });
 
-app.get("/api/sinn/:sinn", async function (req, res) {
+app.get("/api/sinn/:sinn", async function(req, res) {
   if (first) {
-
     const weather = await WeatherForecast.query();
     data.kanal["wetter"] = weather;
     data.kanal["wetter"].mode = "vorhersage";
@@ -142,7 +141,7 @@ app.get("/api/sinn/:sinn", async function (req, res) {
   res.json(data.sinn[req.params.sinn]);
 });
 
-app.post("/api/sinn/:sinn", async function (req, res) {
+app.post("/api/sinn/:sinn", async function(req, res) {
   res.json(await setSinn(req.params.sinn, req.body));
 });
 
@@ -165,9 +164,8 @@ export async function setSinn(sinn: string, sinnData: any, mode?: string) {
   return data.sinn[sinn];
 }
 
-app.get("/api/kanal/:kanal", async function (req, res) {
+app.get("/api/kanal/:kanal", async function(req, res) {
   if (first) {
-
     const weather = await WeatherForecast.query();
     data.kanal["wetter"] = weather;
     data.kanal["wetter"].mode = "vorhersage";
@@ -180,11 +178,11 @@ app.get("/api/kanal/:kanal", async function (req, res) {
   res.json(data.kanal[req.params.kanal]);
 });
 
-app.get("/api/kanal/wetter/image", function (_req, res) {
+app.get("/api/kanal/wetter/image", function(_req, res) {
   res.json(chooseGoodMatch(data.kanal["wetter"]));
 });
 
-app.post("/api/kanal/:kanal", async function (req, res) {
+app.post("/api/kanal/:kanal", async function(req, res) {
   res.json(await setKanal(req.params.kanal, req.body));
 });
 
@@ -229,7 +227,6 @@ export function getSinn(sinn: string) {
 app.listen(3001);
 
 async function controlTon() {
-
   await WeatherRadio.stopSound();
   await NaturRadio.stopSound();
 
@@ -264,7 +261,6 @@ async function controlTon() {
     } else if (data.sinn["ton"].kanal === "natur") {
       await NaturRadio.playSound(data.kanal["natur"].szene);
     } else {
-
       if (data.sinn["ton"].kanal === "musik") {
         if (data.kanal["musik"].stil === "interesse") {
           await playSender("Radio Swiss Jazz (Jazz)");
@@ -322,7 +318,6 @@ async function playSender(name: string) {
 }
 
 async function controlLicht(mode?: string) {
-
   const roomsOn = [];
   const roomsOff = [];
 
@@ -341,7 +336,7 @@ async function controlLicht(mode?: string) {
     roomsOn.push("Wohnzimmer");
     roomsOff.push("Toilette");
     roomsOff.push("Schlafzimmer");
-  } else /* data.sinn["licht"].helligkeit === "überall" */ {
+  } /* data.sinn["licht"].helligkeit === "überall" */ else {
     roomsOn.push("Terrasse");
     roomsOn.push("Wohnzimmer");
     roomsOn.push("Toilette");
@@ -351,17 +346,22 @@ async function controlLicht(mode?: string) {
   if (data.sinn["licht"].kanal !== "tageslicht") {
     if (data.sinn["licht"].helligkeit !== "aus" || mode === "alarm")
       await hue.updateAllHueLabToggleByName(/Auto\. Dimmen/g, 0);
-    else
-      // Default: Tageslicht
-      await hue.updateAllHueLabToggleByName(/Auto\. Dimmen/g, 1);
+    // Default: Tageslicht
+    else await hue.updateAllHueLabToggleByName(/Auto\. Dimmen/g, 1);
   }
 
-  if (data.kanal["szene"].szene !== "sonnenaufgang" || data.sinn["licht"].helligkeit === "aus") {
+  if (
+    data.kanal["szene"].szene !== "sonnenaufgang" ||
+    data.sinn["licht"].helligkeit === "aus"
+  ) {
     await hue.updateHueLabToggle("71", 0);
     await hue.updateHueLabToggle("72", 0);
   }
 
-  if (data.kanal["szene"].szene !== "sonnenuntergang" || data.sinn["licht"].helligkeit === "aus") {
+  if (
+    data.kanal["szene"].szene !== "sonnenuntergang" ||
+    data.sinn["licht"].helligkeit === "aus"
+  ) {
     await hue.updateHueLabToggle("74", 0);
     await hue.updateHueLabToggle("75", 0);
   }
@@ -411,27 +411,51 @@ async function controlLicht(mode?: string) {
       leuchturm();
       wasser();
     }
-  } else /* data.sinn["licht"].kanal === "emotion" */ {
+  } /* data.sinn["licht"].kanal === "emotion" */ else {
     if (data.kanal["emotion"].emotion === "groll")
-      await hue.setLightStateByGroupByNames(roomsOn, { on: true, xy: hexToXy("#d40000") });
+      await hue.setLightStateByGroupByNames(roomsOn, {
+        on: true,
+        xy: hexToXy("#d40000")
+      });
     else if (data.kanal["emotion"].emotion === "erwartung")
-      await hue.setLightStateByGroupByNames(roomsOn, { on: true, xy: hexToXy("#ff7d00") });
+      await hue.setLightStateByGroupByNames(roomsOn, {
+        on: true,
+        xy: hexToXy("#ff7d00")
+      });
     else if (data.kanal["emotion"].emotion === "freude")
-      await hue.setLightStateByGroupByNames(roomsOn, { on: true, xy: hexToXy("#ffe854") });
+      await hue.setLightStateByGroupByNames(roomsOn, {
+        on: true,
+        xy: hexToXy("#ffe854")
+      });
     else if (data.kanal["emotion"].emotion === "vertrauen")
-      await hue.setLightStateByGroupByNames(roomsOn, { on: true, xy: hexToXy("#00b400") });
+      await hue.setLightStateByGroupByNames(roomsOn, {
+        on: true,
+        xy: hexToXy("#00b400")
+      });
     else if (data.kanal["emotion"].emotion === "angst")
-      await hue.setLightStateByGroupByNames(roomsOn, { on: true, xy: hexToXy("#007f00") });
+      await hue.setLightStateByGroupByNames(roomsOn, {
+        on: true,
+        xy: hexToXy("#007f00")
+      });
     else if (data.kanal["emotion"].emotion === "überraschung")
-      await hue.setLightStateByGroupByNames(roomsOn, { on: true, xy: hexToXy("#0089e0") });
+      await hue.setLightStateByGroupByNames(roomsOn, {
+        on: true,
+        xy: hexToXy("#0089e0")
+      });
     else if (data.kanal["emotion"].emotion === "traurigkeit")
-      await hue.setLightStateByGroupByNames(roomsOn, { on: true, xy: hexToXy("#0000c8") });
+      await hue.setLightStateByGroupByNames(roomsOn, {
+        on: true,
+        xy: hexToXy("#0000c8")
+      });
     else if (data.kanal["emotion"].emotion === "abneigung")
-      await hue.setLightStateByGroupByNames(roomsOn, { on: true, xy: hexToXy("#de00de") });
+      await hue.setLightStateByGroupByNames(roomsOn, {
+        on: true,
+        xy: hexToXy("#de00de")
+      });
   }
 }
 
-process.on("uncaughtException", function (err) {
+process.on("uncaughtException", function(err) {
   console.error(err.stack);
   topic("Node NOT Exiting...");
 });
@@ -451,22 +475,21 @@ async function setLautstaerke(volume: number) {
     .do();
 }
 
-app.get("/api/events/", function (_req, res) {
+app.get("/api/events/", function(_req, res) {
   res.json(Events.get());
 });
 
-app.get("/api/events.ics", function (_req, res) {
+app.get("/api/events.ics", function(_req, res) {
   res.end(Events.getIcal());
 });
 
-app.get("/api/events/:kategorie.ics", function (req, res) {
+app.get("/api/events/:kategorie.ics", function(req, res) {
   res.end(Events.getIcal(req.params.kategorie));
 });
 
-app.get("/api/config/:name/", async function (req, res) {
+app.get("/api/config/:name/", async function(req, res) {
   res.json((await loadConfig())[req.params.name]);
 });
-
 
 async function leuchturm(trigger: boolean = true) {
   if (trigger) {
@@ -475,12 +498,13 @@ async function leuchturm(trigger: boolean = true) {
     await hue.recallScene("Wohnzimmer", "Leuchturm (Aus)", 30);
   }
 
-  if (data.sinn["licht"].helligkeit !== "aus"
-    && data.sinn["licht"].kanal === "szene"
-    && data.kanal["szene"].szene === "leuchturm")
+  if (
+    data.sinn["licht"].helligkeit !== "aus" &&
+    data.sinn["licht"].kanal === "szene" &&
+    data.kanal["szene"].szene === "leuchturm"
+  )
     leuchturm(!trigger);
 }
-
 
 async function wasser(trigger: boolean = true) {
   if (trigger) {
@@ -489,18 +513,21 @@ async function wasser(trigger: boolean = true) {
     await hue.recallScene("Terrasse", "Meer", 60);
   }
 
-  if (data.sinn["licht"].helligkeit !== "aus"
-    && data.sinn["licht"].kanal === "szene"
-    && data.kanal["szene"].szene === "leuchturm")
+  if (
+    data.sinn["licht"].helligkeit !== "aus" &&
+    data.sinn["licht"].kanal === "szene" &&
+    data.kanal["szene"].szene === "leuchturm"
+  )
     wasser(!trigger);
 }
 
 async function wind() {
-
   await hue.recallScene("Wohnzimmer", "Wind " + getRandomInt(1, 4), 40);
 
-  if (data.sinn["licht"].helligkeit !== "aus"
-    && data.sinn["licht"].kanal === "szene"
-    && data.kanal["szene"].szene === "wind")
+  if (
+    data.sinn["licht"].helligkeit !== "aus" &&
+    data.sinn["licht"].kanal === "szene" &&
+    data.kanal["szene"].szene === "wind"
+  )
     wind();
 }

@@ -53,7 +53,7 @@ export const dynamoKurseReader: HtmlReader = {
         .replace(/ \- /, " ");
     }
 
-    let timeFrom: string;
+    let timeFrom: string | undefined;
     let timeTo: string | undefined = undefined;
     const time = $detailItem
       .find(
@@ -64,25 +64,25 @@ export const dynamoKurseReader: HtmlReader = {
 
     const timeFromMatch = /[0-2]?[0-9]((:|\.)[0-5][0-9])?/gi.exec(time);
 
-    if (!timeFromMatch || !timeFromMatch[0]) throw "time not found";
+    if (timeFromMatch && timeFromMatch[0]) {
+      timeFrom = timeFromMatch[0].replace(/\./, ":");
+      if (timeFrom.length <= 2) timeFrom += ":00";
 
-    timeFrom = timeFromMatch[0].replace(/\./, ":");
-    if (timeFrom.length <= 2) timeFrom += ":00";
+      if (timeFrom.length < 5) timeFrom = "0" + timeFrom;
 
-    if (timeFrom.length < 5) timeFrom = "0" + timeFrom;
+      const timeToMatch = /(\-|bis)(^[0-9])*([0-2]?[0-9]((:|\.)[0-5][0-9])?)/gi.exec(
+        time
+      );
 
-    const timeToMatch = /(\-|bis)(^[0-9])*([0-2]?[0-9]((:|\.)[0-5][0-9])?)/gi.exec(
-      time
-    );
+      if (timeToMatch && timeToMatch[3]) {
+        timeTo = timeToMatch[3].replace(/\./, ":");
 
-    if (timeToMatch && timeToMatch[3]) {
-      timeTo = timeToMatch[3].replace(/\./, ":");
+        if (timeTo.length <= 2) timeTo += ":00";
 
-      if (timeTo.length <= 2) timeTo += ":00";
+        if (timeTo.length < 5) timeTo = "0" + timeTo;
 
-      if (timeTo.length < 5) timeTo = "0" + timeTo;
-
-      if (timeTo === "00:00") timeTo = "23:59";
+        if (timeTo === "00:00") timeTo = "23:59";
+      }
     }
 
     if (dateTo) {
@@ -99,15 +99,17 @@ export const dynamoKurseReader: HtmlReader = {
           beschreibung: $detailItem
             .find("#content .pane-node-field-kurs-description")
             .text(),
-          start: moment(
-            currentDate.format("YYYY-MM-DD") + " " + timeFrom,
-            "YYYY-MM-DD HH:mm"
-          ),
+          start: timeFrom
+            ? moment(
+                currentDate.format("YYYY-MM-DD") + " " + timeFrom,
+                "YYYY-MM-DD HH:mm"
+              )
+            : moment(currentDate, "LL"),
           ende: timeTo
             ? moment(
-              currentDate.format("YYYY-MM-DD") + " " + timeTo,
-              "YYYY-MM-DD HH:mm"
-            )
+                currentDate.format("YYYY-MM-DD") + " " + timeTo,
+                "YYYY-MM-DD HH:mm"
+              )
             : undefined,
           ort: "Jugendkulturhaus Dynamo, Wasserwerkstrasse 21, 8006 Zürich",
           bild: img
@@ -123,7 +125,9 @@ export const dynamoKurseReader: HtmlReader = {
         beschreibung: $detailItem
           .find("#content .pane-node-field-kurs-description")
           .text(),
-        start: moment(dateFrom + " " + timeFrom, "Do MMMM YYYY HH:mm"),
+        start: timeFrom
+          ? moment(dateFrom + " " + timeFrom, "YYYY-MM-DD HH:mm")
+          : moment(dateFrom, "LL"),
         ende: timeTo
           ? moment(dateFrom + " " + timeTo, "Do MMMM YYYY HH:mm")
           : undefined,

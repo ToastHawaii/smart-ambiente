@@ -1,5 +1,10 @@
 import * as React from "react";
-import { StyleRulesCallback, withStyles, Collapse, Theme } from "@material-ui/core";
+import {
+  StyleRulesCallback,
+  withStyles,
+  Collapse,
+  Theme
+} from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
 import Ton from "../sinn/Ton";
 import Bild from "../sinn/Bild";
@@ -127,7 +132,7 @@ class Menu extends Component<Props & WithStyles<ComponentClassNames>, State> {
     }
 
     this.changeFocus(direction);
-  }
+  };
 
   private previousEvent: MouseEvent;
 
@@ -151,7 +156,7 @@ class Menu extends Component<Props & WithStyles<ComponentClassNames>, State> {
     else if (movementY < 0) direction = "up";
     else return;
     this.changeFocus(direction);
-  }
+  };
 
   private mouseDown = (event: any) => {
     if (!this.state.menu) return;
@@ -159,7 +164,7 @@ class Menu extends Component<Props & WithStyles<ComponentClassNames>, State> {
     if (this.activeElement && isLeftMouseButtonDown(event)) {
       this.activeElement.click();
     }
-  }
+  };
 
   private setFocus() {
     if (!this.activeElement || !isVisible(this.activeElement)) {
@@ -310,7 +315,7 @@ class Menu extends Component<Props & WithStyles<ComponentClassNames>, State> {
         sinn: "alarm"
       });
     }
-  }
+  };
 
   private clicked = false;
   private clickCounter = 0;
@@ -331,7 +336,7 @@ class Menu extends Component<Props & WithStyles<ComponentClassNames>, State> {
     await delay(1000);
     this.clicked = false;
     this.clickCounter = 0;
-  }
+  };
 
   public handleSinnChange = async (_event: any, sinn: any) => {
     this.publish("sinn", { sinn });
@@ -339,7 +344,7 @@ class Menu extends Component<Props & WithStyles<ComponentClassNames>, State> {
       menu: true,
       sinn: sinn
     });
-  }
+  };
 
   public render() {
     const { classes } = this.props;

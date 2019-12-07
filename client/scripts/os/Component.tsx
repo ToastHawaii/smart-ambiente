@@ -14,7 +14,7 @@ export class Component<P, S> extends React.Component<P, S> {
 
     const data = await toData(mapping(await getJson("/api/" + topic)));
     this.setState(data);
-  }
+  };
 
   public publish = async (
     topic: string,
@@ -27,7 +27,7 @@ export class Component<P, S> extends React.Component<P, S> {
     const data = await toData(mapping(this.state));
     const result = await postJson("/api/" + topic, data);
     PubSub.publish(topic, result);
-  }
+  };
 }
 
 function isPromise(result: any | Promise<any>): result is Promise<any> {

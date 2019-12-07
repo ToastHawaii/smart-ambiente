@@ -53,18 +53,20 @@ export async function playSound(weather: Forecast) {
     random: "0",
     typ: "background"
   };
-  const list = (await Promise.all(
-    fs.readdirSync(soundSource + source).map(async f => ({
-      ...(await getSource(soundSource + source, f)),
-      volume: (
-        parseFloat(matchOrDefault(f, "volume", def.volume)) *
-        typVolume(matchOrDefault(f, "typ", def.typ), weather)
-      ).toString(),
-      pan: matchOrDefault(f, "pan", def.pan),
-      crossfade: matchOrDefault(f, "crossfade", def.crossfade),
-      random: matchOrDefault(f, "random", def.random)
-    }))
-  )).filter(f => parseFloat(f.volume) >= 0.1);
+  const list = (
+    await Promise.all(
+      fs.readdirSync(soundSource + source).map(async f => ({
+        ...(await getSource(soundSource + source, f)),
+        volume: (
+          parseFloat(matchOrDefault(f, "volume", def.volume)) *
+          typVolume(matchOrDefault(f, "typ", def.typ), weather)
+        ).toString(),
+        pan: matchOrDefault(f, "pan", def.pan),
+        crossfade: matchOrDefault(f, "crossfade", def.crossfade),
+        random: matchOrDefault(f, "random", def.random)
+      }))
+    )
+  ).filter(f => parseFloat(f.volume) >= 0.1);
 
   let i = 0;
   for (const chunk of split(sortAlternate(list), channelOutputUrls.length)) {
@@ -110,7 +112,10 @@ function checkChannel() {
     const playing = state.playbackState === "PLAYING";
     const uri = (state.currentTrack || { uri: "" }).uri || "";
     topic("radio check", { playing, uri, state });
-    if (state.status !== "error" && !(playing && uri.endsWith("smart-ambiente/channel"))) {
+    if (
+      state.status !== "error" &&
+      !(playing && uri.endsWith("smart-ambiente/channel"))
+    ) {
       topic("radio stop");
       await stopSound();
     } else {

@@ -54,7 +54,7 @@ class Entspannung extends Component<
 
   public handleChange = (_event: any, aktivitaet: any) => {
     this.publish("kanal/zusehen", { aktivitaet });
-  }
+  };
 
   public render() {
     const { classes } = this.props;

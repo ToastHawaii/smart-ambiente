@@ -64,8 +64,8 @@ export function getIcal(kategorie: string = "") {
         end: !allDay
           ? e.ende
           : e.ende && !e.start.isSame(e.ende, "day")
-            ? moment(e.ende).add(3, "hour")
-            : undefined,
+          ? moment(e.ende).add(3, "hour")
+          : undefined,
         allDay: allDay,
         description: e.beschreibung || undefined,
         location: e.ort || undefined,
@@ -96,12 +96,12 @@ export function getIcal(kategorie: string = "") {
 }
 // dav.debug.enabled = true;
 
-if (args["--RELEASE"]) {
-  init();
-}
+// if (args["--RELEASE"]) {
+init();
+// }
 
 async function init() {
-  await delay(5 * 60 * 1000);
+  if (args["--RELEASE"]) await delay(5 * 60 * 1000);
 
   try {
     topic("Crawel");
@@ -128,7 +128,10 @@ async function init() {
 
       const same = existings.filter(e => isBetween(event, e));
       if (same.length > 0)
-        topic("same: ", same.map(e => `${e.titel} ${e.start} - ${e.ende}`));
+        topic(
+          "same: ",
+          same.map(e => `${e.titel} ${e.start} - ${e.ende}`)
+        );
       for (const e of same) {
         e.start = event.start;
         e.ende = event.ende;
@@ -263,18 +266,179 @@ const baseKategorieSchlagwoerter = [
       "lachen"
     ]
   },
-  { name: "Leichtigkeit", schlagwoerter: ["leichtigkeit", "spiel", "spass", "freude", "humor", "lebendigkeit", "bequemlichkeit", "erholung", "gelassenheit", "gemütlichkeit", "leicht", "lebendig", "bequem", "gelassen", "gemütlich"] },
-  { name: "Gerechtigkeit", schlagwoerter: ["gerechtigkeit", "gleichwertigkeit", "gleichbehandlung", "privatsphäre", "gerecht", "gleichwertig", "privat"] },
-  { name: "Balance", schlagwoerter: ["balance", "gleichgewicht", "gleichwertigkeit", "gegenseitigkeit", "ausgewogenheit", "ausgeglichenheit", "ausgleich", "achtsamkeit", "beständigkeit", "gegenseitig", "ausgewogen", "ausgeglichen", "achtsamkeit", "beständig"] },
-  { name: "Unterstützung", schlagwoerter: ["unterstützung", "hilfe", "fürsorge", "rückhalt", "zusammenarbeit", "zuspruch", "ermutigung", "diskretion", "geborgenheit", "verbindlichkeit", "orientierung", "geborgen", "verbindlich"] },
-  { name: "Dazugehören", schlagwoerter: ["dazugehören", "verständnis", "gemeinschaft", "einbezogen sein", "eigenen platz haben", "aufrichtigkeit", "ehrlichkeit", "vertraulichkeit", "vertrauen", "klarheit", "nähe", "intimität", "akzeptanz", "aufmerksamkeit", "aufrichtig", "ehrlich", "vertaulich", "aufmerksam"] },
-  { name: "Wertschätzung", schlagwoerter: ["wertschätzung", "anerkennung", "bewunderung", "dankbarkeit", "bestätigung", "respekt", "einfühlung", "verlässlichkeit", "transparenz", "dankbar", "verlässlich"] },
-  { name: "Austausch", schlagwoerter: ["austausch", "verständnis", "verständigung", "kommunikation", "wahrgenommen werden", "sex", "tiefe", "kontakt"] },
-  { name: "Beitragen", schlagwoerter: ["sinnhaftigkeit", "authentizität", "authentisch"] },
-  { name: "Entwicklung", schlagwoerter: ["entwicklung", "anregung", "inspiration", "selbstentfaltung", "entfaltung", "lernen", "verbesserung", "wachstum", "individualität", "unabhängigkeit", "unabhängig"] },
-  { name: "Wirksam sein", schlagwoerter: ["wirksam sein", "selbstwirksamkeit", "effektivität", "kompetenz", "erfolg", "autonomie", "freiwilligkeit", "selbstwirksam", "freiwillig"] },
-  { name: "Abwechslung", schlagwoerter: ["abwechslung", "vielfalt", "abenteuer", "unterhaltung"] },
-  { name: "Schönheit", schlagwoerter: ["schönheit", "ästhetik", "harmonie", "ordnung", "ruhe", "frieden", "stille", "rückzug", "schön"] },
+  {
+    name: "Leichtigkeit",
+    schlagwoerter: [
+      "leichtigkeit",
+      "spiel",
+      "spass",
+      "freude",
+      "humor",
+      "lebendigkeit",
+      "bequemlichkeit",
+      "erholung",
+      "gelassenheit",
+      "gemütlichkeit",
+      "leicht",
+      "lebendig",
+      "bequem",
+      "gelassen",
+      "gemütlich"
+    ]
+  },
+  {
+    name: "Gerechtigkeit",
+    schlagwoerter: [
+      "gerechtigkeit",
+      "gleichwertigkeit",
+      "gleichbehandlung",
+      "privatsphäre",
+      "gerecht",
+      "gleichwertig",
+      "privat"
+    ]
+  },
+  {
+    name: "Balance",
+    schlagwoerter: [
+      "balance",
+      "gleichgewicht",
+      "gleichwertigkeit",
+      "gegenseitigkeit",
+      "ausgewogenheit",
+      "ausgeglichenheit",
+      "ausgleich",
+      "achtsamkeit",
+      "beständigkeit",
+      "gegenseitig",
+      "ausgewogen",
+      "ausgeglichen",
+      "achtsamkeit",
+      "beständig"
+    ]
+  },
+  {
+    name: "Unterstützung",
+    schlagwoerter: [
+      "unterstützung",
+      "hilfe",
+      "fürsorge",
+      "rückhalt",
+      "zusammenarbeit",
+      "zuspruch",
+      "ermutigung",
+      "diskretion",
+      "geborgenheit",
+      "verbindlichkeit",
+      "orientierung",
+      "geborgen",
+      "verbindlich"
+    ]
+  },
+  {
+    name: "Dazugehören",
+    schlagwoerter: [
+      "dazugehören",
+      "verständnis",
+      "gemeinschaft",
+      "einbezogen sein",
+      "eigenen platz haben",
+      "aufrichtigkeit",
+      "ehrlichkeit",
+      "vertraulichkeit",
+      "vertrauen",
+      "klarheit",
+      "nähe",
+      "intimität",
+      "akzeptanz",
+      "aufmerksamkeit",
+      "aufrichtig",
+      "ehrlich",
+      "vertaulich",
+      "aufmerksam"
+    ]
+  },
+  {
+    name: "Wertschätzung",
+    schlagwoerter: [
+      "wertschätzung",
+      "anerkennung",
+      "bewunderung",
+      "dankbarkeit",
+      "bestätigung",
+      "respekt",
+      "einfühlung",
+      "verlässlichkeit",
+      "transparenz",
+      "dankbar",
+      "verlässlich"
+    ]
+  },
+  {
+    name: "Austausch",
+    schlagwoerter: [
+      "austausch",
+      "verständnis",
+      "verständigung",
+      "kommunikation",
+      "wahrgenommen werden",
+      "sex",
+      "tiefe",
+      "kontakt"
+    ]
+  },
+  {
+    name: "Beitragen",
+    schlagwoerter: ["sinnhaftigkeit", "authentizität", "authentisch"]
+  },
+  {
+    name: "Entwicklung",
+    schlagwoerter: [
+      "entwicklung",
+      "anregung",
+      "inspiration",
+      "selbstentfaltung",
+      "entfaltung",
+      "lernen",
+      "verbesserung",
+      "wachstum",
+      "individualität",
+      "unabhängigkeit",
+      "unabhängig"
+    ]
+  },
+  {
+    name: "Wirksam sein",
+    schlagwoerter: [
+      "wirksam sein",
+      "selbstwirksamkeit",
+      "effektivität",
+      "kompetenz",
+      "erfolg",
+      "autonomie",
+      "freiwilligkeit",
+      "selbstwirksam",
+      "freiwillig"
+    ]
+  },
+  {
+    name: "Abwechslung",
+    schlagwoerter: ["abwechslung", "vielfalt", "abenteuer", "unterhaltung"]
+  },
+  {
+    name: "Schönheit",
+    schlagwoerter: [
+      "schönheit",
+      "ästhetik",
+      "harmonie",
+      "ordnung",
+      "ruhe",
+      "frieden",
+      "stille",
+      "rückzug",
+      "schön"
+    ]
+  },
   {
     name: "Abwechslung",
     schlagwoerter: [
@@ -286,19 +450,12 @@ const baseKategorieSchlagwoerter = [
       "börse",
       "märkte",
       "börsen",
-      "führung",
+      "führung"
     ]
   },
   {
     name: "Balance",
-    schlagwoerter: [
-      "bewegung",
-      "sport",
-      "fitness",
-      "tanz",
-      "yoga",
-      "dance"
-    ]
+    schlagwoerter: ["bewegung", "sport", "fitness", "tanz", "yoga", "dance"]
   },
   {
     name: "Unterstützung",
@@ -313,11 +470,7 @@ const baseKategorieSchlagwoerter = [
   },
   {
     name: "Austausch",
-    schlagwoerter: [
-      "erfahrungsaustausch",
-      "zusammenarbeit",
-      "networking"
-    ]
+    schlagwoerter: ["erfahrungsaustausch", "zusammenarbeit", "networking"]
   },
   {
     name: "Entwicklung",
@@ -331,19 +484,20 @@ const baseKategorieSchlagwoerter = [
       "technologie",
       "softwareentwicklung",
       "programmieren",
-      "weiterentwicklung",
+      "weiterentwicklung"
     ]
   },
   {
     name: "Balance",
-    schlagwoerter: [
-      "traning",
-      "marathon"
-    ]
+    schlagwoerter: ["traning", "marathon"]
   },
-  { name: "Abwechslung", schlagwoerter: ["theater", "zirkus", "musical", "oper"] },
   {
-    name: "Austausch", schlagwoerter: [
+    name: "Abwechslung",
+    schlagwoerter: ["theater", "zirkus", "musical", "oper"]
+  },
+  {
+    name: "Austausch",
+    schlagwoerter: [
       "party",
       "fest",
       "disco",
@@ -380,10 +534,7 @@ const baseKategorieSchlagwoerter = [
   },
   {
     name: "Wertschätzung",
-    schlagwoerter: [
-      "single",
-      "freund"
-    ]
+    schlagwoerter: ["single", "freund"]
   },
   {
     name: "Abwechslung",
@@ -416,40 +567,38 @@ const baseKategorieSchlagwoerter = [
   },
   {
     name: "Schönheit",
-    schlagwoerter: [
-      "gedichte",
-      "lyrik"
-    ]
+    schlagwoerter: ["gedichte", "lyrik"]
   },
   {
     name: "Austausch",
-    schlagwoerter: [
-      "konversation",
-      "englisch",
-      "conversation"
-    ]
+    schlagwoerter: ["konversation", "englisch", "conversation"]
   },
   {
     name: "Austausch",
     schlagwoerter: ["diskussion", "discussion"]
   },
-  { name: "Beitragen", schlagwoerter: ["beitragen", "sinn", "kreativität", "dienen", "geben", "helf"] },
-  { name: "Entwicklung", schlagwoerter: ["wissen", "sinn", "freiheit", "frei"] },
   {
-    name: "Wertschätzung",
+    name: "Beitragen",
     schlagwoerter: [
-      "dating",
-      "date",
-      "beziehung"
+      "beitragen",
+      "sinn",
+      "kreativität",
+      "dienen",
+      "geben",
+      "helf"
     ]
   },
   {
+    name: "Entwicklung",
+    schlagwoerter: ["wissen", "sinn", "freiheit", "frei"]
+  },
+  {
+    name: "Wertschätzung",
+    schlagwoerter: ["dating", "date", "beziehung"]
+  },
+  {
     name: "Dazugehören",
-    schlagwoerter: [
-      "verein",
-      "gruppe",
-      "klar"
-    ]
+    schlagwoerter: ["verein", "gruppe", "klar"]
   },
   {
     name: "Leichtigkeit",
@@ -491,10 +640,11 @@ function extractBaseKategorie(e: {
 }
 
 function findBaseKategorie(text: string) {
-  for (const k of baseKategorieSchlagwoerter) {
-    for (const s of k.schlagwoerter) {
-      if (text.toUpperCase().indexOf(s.toUpperCase()) >= 0) return k.name;
+  if (text)
+    for (const k of baseKategorieSchlagwoerter) {
+      for (const s of k.schlagwoerter) {
+        if (text.toUpperCase().indexOf(s.toUpperCase()) >= 0) return k.name;
+      }
     }
-  }
   return undefined;
 }

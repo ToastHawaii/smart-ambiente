@@ -39,10 +39,7 @@ const style: StyleRulesCallback<Theme, any, ComponentClassNames> = () => ({
   }
 });
 
-class Tour extends Component<
-  Props & WithStyles<ComponentClassNames>,
-  State
-> {
+class Tour extends Component<Props & WithStyles<ComponentClassNames>, State> {
   constructor(props: any) {
     super(props);
     this.state = {};
@@ -54,7 +51,7 @@ class Tour extends Component<
 
   public handleChange = (_event: any, reise: any) => {
     this.publish("kanal/tour", { reise });
-  }
+  };
 
   public render() {
     const { classes } = this.props;
