@@ -403,6 +403,16 @@ class Schweiz extends React.Component<
       {
         duration: 160,
         init: 15,
+        source: "https://saentis.roundshot.com/"
+      },
+      {
+        duration: 160,
+        init: 15,
+        source: "https://schauenberg.roundshot.com/"
+      },
+      {
+        duration: 160,
+        init: 15,
         source: "https://winterthur.roundshot.com/roterturm/"
       },
       { duration: 160, init: 15, source: "https://nzz.roundshot.com/" },
@@ -446,6 +456,11 @@ class Schweiz extends React.Component<
         duration: 40,
         init: 15,
         source: "https://luzerntourismus.roundshot.com/"
+      },
+      {
+        duration: 80,
+        init: 15,
+        source: "https://berntourismus.roundshot.com/rosengarten/"
       }
       //{ duration: 10, init: 1, source: "http://mdfcam.i-video.biz/webcam-weitwinkel.jpg" }
     ];
