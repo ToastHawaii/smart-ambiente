@@ -9,10 +9,10 @@ const hue = Hue.createHueService(
 
 const sonosHttp = SonosHttp.createClient();
 
-let schlafzimmerOn: boolean | undefined = undefined;
+let gangOn: boolean | undefined = undefined;
 let badOn: boolean | undefined = undefined;
 
-async function schlafzimmerCheck() {
+async function gangCheck() {
   let result = await hue.getLights("9");
   result = result || ({} as any);
   result.state = result.state || ({} as any);
@@ -20,26 +20,26 @@ async function schlafzimmerCheck() {
   if (result.state.on === undefined) return;
 
   if (result.state.on) {
-    if (!schlafzimmerOn || schlafzimmerOn === undefined) {
-      // console.log("Schlafzimmer an");
+    if (!gangOn || gangOn === undefined) {
+      // console.log("Gang an");
 
       const state = await sonosHttp.room("Wohnzimmer").state();
       await sonosHttp
-        .room("Schlafzimmer")
-        .volume(relative(state.volume, 25, 80))
+        .room("Küche")
+        .volume(relative(state.volume, 25, 15))
         .join("Wohnzimmer")
         .do();
     }
   } else {
-    if (schlafzimmerOn || schlafzimmerOn === undefined) {
-      // console.log("Schlafzimmer aus");
+    if (gangOn || gangOn === undefined) {
+      // console.log("Gang aus");
       await sonosHttp
-        .room("Schlafzimmer")
+        .room("Küche")
         .leave("Wohnzimmer")
         .do();
     }
   }
-  schlafzimmerOn = result.state.on;
+  gangOn = result.state.on;
 }
 
 async function badCheck() {
@@ -56,7 +56,7 @@ async function badCheck() {
       const state = await sonosHttp.room("Wohnzimmer").state();
       await sonosHttp
         .room("Bad")
-        .volume(relative(state.volume, 25, 15))
+        .volume(relative(state.volume, 25, 80))
         .join("Wohnzimmer")
         .do();
     }
@@ -73,7 +73,7 @@ async function badCheck() {
 }
 
 async function roomCheck() {
-  schlafzimmerCheck();
+  gangCheck();
   badCheck();
 
   await delay(3000);

@@ -322,25 +322,25 @@ async function controlLicht(mode?: string) {
   const roomsOff = [];
 
   if (data.sinn["licht"].helligkeit === "aus") {
-    roomsOff.push("Terrasse");
+    roomsOff.push("Decke");
     roomsOff.push("Wohnzimmer");
-    roomsOff.push("Toilette");
-    roomsOff.push("Schlafzimmer");
+    roomsOff.push("Bad");
+    roomsOff.push("Gang");
   } else if (data.sinn["licht"].helligkeit === "wenig") {
-    roomsOn.push("Terrasse");
+    roomsOn.push("Decke");
     roomsOff.push("Wohnzimmer");
-    roomsOff.push("Toilette");
-    roomsOff.push("Schlafzimmer");
+    roomsOff.push("Bad");
+    roomsOff.push("Gang");
   } else if (data.sinn["licht"].helligkeit === "viel") {
-    roomsOn.push("Terrasse");
+    roomsOn.push("Decke");
     roomsOn.push("Wohnzimmer");
-    roomsOff.push("Toilette");
-    roomsOff.push("Schlafzimmer");
+    roomsOff.push("Bad");
+    roomsOff.push("Gang");
   } /* data.sinn["licht"].helligkeit === "überall" */ else {
-    roomsOn.push("Terrasse");
+    roomsOn.push("Decke");
     roomsOn.push("Wohnzimmer");
-    roomsOn.push("Toilette");
-    roomsOn.push("Schlafzimmer");
+    roomsOn.push("Bad");
+    roomsOn.push("Gang");
   }
 
   if (data.sinn["licht"].kanal !== "tageslicht") {
@@ -391,21 +391,21 @@ async function controlLicht(mode?: string) {
       if (mode === "alarm") return;
 
       await hue.recallScene("Wohnzimmer", "Sonnenaufgang (1)");
-      await hue.recallScene("Schlafzimmer", "Minimum");
-      await hue.recallScenes(["Terrasse", "Toilette"], "Entspannen");
+      await hue.recallScene("Gang", "Minimum");
+      await hue.recallScenes(["Decke", "Bad"], "Entspannen");
 
       await hue.updateHueLabToggle("71", 1);
       await hue.updateHueLabToggle("72", 1);
     } else if (data.kanal["szene"].szene === "sonnenuntergang") {
       await hue.recallScenes(
-        ["Wohnzimmer", "Terrasse", "Toilette", "Schlafzimmer"],
+        ["Wohnzimmer", "Decke", "Bad", "Gang"],
         "Konzentration"
       );
 
       await hue.updateHueLabToggle("74", 1);
       await hue.updateHueLabToggle("75", 1);
     } else if (data.kanal["szene"].szene === "wind") {
-      hue.recallScene("Terrasse", "Blätterdach");
+      hue.recallScene("Decke", "Blätterdach");
       wind();
     } else if (data.kanal["szene"].szene === "leuchturm") {
       leuchturm();
@@ -466,11 +466,11 @@ async function setLautstaerke(volume: number) {
     .volume(volume)
     .do();
   await sonos
-    .room("Bad")
+    .room("Küche")
     .volume(relative(volume, 25, 15))
     .do();
   await sonos
-    .room("Schlafzimmer")
+    .room("Bad")
     .volume(relative(volume, 25, 80))
     .do();
 }
@@ -508,9 +508,9 @@ async function leuchturm(trigger: boolean = true) {
 
 async function wasser(trigger: boolean = true) {
   if (trigger) {
-    await hue.recallScene("Terrasse", "Minimum (Heiter)", 60);
+    await hue.recallScene("Decke", "Minimum (Heiter)", 60);
   } else {
-    await hue.recallScene("Terrasse", "Meer", 60);
+    await hue.recallScene("Decke", "Meer", 60);
   }
 
   if (
