@@ -26,7 +26,7 @@ async function gangCheck() {
       const state = await sonosHttp.room("Wohnzimmer").state();
       await sonosHttp
         .room("Küche")
-        .volume(relative(state.volume, 25, 15))
+        .volume(relative(state.volume, 20, 15))
         .join("Wohnzimmer")
         .do();
     }
@@ -56,7 +56,7 @@ async function badCheck() {
       const state = await sonosHttp.room("Wohnzimmer").state();
       await sonosHttp
         .room("Bad")
-        .volume(relative(state.volume, 25, 95))
+        .volume(relative(state.volume, 20, 100))
         .join("Wohnzimmer")
         .do();
     }

@@ -239,16 +239,16 @@ async function controlTon() {
     if (data.sinn["ton"].lautstaerke === "leise") {
       await setLautstaerke(8);
     } else if (data.sinn["ton"].lautstaerke === "normal") {
-      await setLautstaerke(15);
+      await setLautstaerke(12);
     } else if (data.sinn["ton"].lautstaerke === "laut") {
-      await setLautstaerke(25);
+      await setLautstaerke(20);
     } else {
       const lautstaerke = parseInt(data.sinn["ton"].lautstaerke, 10);
       await setLautstaerke(lautstaerke);
 
-      if (lautstaerke >= 20) {
+      if (lautstaerke >= 15) {
         data.sinn["ton"].lautstaerke = "laut";
-      } else if (lautstaerke >= 12) {
+      } else if (lautstaerke >= 10) {
         data.sinn["ton"].lautstaerke = "normal";
       } else if (lautstaerke >= 1) {
         data.sinn["ton"].lautstaerke = "leise";
@@ -467,11 +467,11 @@ async function setLautstaerke(volume: number) {
     .do();
   await sonos
     .room("Küche")
-    .volume(relative(volume, 25, 15))
+    .volume(relative(volume, 20, 15))
     .do();
   await sonos
     .room("Bad")
-    .volume(relative(volume, 25, 95))
+    .volume(relative(volume, 20, 100))
     .do();
 }
 

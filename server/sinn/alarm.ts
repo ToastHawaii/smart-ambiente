@@ -86,7 +86,7 @@ const transition = interval * 60 * 10;
       check();
 
       if (tonActiv)
-        setSinn("ton", { lautstaerke: "4", kanal: "wetter" }, "alarm");
+        setSinn("ton", { lautstaerke: "3", kanal: "wetter" }, "alarm");
 
       if (lichtActiv)
         if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
@@ -113,7 +113,7 @@ const transition = interval * 60 * 10;
       check();
 
       if (tonActiv)
-        setSinn("ton", { lautstaerke: "6", kanal: "wetter" }, "alarm");
+        setSinn("ton", { lautstaerke: "4", kanal: "wetter" }, "alarm");
 
       if (lichtActiv)
         if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
@@ -136,7 +136,7 @@ const transition = interval * 60 * 10;
       check();
 
       if (tonActiv)
-        setSinn("ton", { lautstaerke: "8", kanal: "wetter" }, "alarm");
+        setSinn("ton", { lautstaerke: "5", kanal: "wetter" }, "alarm");
 
       if (lichtActiv)
         if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
@@ -159,7 +159,7 @@ const transition = interval * 60 * 10;
 
       if (tonActiv) {
         setKanal("wetter", { ...getKanal("wetter"), radio: 0.3 }, "alarm");
-        setSinn("ton", { lautstaerke: "10", kanal: "wetter" }, "alarm");
+        setSinn("ton", { lautstaerke: "6", kanal: "wetter" }, "alarm");
       }
 
       if (lichtActiv) {
@@ -175,7 +175,7 @@ const transition = interval * 60 * 10;
 
       if (tonActiv) {
         setKanal("wetter", { ...getKanal("wetter"), radio: 0.6 }, "alarm");
-        setSinn("ton", { lautstaerke: "12", kanal: "wetter" }, "alarm");
+        setSinn("ton", { lautstaerke: "8", kanal: "wetter" }, "alarm");
       }
 
       if (lichtActiv) {
@@ -191,7 +191,7 @@ const transition = interval * 60 * 10;
 
       if (tonActiv) {
         setKanal("wetter", { ...getKanal("wetter"), radio: 1 }, "alarm");
-        setSinn("ton", { lautstaerke: "14", kanal: "wetter" }, "alarm");
+        setSinn("ton", { lautstaerke: "10", kanal: "wetter" }, "alarm");
       }
 
       if (lichtActiv) {
@@ -202,7 +202,7 @@ const transition = interval * 60 * 10;
       check();
 
       if (tonActiv) {
-        setSinn("ton", { lautstaerke: "15", kanal: "nachrichten" }, "alarm");
+        setSinn("ton", { lautstaerke: "12", kanal: "nachrichten" }, "alarm");
         setSinn("bild", { bildschirm: "ein", kanal: "ansehen" }, "alarm");
       }
     }
