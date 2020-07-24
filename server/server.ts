@@ -471,7 +471,7 @@ async function setLautstaerke(volume: number) {
     .do();
   await sonos
     .room("Bad")
-    .volume(relative(volume, 25, 80))
+    .volume(relative(volume, 25, 95))
     .do();
 }
 

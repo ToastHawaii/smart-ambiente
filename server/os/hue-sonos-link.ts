@@ -56,7 +56,7 @@ async function badCheck() {
       const state = await sonosHttp.room("Wohnzimmer").state();
       await sonosHttp
         .room("Bad")
-        .volume(relative(state.volume, 25, 80))
+        .volume(relative(state.volume, 25, 95))
         .join("Wohnzimmer")
         .do();
     }
