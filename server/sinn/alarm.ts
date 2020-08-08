@@ -56,11 +56,7 @@ const transition = interval * 60 * 10;
         hue.recallScene("Wohnzimmer", "Minimum", 1);
         hue.recallScenes(["Decke", "Bad"], "Nachtlicht", 1);
       } else {
-        hue.recallScenes(
-          ["Wohnzimmer", "Decke", "Bad"],
-          "Minimum (Heiter)",
-          1
-        );
+        hue.recallScenes(["Wohnzimmer", "Decke", "Bad"], "Minimum (Heiter)", 1);
       }
     },
     () => {

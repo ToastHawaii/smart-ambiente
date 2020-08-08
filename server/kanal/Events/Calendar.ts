@@ -96,9 +96,9 @@ export function getIcal(kategorie: string = "") {
 }
 // dav.debug.enabled = true;
 
-// if (args["--RELEASE"]) {
+ if (args["--RELEASE"]) {
 init();
-// }
+ }
 
 async function init() {
   if (args["--RELEASE"]) await delay(5 * 60 * 1000);

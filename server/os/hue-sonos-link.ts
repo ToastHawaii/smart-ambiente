@@ -13,13 +13,13 @@ let gangOn: boolean | undefined = undefined;
 let badOn: boolean | undefined = undefined;
 
 async function gangCheck() {
-  let result = await hue.getLights("9");
-  result = result || ({} as any);
-  result.state = result.state || ({} as any);
+  let lightResult = await hue.getLights("9");
+  lightResult = lightResult || ({} as any);
+  lightResult.state = lightResult.state || ({} as any);
 
-  if (result.state.on === undefined) return;
+  if (lightResult.state.on === undefined) return;
 
-  if (result.state.on) {
+  if (lightResult.state.on) {
     if (!gangOn || gangOn === undefined) {
       // console.log("Gang an");
 
@@ -33,23 +33,26 @@ async function gangCheck() {
   } else {
     if (gangOn || gangOn === undefined) {
       // console.log("Gang aus");
-      await sonosHttp
-        .room("Küche")
-        .leave("Wohnzimmer")
-        .do();
+      await sonosHttp.room("Küche").leave("Wohnzimmer").do();
     }
   }
-  gangOn = result.state.on;
+  gangOn = lightResult.state.on;
 }
 
 async function badCheck() {
-  let result = await hue.getLights("4");
-  result = result || ({} as any);
-  result.state = result.state || ({} as any);
+  let lightResult = await hue.getLights("4");
+  lightResult = lightResult || ({} as any);
+  lightResult.state = lightResult.state || ({} as any);
 
-  if (result.state.on === undefined) return;
+  if (lightResult.state.on === undefined) return;
 
-  if (result.state.on) {
+  let sensorResult = await hue.getSensors("6");
+  sensorResult = sensorResult || ({} as any);
+  sensorResult.state = sensorResult.state || ({} as any);
+
+  if (sensorResult.state.presence === undefined) return;
+
+  if (lightResult.state.on || sensorResult.state.presence) {
     if (!badOn || badOn === undefined) {
       // console.log("Bad an");
 
@@ -63,13 +66,10 @@ async function badCheck() {
   } else {
     if (badOn || badOn === undefined) {
       // console.log("Bad aus");
-      await sonosHttp
-        .room("Bad")
-        .leave("Wohnzimmer")
-        .do();
+      await sonosHttp.room("Bad").leave("Wohnzimmer").do();
     }
   }
-  badOn = result.state.on;
+  badOn = lightResult.state.on;
 }
 
 async function roomCheck() {
