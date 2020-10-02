@@ -1,5 +1,4 @@
 const webpack = require("webpack");
-const UglifyJSPlugin = require("uglifyjs-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 module.exports = {
@@ -13,7 +12,6 @@ module.exports = {
     new webpack.DefinePlugin({
       "process.env.NODE_ENV": JSON.stringify("production")
     }),
-    new UglifyJSPlugin(),
     new CopyWebpackPlugin([{ from: "server/static" }])
   ],
   mode: "production",
