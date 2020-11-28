@@ -21,8 +21,8 @@ import { toArray } from "../utils/array";
 import debug from "../utils/debug";
 const topic = debug("philips-hue-api", false);
 
-export function createHueService(baseUrl: string) {
-  return new Hue(baseUrl);
+export function createHueService(baseUrl: string, scenes: Scenes) {
+  return new Hue(baseUrl, scenes);
 }
 
 export interface Scheduler {
@@ -117,8 +117,14 @@ export interface GroupPartial {
   transitiontime?: number;
 }
 
+export type Scenes = {
+  name: string;
+  group: string;
+  lights: { [name: string]: LightPartial };
+}[];
+
 class Hue {
-  public constructor(private baseUrl: string) {}
+  public constructor(private baseUrl: string, private scenes: Scenes) {}
 
   public async queryRules() {
     return await getJson<{ [index: string]: Rule }>(this.baseUrl + "/rules");
@@ -255,6 +261,16 @@ class Hue {
     return await getJson<Light>(this.baseUrl + "/lights/" + id);
   }
 
+  public async getLightByName(name: string) {
+    const result = await this.queryLights();
+    const lights = toArray<{ [index: string]: Light }, Light>(result);
+    return lights.filter(l => l.name === name)[0];
+  }
+
+  public async queryLights() {
+    return await getJson<{ [index: string]: Light }>(this.baseUrl + "/lights");
+  }
+
   public async getGroups(id: string) {
     return await getJson<Group>(this.baseUrl + "/groups/" + id);
   }
@@ -326,14 +342,16 @@ class Hue {
     sceneName: string,
     transitiontime?: number
   ) {
-    const group = await this.getGroupByName(roomName);
-    const scene = await this.getSceneByName(group.id, sceneName);
+    const scene = this.scenes.filter(
+      s => s.name === sceneName && s.group === roomName
+    )[0];
 
-    for (const light of scene.lights) {
-      await this.setLightState(light, {
-        ...scene.lightstates[light],
-        transitiontime: transitiontime,
-        on: true
+    for (const light of toArray<{ [name: string]: LightPartial }, LightPartial>(
+      scene.lights
+    )) {
+      await this.setLightState((await this.getLightByName(light.id)).id, {
+        ...light,
+        transitiontime: transitiontime
       });
     }
 

@@ -1,23 +1,23 @@
 // Copyright (C) 2020 Markus Peloso
-// 
+//
 // This file is part of smart-ambiente.
-// 
+//
 // smart-ambiente is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // smart-ambiente is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with smart-ambiente.  If not, see <http://www.gnu.org/licenses/>.
 
 import * as express from "express";
 import * as bodyParser from "body-parser";
-import { shuffle } from "./utils/array";
+import { shuffle, toArray } from "./utils/array";
 import { relative, hexToXy, getRandomInt } from "./utils/math";
 import * as SonosHttp from "./os/node-sonos-http-api";
 import * as HueHttp from "./os/philips-hue-api";
@@ -31,12 +31,14 @@ import { chooseGoodMatch } from "./kanal/Weather/Image";
 import debug from "./utils/debug";
 import { saveConfig, loadConfig } from "./utils/config";
 import { delay } from "./utils/timer";
+import { LightPartial, Scene } from "./os/philips-hue-api";
+import { scenes } from "./scenes";
 debug.enabled = true;
 const topic = debug("server", false);
 
 const sonos = SonosHttp.createClient();
 const hue = HueHttp.createHueService(
-  "http://192.168.178.101/api/p5u0Ki9EwbUQ330gcMA9-gK3qBKhYWCWJ1NmkNVs"
+  "http://192.168.178.101/api/p5u0Ki9EwbUQ330gcMA9-gK3qBKhYWCWJ1NmkNVs", scenes
 );
 
 const app = express();
@@ -108,7 +110,7 @@ const data: {
   }
 };
 
-(async function() {
+(async function () {
   data.kanal["natur"].szene = shuffle([
     "feuer",
     "wind",
@@ -135,16 +137,16 @@ const data: {
   data.kanal["alarm"] = config.alarm;
 })();
 
-app.get("/api/sinn", async function(_req, res) {
+app.get("/api/sinn", async function (_req, res) {
   res.json({ sinn: data.sinn["aktiv"] });
 });
 
-app.post("/api/sinn", async function(req, res) {
+app.post("/api/sinn", async function (req, res) {
   data.sinn["aktiv"] = req.body.sinn;
   res.json({ sinn: data.sinn["aktiv"] });
 });
 
-app.get("/api/sinn/:sinn", async function(req, res) {
+app.get("/api/sinn/:sinn", async function (req, res) {
   if (first) {
     const weather = await WeatherForecast.query();
     data.kanal["wetter"] = weather;
@@ -158,7 +160,7 @@ app.get("/api/sinn/:sinn", async function(req, res) {
   res.json(data.sinn[req.params.sinn]);
 });
 
-app.post("/api/sinn/:sinn", async function(req, res) {
+app.post("/api/sinn/:sinn", async function (req, res) {
   res.json(await setSinn(req.params.sinn, req.body));
 });
 
@@ -181,7 +183,7 @@ export async function setSinn(sinn: string, sinnData: any, mode?: string) {
   return data.sinn[sinn];
 }
 
-app.get("/api/kanal/:kanal", async function(req, res) {
+app.get("/api/kanal/:kanal", async function (req, res) {
   if (first) {
     const weather = await WeatherForecast.query();
     data.kanal["wetter"] = weather;
@@ -195,11 +197,11 @@ app.get("/api/kanal/:kanal", async function(req, res) {
   res.json(data.kanal[req.params.kanal]);
 });
 
-app.get("/api/kanal/wetter/image", function(_req, res) {
+app.get("/api/kanal/wetter/image", function (_req, res) {
   res.json(chooseGoodMatch(data.kanal["wetter"]));
 });
 
-app.post("/api/kanal/:kanal", async function(req, res) {
+app.post("/api/kanal/:kanal", async function (req, res) {
   res.json(await setKanal(req.params.kanal, req.body));
 });
 
@@ -305,10 +307,7 @@ async function controlTon() {
       }
     }
   } else {
-    await sonos
-      .room("wohnzimmer")
-      .pause()
-      .do();
+    await sonos.room("wohnzimmer").pause().do();
   }
 }
 
@@ -327,11 +326,7 @@ async function playPlaylist(name: string) {
 }
 
 async function playSender(name: string) {
-  await sonos
-    .room("wohnzimmer")
-    .favorite(name)
-    .play()
-    .do();
+  await sonos.room("wohnzimmer").favorite(name).play().do();
 }
 
 async function controlLicht(mode?: string) {
@@ -472,40 +467,64 @@ async function controlLicht(mode?: string) {
   }
 }
 
-process.on("uncaughtException", function(err) {
+process.on("uncaughtException", function (err) {
   console.error(err.stack);
   topic("Node NOT Exiting...");
 });
 
 async function setLautstaerke(volume: number) {
-  await sonos
-    .room("Wohnzimmer")
-    .volume(volume)
-    .do();
-  await sonos
-    .room("Küche")
-    .volume(relative(volume, 20, 15))
-    .do();
-  await sonos
-    .room("Bad")
-    .volume(relative(volume, 20, 100))
-    .do();
+  await sonos.room("Wohnzimmer").volume(volume).do();
+  await sonos.room("Küche").volume(relative(volume, 20, 15)).do();
+  await sonos.room("Bad").volume(relative(volume, 20, 100)).do();
 }
 
-app.get("/api/events/", function(_req, res) {
+app.get("/api/events/", function (_req, res) {
   res.json(Events.get());
 });
 
-app.get("/api/events.ics", function(_req, res) {
+app.get("/api/events.ics", function (_req, res) {
   res.end(Events.getIcal());
 });
 
-app.get("/api/events/:kategorie.ics", function(req, res) {
+app.get("/api/events/:kategorie.ics", function (req, res) {
   res.end(Events.getIcal(req.params.kategorie));
 });
 
-app.get("/api/config/:name/", async function(req, res) {
+app.get("/api/config/:name/", async function (req, res) {
   res.json((await loadConfig())[req.params.name]);
+});
+
+app.get("/api/hue/scenes/", async (_req, res) => {
+  const scenes = [];
+
+  for (const s of toArray<{ [id: string]: Scene }, Scene>(
+    await hue.queryScenes()
+  )) {
+    if (s.type !== "GroupScene") continue;
+
+    const scene = await hue.getScenes(s.id);
+
+    const lightsStates = toArray<{ [id: string]: LightPartial }, LightPartial>(
+      scene.lightstates
+    );
+
+    const lights: any = {};
+
+    for (const l of lightsStates) {
+      const name = (await hue.getLights(l.id)).name;
+      delete l.id;
+
+      lights[name] = l;
+    }
+
+    scenes.push({
+      group: (await hue.getGroups(s.group)).name,
+      name: scene.name,
+      lights: lights
+    });
+  }
+
+  res.json(scenes);
 });
 
 async function leuchturm(trigger: boolean = true) {
