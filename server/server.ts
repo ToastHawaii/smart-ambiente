@@ -38,7 +38,8 @@ const topic = debug("server", false);
 
 const sonos = SonosHttp.createClient();
 const hue = HueHttp.createHueService(
-  "http://192.168.178.101/api/p5u0Ki9EwbUQ330gcMA9-gK3qBKhYWCWJ1NmkNVs", scenes
+  "http://192.168.178.101/api/p5u0Ki9EwbUQ330gcMA9-gK3qBKhYWCWJ1NmkNVs",
+  scenes
 );
 
 const app = express();
@@ -494,7 +495,7 @@ app.get("/api/config/:name/", async function (req, res) {
   res.json((await loadConfig())[req.params.name]);
 });
 
-app.get("/api/hue/scenes/", async (_req, res) => {
+app.get("/api/hue/scenes/export", async (_req, res) => {
   const scenes = [];
 
   for (const s of toArray<{ [id: string]: Scene }, Scene>(
@@ -525,6 +526,32 @@ app.get("/api/hue/scenes/", async (_req, res) => {
   }
 
   res.json(scenes);
+});
+
+app.post("/api/hue/scenes/install", async (_req, res) => {
+  for (const scene of scenes) {
+    const lightsStates: {
+      [id: string]: HueHttp.LightPartial;
+    } = {};
+    for (const light of toArray<{ [name: string]: LightPartial }, LightPartial>(
+      scene.lights
+    )) {
+      const l = await hue.getLightByName(light.id);
+      if (!l) continue;
+
+      const id = l.id;
+      delete light.id;
+      lightsStates[id] = light;
+    }
+
+    await hue.createScenes(
+      (await hue.getGroupByName(scene.group)).id,
+      scene.name,
+      lightsStates
+    );
+  }
+
+  res.json({ result: "installed" });
 });
 
 async function leuchturm(trigger: boolean = true) {

@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with smart-ambiente.  If not, see <http://www.gnu.org/licenses/>.
 
-import { getJson, putJson } from "../utils/request";
+import { getJson, postJson, putJson } from "../utils/request";
 import { delay } from "../utils/timer";
 import { toArray } from "../utils/array";
 import debug from "../utils/debug";
@@ -309,6 +309,26 @@ class Hue {
 
   public async queryScenes() {
     return await getJson<{ [index: string]: Scene }>(this.baseUrl + "/scenes");
+  }
+
+  public async createScenes(
+    group: string,
+    name: string,
+    lightstates: {
+      [id: string]: LightPartial;
+    }
+  ) {
+    await postJson(this.baseUrl + "/scenes/", {
+      type: "GroupScene",
+      appdata: {
+        version: 1,
+        data: "Gl1Xm_r05_d99"
+      },
+      group,
+      name,
+      lightstates,
+      recycle: false
+    });
   }
 
   public async updateScenesLightstates(
