@@ -38,7 +38,7 @@
     "classnames": "2.2.6",
     "express": "4.17.1",
     "google-maps": "3.3.0",
-    "gsap": "3.0.2",
+    "gsap": "3.6.0",
     "ical-generator": "1.9.1",
     "mdi-material-ui": "6.9.0",
     "proxy-middleware": "0.15.0",
