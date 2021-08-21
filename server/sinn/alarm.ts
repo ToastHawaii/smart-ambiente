@@ -72,9 +72,9 @@ const transition = interval * 60 * 10;
       setSinn("licht", { helligkeit: "wenig", kanal: "szene" }, "alarm");
 
       if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
-        hue.recallScenes(["Decke", "Bad"], "Nachtlicht", 1);
+        hue.recallScenes(["Decke", "Bad"], "Sonnenaufgang Bewölkt (Start)", 1);
       } else {
-        hue.recallScenes(["Decke", "Bad"], "Minimum (Heiter)", 1);
+        hue.recallScenes(["Decke", "Bad"], "Sonnenaufgang Heiter (Start)", 1);
       }
     },
     () => {
@@ -87,12 +87,12 @@ const transition = interval * 60 * 10;
         setSinn("licht", { helligkeit: "überall", kanal: "szene" }, "alarm");
 
         if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
-          hue.recallScene("Wohnzimmer", "Sonnenaufgang (1)", 1);
+          hue.recallScene("Wohnzimmer", "Sonnenaufgang Bewölkt (1)", 1);
           hue.recallScenes(["Decke", "Bad"], "Nachtlicht", transition);
         } else {
-          hue.recallScene("Wohnzimmer", "Sonnenaufgang 1 (Heiter)", 1);
-          hue.recallScene("Decke", "Sonnenaufgang 1 (Heiter)", transition);
-          hue.recallScene("Bad", "Minimum (Heiter)", transition);
+          hue.recallScene("Wohnzimmer", "Sonnenaufgang Heiter (1)", 1);
+          hue.recallScene("Decke", "Sonnenaufgang Heiter (1)", transition);
+          hue.recallScene("Bad", "Sonnenaufgang Heiter (Start)", transition);
         }
       }
     },
@@ -106,21 +106,19 @@ const transition = interval * 60 * 10;
         if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
           hue.recallScenes(
             ["Wohnzimmer", "Decke"],
-            "Sonnenaufgang (2)",
+            "Sonnenaufgang Bewölkt (2)",
             transition
           );
-          hue.recallScene("Bad", "Nachtlicht", transition);
-
-          hue.recallScene("Gang", "Minimum", 1);
+          hue.recallScene("Bad", "Sonnenaufgang Bewölkt (Start)", transition);
+          hue.recallScene("Gang", "Sonnenaufgang Bewölkt (Start)", 1);
         } else {
           hue.recallScenes(
             ["Wohnzimmer", "Decke"],
             "Sonnenaufgang 2 (Heiter)",
             transition
           );
-          hue.recallScene("Bad", "Minimum (Heiter)", transition);
-
-          hue.recallScene("Gang", "Minimum (Heiter)", 1);
+          hue.recallScene("Bad", "Sonnenaufgang Heiter (Start)", transition);
+          hue.recallScene("Gang", "Sonnenaufgang Heiter (Start)", 1);
         }
     },
     () => {
@@ -133,7 +131,7 @@ const transition = interval * 60 * 10;
         if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
           hue.recallScenes(
             ["Wohnzimmer", "Decke"],
-            "Sonnenaufgang (3)",
+            "Sonnenaufgang Bewölkt (3)",
             transition
           );
           hue.recallScene("Bad", "Gedimmt", transition);
@@ -141,7 +139,7 @@ const transition = interval * 60 * 10;
         } else {
           hue.recallScenes(
             ["Wohnzimmer", "Decke", "Bad", "Gang"],
-            "Sonnenaufgang 3 (Heiter)",
+            "Sonnenaufgang Heiter (3)",
             transition
           );
         }
@@ -156,14 +154,14 @@ const transition = interval * 60 * 10;
         if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
           hue.recallScenes(
             ["Wohnzimmer", "Decke"],
-            "Sonnenaufgang (4)",
+            "Sonnenaufgang Bewölkt (4)",
             transition
           );
           hue.recallScenes(["Bad", "Gang"], "Entspannen", transition);
         } else {
           hue.recallScenes(
             ["Wohnzimmer", "Decke", "Bad", "Gang"],
-            "Sonnenaufgang 4 (Heiter)",
+            "Sonnenaufgang Heiter (4)",
             transition
           );
         }

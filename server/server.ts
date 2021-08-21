@@ -403,9 +403,8 @@ async function controlLicht(mode?: string) {
     if (data.kanal["szene"].szene === "sonnenaufgang") {
       if (mode === "alarm") return;
 
-      await hue.recallScene("Wohnzimmer", "Sonnenaufgang (1)");
-      await hue.recallScene("Gang", "Minimum");
-      await hue.recallScenes(["Decke", "Bad"], "Entspannen");
+      await hue.recallScene("Wohnzimmer", "Sonnenaufgang Bewölkt (1)");
+      await hue.recallScenes(["Decke", "Bad","Gang"], "Entspannen");
 
       await hue.updateHueLabToggle("71", 1);
       await hue.updateHueLabToggle("72", 1);
@@ -571,9 +570,9 @@ async function leuchturm(trigger: boolean = true) {
 
 async function wasser(trigger: boolean = true) {
   if (trigger) {
-    await hue.recallScene("Decke", "Minimum (Heiter)", 60);
+    await hue.recallScene("Decke", "Meer 1", 60);
   } else {
-    await hue.recallScene("Decke", "Meer", 60);
+    await hue.recallScene("Decke", "Meer 2", 60);
   }
 
   if (
