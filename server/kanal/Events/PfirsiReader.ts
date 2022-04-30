@@ -24,7 +24,7 @@ export const pfirsiReader: HtmlReader = {
   typ: "html",
   sourceName: "pfirsi",
   sourceUrl: ["https://www.pfirsi.ch/events/anundpfirsich/"],
-  itemSelector: ".et_pb_row a.et_pb_button",
+  itemSelector: ".btTxt.et_pb_promo_button.et_pb_button",
   sourceDetailUrl: $item => {
     return $item.attr("href") || "";
   },

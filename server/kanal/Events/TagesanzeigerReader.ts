@@ -1,77 +1,55 @@
 // Copyright (C) 2020 Markus Peloso
-// 
+//
 // This file is part of smart-ambiente.
-// 
+//
 // smart-ambiente is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // smart-ambiente is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with smart-ambiente.  If not, see <http://www.gnu.org/licenses/>.
 
 import { HtmlReader, Event } from "./Crawler";
 import * as moment from "moment";
-import * as $ from "cheerio";
 
 export const tagesanzeigerChReader: HtmlReader = {
   typ: "html",
   sourceName: "tagesanzeiger.ch",
   sourceUrl: [
-    "[https://agenda.tagesanzeiger.ch/veranstaltungen/suche/neu/?postcode=ZH&search_from=]DD.MM.YYYY[&search_to=]DD.MM.YYYY"
+    "[https://agenda.tagesanzeiger.ch/veranstaltungen.html]",
+    "[https://agenda.tagesanzeiger.ch/veranstaltungen.html?page=2]",
+    "[https://agenda.tagesanzeiger.ch/veranstaltungen.html?page=3]",
+    "[https://agenda.tagesanzeiger.ch/veranstaltungen.html?page=4]",
+    "[https://agenda.tagesanzeiger.ch/veranstaltungen.html?page=5]",
+    "[https://agenda.tagesanzeiger.ch/veranstaltungen.html?page=6]",
+    "[https://agenda.tagesanzeiger.ch/veranstaltungen.html?page=7]",
+    "[https://agenda.tagesanzeiger.ch/veranstaltungen.html?page=8]",
+    "[https://agenda.tagesanzeiger.ch/veranstaltungen.html?page=9]",
+    "[https://agenda.tagesanzeiger.ch/veranstaltungen.html?page=10]",
   ],
-  itemSelector: '.leo_event,meta[HTTP-EQUIV="REFRESH"]',
-  sourceDetailUrl: $item => {
-    if ($item.is('meta[HTTP-EQUIV="REFRESH"]')) {
-      const content = $item.attr("content");
-      if (content) return content.substr(7, content.length - 7);
-    }
+  itemSelector: ".overview-event",
+  mapper: ($item: Cheerio) => {
+    const event: Event = {
+      kategorie: $item.find(".overview-event__info__category").text(),
+      titel: $item.find(".overview-event__info__title").text(),
+      beschreibung: $item.find(".overview-event__info__description").text(),
+      start: moment(
+        $item.find(".overview-event__date").text().split("<br>")[1],
+        "DD.MM.YY, HH:mm[&nbsp;Uhr]",
+        "de"
+      ),
+      ort: $item.find(".overview-event__info__location").text(),
+      bild:
+        "https://agenda.tagesanzeiger.ch/" +
+        $item.find(".overview-event__image img").attr("src"),
+    };
 
-    return $item.find(".leo_h3 a").attr("href") || "";
+    return [event];
   },
-  mapper: (_$listItem: Cheerio, $detailItem?: Cheerio) => {
-    if (!$detailItem) return [];
-
-    const events: Event[] = [];
-
-    $detailItem.find(".dates p").each((_i, e) => {
-      const $e = $(e);
-
-      const date = $e.find(".leo_date_begin,.leo_date_end").text();
-      const times = ($e.find(".leo_time").text() || "00:00")
-        .split("-")
-        .map(t => t.replace(/ Uhr( )?/gi, ""));
-
-      let start: moment.Moment;
-      let ende: moment.Moment | undefined = undefined;
-
-      start = moment(date + " " + times[0], "DD.MM.YYYY HH:mm");
-      if (times.length > 1 && times[1])
-        ende = moment(date + " " + times[1], "DD.MM.YYYY HH:mm");
-
-      if ($e.is(".same_date")) {
-        events[events.length - 1].ende = start;
-        return;
-      }
-
-      const event: Event = {
-        kategorie: $detailItem.find(".leo_event-details .category").text(),
-        titel: $detailItem.find(".leo_event-headline").text(),
-        beschreibung: $detailItem
-          .find(".leo_event-details .description")
-          .text(),
-        start: start,
-        ort: $detailItem.find(".location").text()
-      };
-      if (event.ende) event.ende = ende;
-      events.push(event);
-    });
-
-    return events;
-  }
 };
