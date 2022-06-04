@@ -72,9 +72,9 @@ const transition = interval * 60 * 10;
       setSinn("licht", { helligkeit: "wenig", kanal: "szene" }, "alarm");
 
       if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
-        hue.recallScenes(["Decke", "Bad"], "Nachtlicht", 1);
+        hue.recallScenes(["Boden"], "Nachtlicht", 1);
       } else {
-        hue.recallScenes(["Decke", "Bad"], "Minimum (Heiter)", 1);
+        hue.recallScenes(["Boden"], "Minimum (Heiter)", 1);
       }
     },
     () => {
@@ -87,12 +87,11 @@ const transition = interval * 60 * 10;
         setSinn("licht", { helligkeit: "überall", kanal: "szene" }, "alarm");
 
         if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
-          hue.recallScene("Wohnzimmer", "Sonnenaufgang (1)", 1);
-          hue.recallScenes(["Decke", "Bad"], "Nachtlicht", transition);
+          hue.recallScene("Schlafzimmer", "Sonnenaufgang (1)", 1);
+          hue.recallScenes(["Boden"], "Nachtlicht", transition);
         } else {
-          hue.recallScene("Wohnzimmer", "Sonnenaufgang 1 (Heiter)", 1);
-          hue.recallScene("Decke", "Sonnenaufgang 1 (Heiter)", transition);
-          hue.recallScene("Bad", "Minimum (Heiter)", transition);
+          hue.recallScene("Schlafzimmer", "Sonnenaufgang 1 (Heiter)", 1);
+          hue.recallScene("Boden", "Sonnenaufgang 1 (Heiter)", transition);
         }
       }
     },
@@ -105,22 +104,16 @@ const transition = interval * 60 * 10;
       if (lichtActiv)
         if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
           hue.recallScenes(
-            ["Wohnzimmer", "Decke"],
+            ["Schlafzimmer", "Boden"],
             "Sonnenaufgang (2)",
             transition
           );
-          hue.recallScene("Bad", "Nachtlicht", transition);
-
-          hue.recallScene("Gang", "Minimum", 1);
         } else {
           hue.recallScenes(
-            ["Wohnzimmer", "Decke"],
+            ["Schlafzimmer", "Boden"],
             "Sonnenaufgang 2 (Heiter)",
             transition
           );
-          hue.recallScene("Bad", "Minimum (Heiter)", transition);
-
-          hue.recallScene("Gang", "Minimum (Heiter)", 1);
         }
     },
     () => {
@@ -132,15 +125,13 @@ const transition = interval * 60 * 10;
       if (lichtActiv)
         if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
           hue.recallScenes(
-            ["Wohnzimmer", "Decke"],
+            ["Schlafzimmer", "Boden"],
             "Sonnenaufgang (3)",
             transition
           );
-          hue.recallScene("Bad", "Gedimmt", transition);
-          hue.recallScene("Gang", "Nachtlicht", transition);
         } else {
           hue.recallScenes(
-            ["Wohnzimmer", "Decke", "Bad", "Gang"],
+            ["Schlafzimmer", "Boden"],
             "Sonnenaufgang 3 (Heiter)",
             transition
           );
@@ -155,14 +146,13 @@ const transition = interval * 60 * 10;
       if (lichtActiv)
         if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
           hue.recallScenes(
-            ["Wohnzimmer", "Decke"],
+            ["Schlafzimmer", "Boden"],
             "Sonnenaufgang (4)",
             transition
           );
-          hue.recallScenes(["Bad", "Gang"], "Entspannen", transition);
         } else {
           hue.recallScenes(
-            ["Wohnzimmer", "Decke", "Bad", "Gang"],
+            ["Schlafzimmer", "Boden"],
             "Sonnenaufgang 4 (Heiter)",
             transition
           );
@@ -178,7 +168,7 @@ const transition = interval * 60 * 10;
 
       if (lichtActiv) {
         hue.recallScenes(
-          ["Wohnzimmer", "Decke", "Bad", "Gang"],
+          ["Schlafzimmer", "Boden"],
           "Konzentration",
           transition
         );
@@ -194,7 +184,7 @@ const transition = interval * 60 * 10;
 
       if (lichtActiv) {
         hue.recallScenes(
-          ["Wohnzimmer", "Decke", "Bad", "Gang"],
+          ["Schlafzimmer", "Boden"],
           "Aktivieren",
           transition
         );
@@ -219,6 +209,6 @@ const transition = interval * 60 * 10;
         setSinn("ton", { lautstaerke: "12", kanal: "nachrichten" }, "alarm");
         setSinn("bild", { bildschirm: "ein", kanal: "ansehen" }, "alarm");
       }
-    }
+    },
   ]);
 })();

@@ -1,17 +1,17 @@
 // Copyright (C) 2020 Markus Peloso
-// 
+//
 // This file is part of smart-ambiente.
-// 
+//
 // smart-ambiente is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // smart-ambiente is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with smart-ambiente.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -26,12 +26,12 @@ const topic = debug("natur/controller", false);
 const soundSource = "../../smart-ambiente-media/sound/natur/";
 const channelApiUrls = [
   "http://192.168.178.112:8001/smart-ambiente/scene",
-  "http://192.168.178.112:8002/smart-ambiente/scene"
+  "http://192.168.178.112:8002/smart-ambiente/scene",
 ];
 
 const channelOutputUrls = [
   "http://localhost:8000/smart-ambiente/channel",
-  "http://localhost:8000/smart-ambiente/channel/part/1"
+  "http://localhost:8000/smart-ambiente/channel/part/1",
 ];
 
 const sonosHttp = SonosHttp.createClient();
@@ -51,19 +51,19 @@ export async function playSound(scene: string) {
     volume: "1",
     pan: "none",
     crossfade: "0",
-    random: "0"
+    random: "0",
   };
   const list = (
     await Promise.all(
-      fs.readdirSync(soundSource + scene).map(async f => ({
+      fs.readdirSync(soundSource + scene).map(async (f) => ({
         ...(await getSource(soundSource + scene, f)),
         volume: parseFloat(matchOrDefault(f, "volume", def.volume)).toString(),
         pan: matchOrDefault(f, "pan", def.pan),
         crossfade: matchOrDefault(f, "crossfade", def.crossfade),
-        random: matchOrDefault(f, "random", def.random)
+        random: matchOrDefault(f, "random", def.random),
       }))
     )
-  ).filter(f => parseFloat(f.volume) >= 0.1);
+  ).filter((f) => parseFloat(f.volume) >= 0.1);
 
   let i = 0;
   for (const chunk of split(sortAlternate(list), channelOutputUrls.length)) {
@@ -75,7 +75,7 @@ export async function playSound(scene: string) {
         volume: "1",
         pan: "none",
         crossfade: "0",
-        random: "0"
+        random: "0",
       });
     }
 
@@ -85,7 +85,7 @@ export async function playSound(scene: string) {
   }
 
   await SonosHttp.createClient()
-    .room("wohnzimmer")
+    .room("Schlafzimmer")
     .favorite("Smart Ambiente")
     .play()
     .do();
@@ -105,7 +105,7 @@ export async function stopSound() {
 
 function checkChannel() {
   checkChannelTimeout = setTimeout(async () => {
-    const state = await sonosHttp.room("Wohnzimmer").state();
+    const state = await sonosHttp.room("Schlafzimmer").state();
     const playing = state.playbackState === "PLAYING";
     const uri = (state.currentTrack || { uri: "" }).uri || "";
     topic("radio check", { playing, uri, state });
@@ -125,11 +125,11 @@ async function getSource(source: string, file: string) {
   if (!file.toUpperCase().endsWith(".TXT"))
     return {
       typ: "file",
-      source: source + "/" + file
+      source: source + "/" + file,
     };
   else
     return {
       typ: "url",
-      source: await readFile(source + "/" + file)
+      source: await readFile(source + "/" + file),
     };
 }

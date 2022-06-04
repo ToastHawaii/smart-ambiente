@@ -18,7 +18,7 @@
 import * as express from "express";
 import * as bodyParser from "body-parser";
 import { shuffle, toArray } from "./utils/array";
-import { relative, hexToXy, getRandomInt } from "./utils/math";
+import { hexToXy, getRandomInt } from "./utils/math";
 import * as SonosHttp from "./os/node-sonos-http-api";
 import * as HueHttp from "./os/philips-hue-api";
 import * as Events from "./kanal/Events/Calendar";
@@ -26,7 +26,6 @@ import * as WeatherForecast from "./kanal/Weather/Forecast";
 import * as WeatherRadio from "./kanal/Weather/Radio";
 import * as NaturRadio from "./kanal/Natur/Radio";
 import "./sinn/alarm";
-import "./os/hue-sonos-link";
 import { chooseGoodMatch } from "./kanal/Weather/Image";
 import debug from "./utils/debug";
 import { saveConfig, loadConfig } from "./utils/config";
@@ -58,20 +57,20 @@ const data: {
     aktiv: "ton",
     ton: {
       lautstaerke: "normal",
-      kanal: "wetter"
+      kanal: "wetter",
     },
     bild: {
       bildschirm: "ein",
-      kanal: "wetter"
+      kanal: "wetter",
     },
     licht: {
       helligkeit: "viel",
-      kanal: "tageslicht"
+      kanal: "tageslicht",
     },
     aufwachen: {
       aktiv: "aus",
-      kanal: "alarm"
-    }
+      kanal: "alarm",
+    },
   },
   kanal: {
     wetter: {
@@ -81,34 +80,34 @@ const data: {
       niederschlag: 0,
       radio: 0,
       temperatur: 0,
-      mode: "vorhersage"
+      mode: "vorhersage",
     },
     musik: {
-      stil: "interesse"
+      stil: "interesse",
     },
     ansehen: {
-      ort: "schweiz"
+      ort: "schweiz",
     },
     natur: {
-      szene: "wasserfall"
+      szene: "wasserfall",
     },
     tour: {
-      reise: "umrundungErde"
+      reise: "umrundungErde",
     },
     zusehen: {
-      aktivitaet: "bahnverkehr"
+      aktivitaet: "bahnverkehr",
     },
     szene: {
-      szene: "wind"
+      szene: "wind",
     },
     emotion: {
-      emotion: "groll"
+      emotion: "groll",
     },
     alarm: {
       zeit: "06:56",
-      tage: "1-5"
-    }
-  }
+      tage: "1-5",
+    },
+  },
 };
 
 (async function () {
@@ -130,7 +129,7 @@ const data: {
     "bar",
     "windturbine",
     "bruecke",
-    "leuchturm"
+    "leuchturm",
   ])[0];
 
   const config = await loadConfig();
@@ -178,7 +177,7 @@ export async function setSinn(sinn: string, sinnData: any, mode?: string) {
   if (sinn === "aufwachen")
     await saveConfig({
       aufwachen: data.sinn["aufwachen"],
-      alarm: data.kanal["alarm"]
+      alarm: data.kanal["alarm"],
     });
 
   return data.sinn[sinn];
@@ -225,7 +224,7 @@ export async function setKanal(kanal: string, kanalData: any, mode?: string) {
   } else if (kanal === "alarm") {
     await saveConfig({
       aufwachen: data.sinn["aufwachen"],
-      alarm: data.kanal["alarm"]
+      alarm: data.kanal["alarm"],
     });
   } else if (kanal === "szene") {
     controlLicht(mode);
@@ -308,13 +307,13 @@ async function controlTon() {
       }
     }
   } else {
-    await sonos.room("wohnzimmer").pause().do();
+    await sonos.room("Schlafzimmer").pause().do();
   }
 }
 
 async function playPlaylist(name: string) {
   await sonos
-    .room("wohnzimmer")
+    .room("Schlafzimmer")
     .groupMute()
     .pause()
     .shuffle("on")
@@ -327,7 +326,7 @@ async function playPlaylist(name: string) {
 }
 
 async function playSender(name: string) {
-  await sonos.room("wohnzimmer").favorite(name).play().do();
+  await sonos.room("Schlafzimmer").favorite(name).play().do();
 }
 
 async function controlLicht(mode?: string) {
@@ -335,25 +334,17 @@ async function controlLicht(mode?: string) {
   const roomsOff = [];
 
   if (data.sinn["licht"].helligkeit === "aus") {
-    roomsOff.push("Decke");
-    roomsOff.push("Wohnzimmer");
-    roomsOff.push("Bad");
-    roomsOff.push("Gang");
+    roomsOff.push("Boden");
+    roomsOff.push("Schlafzimmer");
   } else if (data.sinn["licht"].helligkeit === "wenig") {
-    roomsOn.push("Decke");
-    roomsOff.push("Wohnzimmer");
-    roomsOff.push("Bad");
-    roomsOff.push("Gang");
+    roomsOn.push("Boden");
+    roomsOff.push("Schlafzimmer");
   } else if (data.sinn["licht"].helligkeit === "viel") {
-    roomsOn.push("Decke");
-    roomsOn.push("Wohnzimmer");
-    roomsOff.push("Bad");
-    roomsOff.push("Gang");
+    roomsOn.push("Boden");
+    roomsOn.push("Schlafzimmer");
   } /* data.sinn["licht"].helligkeit === "überall" */ else {
-    roomsOn.push("Decke");
-    roomsOn.push("Wohnzimmer");
-    roomsOn.push("Bad");
-    roomsOn.push("Gang");
+    roomsOn.push("Boden");
+    roomsOn.push("Schlafzimmer");
   }
 
   if (data.sinn["licht"].kanal !== "tageslicht") {
@@ -403,22 +394,18 @@ async function controlLicht(mode?: string) {
     if (data.kanal["szene"].szene === "sonnenaufgang") {
       if (mode === "alarm") return;
 
-      await hue.recallScene("Wohnzimmer", "Sonnenaufgang (1)");
-      await hue.recallScene("Gang", "Minimum");
-      await hue.recallScenes(["Decke", "Bad"], "Entspannen");
+      await hue.recallScene("Schlafzimmer", "Sonnenaufgang (1)");
+      await hue.recallScenes(["Boden"], "Entspannen");
 
       await hue.updateHueLabToggle("71", 1);
       await hue.updateHueLabToggle("72", 1);
     } else if (data.kanal["szene"].szene === "sonnenuntergang") {
-      await hue.recallScenes(
-        ["Wohnzimmer", "Decke", "Bad", "Gang"],
-        "Konzentration"
-      );
+      await hue.recallScenes(["Schlafzimmer", "Boden"], "Konzentration");
 
       await hue.updateHueLabToggle("74", 1);
       await hue.updateHueLabToggle("75", 1);
     } else if (data.kanal["szene"].szene === "wind") {
-      hue.recallScene("Decke", "Blätterdach");
+      hue.recallScene("Boden", "Blätterdach");
       wind();
     } else if (data.kanal["szene"].szene === "leuchturm") {
       leuchturm();
@@ -428,42 +415,42 @@ async function controlLicht(mode?: string) {
     if (data.kanal["emotion"].emotion === "groll")
       await hue.setLightStateByGroupByNames(roomsOn, {
         on: true,
-        xy: hexToXy("#d40000")
+        xy: hexToXy("#d40000"),
       });
     else if (data.kanal["emotion"].emotion === "erwartung")
       await hue.setLightStateByGroupByNames(roomsOn, {
         on: true,
-        xy: hexToXy("#ff7d00")
+        xy: hexToXy("#ff7d00"),
       });
     else if (data.kanal["emotion"].emotion === "freude")
       await hue.setLightStateByGroupByNames(roomsOn, {
         on: true,
-        xy: hexToXy("#ffe854")
+        xy: hexToXy("#ffe854"),
       });
     else if (data.kanal["emotion"].emotion === "vertrauen")
       await hue.setLightStateByGroupByNames(roomsOn, {
         on: true,
-        xy: hexToXy("#00b400")
+        xy: hexToXy("#00b400"),
       });
     else if (data.kanal["emotion"].emotion === "angst")
       await hue.setLightStateByGroupByNames(roomsOn, {
         on: true,
-        xy: hexToXy("#007f00")
+        xy: hexToXy("#007f00"),
       });
     else if (data.kanal["emotion"].emotion === "überraschung")
       await hue.setLightStateByGroupByNames(roomsOn, {
         on: true,
-        xy: hexToXy("#0089e0")
+        xy: hexToXy("#0089e0"),
       });
     else if (data.kanal["emotion"].emotion === "traurigkeit")
       await hue.setLightStateByGroupByNames(roomsOn, {
         on: true,
-        xy: hexToXy("#0000c8")
+        xy: hexToXy("#0000c8"),
       });
     else if (data.kanal["emotion"].emotion === "abneigung")
       await hue.setLightStateByGroupByNames(roomsOn, {
         on: true,
-        xy: hexToXy("#de00de")
+        xy: hexToXy("#de00de"),
       });
   }
 }
@@ -474,9 +461,7 @@ process.on("uncaughtException", function (err) {
 });
 
 async function setLautstaerke(volume: number) {
-  await sonos.room("Wohnzimmer").volume(volume).do();
-  await sonos.room("Küche").volume(relative(volume, 20, 15)).do();
-  await sonos.room("Bad").volume(relative(volume, 20, 100)).do();
+  await sonos.room("Schlafzimmer").volume(volume).do();
 }
 
 app.get("/api/events/", function (_req, res) {
@@ -521,7 +506,7 @@ app.get("/api/hue/scenes/export", async (_req, res) => {
     scenes.push({
       group: (await hue.getGroups(s.group)).name,
       name: scene.name,
-      lights: lights
+      lights: lights,
     });
   }
 
@@ -545,7 +530,9 @@ app.post("/api/hue/scenes/install", async (_req, res) => {
     }
 
     await hue.createScenes(
-      (await hue.getGroupByName(scene.group)).id,
+      (
+        await hue.getGroupByName(scene.group)
+      ).id,
       scene.name,
       lightsStates
     );
@@ -556,9 +543,9 @@ app.post("/api/hue/scenes/install", async (_req, res) => {
 
 async function leuchturm(trigger: boolean = true) {
   if (trigger) {
-    await hue.recallScene("Wohnzimmer", "Leuchturm (Ein)", 30);
+    await hue.recallScene("Schlafzimmer", "Leuchturm (Ein)", 30);
   } else {
-    await hue.recallScene("Wohnzimmer", "Leuchturm (Aus)", 30);
+    await hue.recallScene("Schlafzimmer", "Leuchturm (Aus)", 30);
   }
 
   if (
@@ -571,9 +558,9 @@ async function leuchturm(trigger: boolean = true) {
 
 async function wasser(trigger: boolean = true) {
   if (trigger) {
-    await hue.recallScene("Decke", "Minimum (Heiter)", 60);
+    await hue.recallScene("Boden", "Minimum (Heiter)", 60);
   } else {
-    await hue.recallScene("Decke", "Meer", 60);
+    await hue.recallScene("Boden", "Meer", 60);
   }
 
   if (
@@ -585,7 +572,7 @@ async function wasser(trigger: boolean = true) {
 }
 
 async function wind() {
-  await hue.recallScene("Wohnzimmer", "Wind " + getRandomInt(1, 4), 40);
+  await hue.recallScene("Schlafzimmer", "Wind " + getRandomInt(1, 4), 40);
 
   if (
     data.sinn["licht"].helligkeit !== "aus" &&

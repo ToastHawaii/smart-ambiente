@@ -26,7 +26,7 @@ import { casinotheaterReader } from "./CasinotheaterReader";
 import { dynamoVeranstaltungenReader } from "./DynamoVeranstaltungenReader";
 import { dynamoKurseReader } from "./DynamoKurseReader";
 import { gzZhReader } from "./GzZhReader";
-import { meetupReader } from "./MeetupReader";
+//import { meetupReader } from "./MeetupReader";
 import * as Calendar from "./Calendar";
 import * as moment from "moment";
 import * as cheerio from "cheerio";
@@ -38,7 +38,7 @@ import { buehneSReader } from "./BuehneSReader";
 import { mapsZueriAgendaReader } from "./MapsZueriAgendaReader";
 import { stadtZuerichSozialdepartementReader } from "./StadtZuerichSozialdepartementReader";
 import { doodleReader } from "./DoodleReader";
-import { spontactsReader } from "./SpontactsReader";
+//import { spontactsReader } from "./SpontactsReader";
 import { openkiReader } from "./OpenkiReader";
 const topic = debug("Events/Crawler", true);
 
