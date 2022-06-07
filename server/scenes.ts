@@ -364,7 +364,7 @@ export const scenes: Scenes = [
         ct: 447,
         transitiontime: 3000,
       },
-      Fenster: {
+      Wand: {
         on: true,
         bri: 127,
         xy: [0.4354, 0.3915],
@@ -749,7 +749,7 @@ export const scenes: Scenes = [
     group: "Boden",
     name: "Entspannen",
     lights: {
-      Fenster: {
+      Wand: {
         on: true,
         bri: 144,
         ct: 447,
@@ -901,7 +901,7 @@ export const scenes: Scenes = [
     group: "Boden",
     name: "Scene scene1 ",
     lights: {
-      Fenster: {
+      Wand: {
         on: true,
         bri: 254,
         ct: 156,
@@ -962,7 +962,7 @@ export const scenes: Scenes = [
         bri: 199,
         xy: [0.5338, 0.3859],
       },
-      Fenster: {
+      Wand: {
         on: true,
         bri: 199,
         xy: [0.5338, 0.3859],
@@ -1057,7 +1057,7 @@ export const scenes: Scenes = [
     group: "Boden",
     name: "Scene scene2 ",
     lights: {
-      Fenster: {
+      Wand: {
         on: true,
         bri: 254,
         ct: 233,
@@ -1168,7 +1168,7 @@ export const scenes: Scenes = [
     group: "Boden",
     name: "Sonnenaufgang 1 (Heiter)",
     lights: {
-      Fenster: {
+      Wand: {
         on: true,
         bri: 19,
         xy: [0.3647, 0.3707],
@@ -1179,7 +1179,7 @@ export const scenes: Scenes = [
     group: "Boden",
     name: "Lesen",
     lights: {
-      Fenster: {
+      Wand: {
         on: true,
         bri: 254,
         ct: 346,
@@ -1190,7 +1190,7 @@ export const scenes: Scenes = [
     group: "Boden",
     name: "Konzentration",
     lights: {
-      Fenster: {
+      Wand: {
         on: true,
         bri: 254,
         ct: 233,
@@ -1202,7 +1202,7 @@ export const scenes: Scenes = [
     group: "Boden",
     name: "Aktivieren",
     lights: {
-      Fenster: {
+      Wand: {
         on: true,
         bri: 254,
         ct: 156,
@@ -1213,7 +1213,7 @@ export const scenes: Scenes = [
     group: "Boden",
     name: "Hell",
     lights: {
-      Fenster: {
+      Wand: {
         on: true,
         bri: 254,
         ct: 367,
@@ -1385,7 +1385,7 @@ export const scenes: Scenes = [
     group: "Boden",
     name: "Sonnenaufgang 4 (Heiter)",
     lights: {
-      Fenster: {
+      Wand: {
         on: true,
         bri: 101,
         xy: [0.3691, 0.3719],
@@ -1549,7 +1549,7 @@ export const scenes: Scenes = [
     group: "Boden",
     name: "Sonnenaufgang 3 (Heiter)",
     lights: {
-      Fenster: {
+      Wand: {
         on: true,
         bri: 51,
         xy: [0.3857, 0.3819],
@@ -1625,7 +1625,7 @@ export const scenes: Scenes = [
         xy: [0.561, 0.4042],
         transitiontime: 3000,
       },
-      Fenster: {
+      Wand: {
         on: true,
         bri: 60,
         xy: [0.5272, 0.4056],
@@ -1637,7 +1637,7 @@ export const scenes: Scenes = [
     group: "Boden",
     name: "Meer",
     lights: {
-      Fenster: {
+      Wand: {
         on: true,
         bri: 26,
         xy: [0.1734, 0.366],
@@ -1648,7 +1648,7 @@ export const scenes: Scenes = [
     group: "Boden",
     name: "Gedimmt",
     lights: {
-      Fenster: {
+      Wand: {
         on: true,
         bri: 77,
         ct: 367,
@@ -1659,7 +1659,7 @@ export const scenes: Scenes = [
     group: "Boden",
     name: "Nachtlicht",
     lights: {
-      Fenster: {
+      Wand: {
         on: true,
         bri: 25,
         xy: [0.561, 0.4042],
@@ -1671,7 +1671,7 @@ export const scenes: Scenes = [
     group: "Boden",
     name: "Sonnenuntergang Savanne",
     lights: {
-      Fenster: {
+      Wand: {
         on: true,
         bri: 199,
         xy: [0.5337, 0.3856],
@@ -1682,7 +1682,7 @@ export const scenes: Scenes = [
     group: "Boden",
     name: "Tropendämmerung",
     lights: {
-      Fenster: {
+      Wand: {
         on: true,
         bri: 123,
         xy: [0.3581, 0.2872],
@@ -1693,7 +1693,7 @@ export const scenes: Scenes = [
     group: "Boden",
     name: "Nordlichter",
     lights: {
-      Fenster: {
+      Wand: {
         on: true,
         bri: 137,
         xy: [0.139, 0.081],
@@ -1704,7 +1704,7 @@ export const scenes: Scenes = [
     group: "Boden",
     name: "Frühlingsblüten",
     lights: {
-      Fenster: {
+      Wand: {
         on: true,
         bri: 214,
         xy: [0.4345, 0.2809],
@@ -1745,7 +1745,7 @@ export const scenes: Scenes = [
         bri: 1,
         xy: [0.5612, 0.4042],
       },
-      Fenster: {
+      Wand: {
         on: true,
         bri: 144,
         ct: 447,
@@ -1792,7 +1792,7 @@ export const scenes: Scenes = [
         ct: 447,
         transitiontime: 3000,
       },
-      Fenster: {
+      Wand: {
         on: true,
         bri: 127,
         xy: [0.4354, 0.3915],
@@ -1824,7 +1824,7 @@ export const scenes: Scenes = [
         bri: 144,
         ct: 447,
       },
-      Fenster: {
+      Wand: {
         on: true,
         bri: 144,
         ct: 447,
@@ -1838,7 +1838,7 @@ export const scenes: Scenes = [
     group: "Boden",
     name: "Scene scene3 ",
     lights: {
-      Fenster: {
+      Wand: {
         on: true,
         bri: 144,
         ct: 447,
@@ -1881,7 +1881,7 @@ export const scenes: Scenes = [
         bri: 254,
         ct: 346,
       },
-      Fenster: {
+      Wand: {
         on: true,
         bri: 254,
         ct: 346,
@@ -2068,7 +2068,7 @@ export const scenes: Scenes = [
         bri: 123,
         xy: [0.3596, 0.2883],
       },
-      Fenster: {
+      Wand: {
         on: true,
         bri: 123,
         xy: [0.292, 0.2251],
@@ -2082,7 +2082,7 @@ export const scenes: Scenes = [
     group: "Boden",
     name: "Scene scene4 ",
     lights: {
-      Fenster: {
+      Wand: {
         on: true,
         bri: 77,
         ct: 367,
@@ -2130,7 +2130,7 @@ export const scenes: Scenes = [
         xy: [0.5612, 0.4042],
         transitiontime: 3000,
       },
-      Fenster: {
+      Wand: {
         on: true,
         bri: 25,
         xy: [0.561, 0.4042],
@@ -2220,7 +2220,7 @@ export const scenes: Scenes = [
         bri: 254,
         ct: 233,
       },
-      Fenster: {
+      Wand: {
         on: true,
         bri: 254,
         ct: 233,
@@ -2267,7 +2267,7 @@ export const scenes: Scenes = [
     group: "Boden",
     name: "Sonnenaufgang (2)",
     lights: {
-      Fenster: {
+      Wand: {
         on: true,
         bri: 50,
         xy: [0.6259, 0.3576],
@@ -2452,7 +2452,7 @@ export const scenes: Scenes = [
         bri: 254,
         ct: 156,
       },
-      Fenster: {
+      Wand: {
         on: true,
         bri: 254,
         ct: 156,
@@ -2509,7 +2509,7 @@ export const scenes: Scenes = [
         bri: 254,
         ct: 367,
       },
-      Fenster: {
+      Wand: {
         on: true,
         bri: 254,
         ct: 367,
@@ -2555,7 +2555,7 @@ export const scenes: Scenes = [
         bri: 77,
         ct: 367,
       },
-      Fenster: {
+      Wand: {
         on: true,
         bri: 77,
         ct: 367,
@@ -2617,7 +2617,7 @@ export const scenes: Scenes = [
         xy: [0.5612, 0.4042],
         transitiontime: 3000,
       },
-      Fenster: {
+      Wand: {
         on: true,
         bri: 50,
         xy: [0.6259, 0.3576],
@@ -2757,7 +2757,7 @@ export const scenes: Scenes = [
         xy: [0.561, 0.4042],
         transitiontime: 3000,
       },
-      Fenster: {
+      Wand: {
         on: true,
         bri: 60,
         xy: [0.5272, 0.4056],
@@ -2896,7 +2896,7 @@ export const scenes: Scenes = [
         bri: 1,
         xy: [0.561, 0.4042],
       },
-      Fenster: {
+      Wand: {
         on: true,
         bri: 1,
         xy: [0.561, 0.4042],
@@ -2999,7 +2999,7 @@ export const scenes: Scenes = [
         bri: 214,
         xy: [0.4357, 0.2814],
       },
-      Fenster: {
+      Wand: {
         on: true,
         bri: 214,
         xy: [0.4357, 0.2814],
@@ -3172,7 +3172,7 @@ export const scenes: Scenes = [
         bri: 137,
         xy: [0.1551, 0.2156],
       },
-      Fenster: {
+      Wand: {
         on: true,
         bri: 137,
         xy: [0.2052, 0.3759],
@@ -3216,7 +3216,7 @@ export const scenes: Scenes = [
         bri: 254,
         ct: 233,
       },
-      Fenster: {
+      Wand: {
         on: true,
         bri: 254,
         ct: 233,
@@ -3227,7 +3227,7 @@ export const scenes: Scenes = [
     group: "Boden",
     name: "Scene scene5 ",
     lights: {
-      Fenster: {
+      Wand: {
         on: true,
         bri: 25,
         xy: [0.561, 0.4042],
@@ -3325,7 +3325,7 @@ export const scenes: Scenes = [
     group: "Boden",
     name: "Sonnenaufgang (3)",
     lights: {
-      Fenster: {
+      Wand: {
         on: true,
         bri: 60,
         xy: [0.5272, 0.4056],
@@ -3349,7 +3349,7 @@ export const scenes: Scenes = [
     group: "Boden",
     name: "Sonnenaufgang (4)",
     lights: {
-      Fenster: {
+      Wand: {
         on: true,
         bri: 127,
         xy: [0.4354, 0.3915],
@@ -3539,7 +3539,7 @@ export const scenes: Scenes = [
     group: "Boden",
     name: "Blätterdach",
     lights: {
-      Fenster: {
+      Wand: {
         on: true,
         bri: 48,
         xy: [0.2089, 0.6669],
@@ -3586,7 +3586,7 @@ export const scenes: Scenes = [
         xy: [0.5612, 0.4042],
         transitiontime: 3000,
       },
-      Fenster: {
+      Wand: {
         on: true,
         bri: 25,
         xy: [0.561, 0.4042],
@@ -3634,7 +3634,7 @@ export const scenes: Scenes = [
         xy: [0.5612, 0.4042],
         transitiontime: 3000,
       },
-      Fenster: {
+      Wand: {
         on: true,
         bri: 50,
         xy: [0.6259, 0.3576],
@@ -3646,7 +3646,7 @@ export const scenes: Scenes = [
     group: "Boden",
     name: "Sonnenaufgang 2 (Heiter)",
     lights: {
-      Fenster: {
+      Wand: {
         on: true,
         bri: 27,
         xy: [0.4243, 0.3965],
@@ -3715,7 +3715,7 @@ export const scenes: Scenes = [
     group: "Boden",
     name: "Minimum (Heiter)",
     lights: {
-      Fenster: {
+      Wand: {
         on: true,
         bri: 26,
         xy: [0.154, 0.0806],
