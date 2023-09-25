@@ -1,17 +1,17 @@
 // Copyright (C) 2020 Markus Peloso
-// 
+//
 // This file is part of smart-ambiente.
-// 
+//
 // smart-ambiente is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // smart-ambiente is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with smart-ambiente.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -20,7 +20,7 @@ import {
   StyleRulesCallback,
   withStyles,
   Typography,
-  Theme
+  Theme,
 } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core";
 import * as GoogleMapsLoader from "google-maps";
@@ -55,7 +55,7 @@ const style: StyleRulesCallback<Theme, any, ComponentClassNames> = () => ({
     left: "0",
     right: "0",
     bottom: "0",
-    top: "0"
+    top: "0",
   },
   mapSmall: {
     position: "absolute",
@@ -63,7 +63,7 @@ const style: StyleRulesCallback<Theme, any, ComponentClassNames> = () => ({
     width: "250px",
     top: "80px",
     height: "250px",
-    zIndex: 8
+    zIndex: 8,
   },
   text: {
     position: "absolute",
@@ -74,14 +74,14 @@ const style: StyleRulesCallback<Theme, any, ComponentClassNames> = () => ({
     padding: "10px",
     paddingLeft: "100vw",
     width: "10000000px",
-    background: "rgba(255,255,255,0.8)"
+    background: "rgba(255,255,255,0.8)",
   },
   image: {
     position: "absolute",
     right: "0px",
     width: "250px",
     top: "80px",
-    zIndex: 8
+    zIndex: 8,
   },
 
   loadingScreen: {
@@ -93,8 +93,8 @@ const style: StyleRulesCallback<Theme, any, ComponentClassNames> = () => ({
     backgroundImage: "url('/img/earth.jpg')",
     backgroundSize: "cover",
     backgroundPosition: "center",
-    zIndex: 9
-  }
+    zIndex: 9,
+  },
 });
 
 class BildHintergrund extends React.Component<
@@ -114,13 +114,13 @@ class BildHintergrund extends React.Component<
     this.state = {
       text: "",
       image: "",
-      loaded: false
+      loaded: false,
     };
   }
 
   public async componentDidMount() {
     (GoogleMapsLoader as any).KEY = (await getJson("/api/config/flug")).key;
-    GoogleMapsLoader.load(google => {
+    GoogleMapsLoader.load((google) => {
       this.google = google;
       this.initMap();
     });
@@ -148,7 +148,7 @@ class BildHintergrund extends React.Component<
       zoomControl: false,
       heading: this.direction * 90,
       tilt: 45,
-      rotateControl: false
+      rotateControl: false,
     });
     this.mapSmall = new this.google.maps.Map(this.refs.mapSmall as any, {
       center: center,
@@ -157,16 +157,16 @@ class BildHintergrund extends React.Component<
       mapTypeId: this.google.maps.MapTypeId.HYBRID,
       fullscreenControl: false,
       mapTypeControl: false,
-      zoomControl: false
+      zoomControl: false,
     });
 
     this.marker = new this.google.maps.Marker({
       position: this.mapSmall.getCenter(),
-      map: this.mapSmall
+      map: this.mapSmall,
     });
 
     loading = true;
-    this.maxZoomService.getMaxZoomAtLatLng(center, response => {
+    this.maxZoomService.getMaxZoomAtLatLng(center, (response: any) => {
       if (!loading) return;
       else loading = false;
 
@@ -214,7 +214,7 @@ class BildHintergrund extends React.Component<
             if (this.state.text !== article.extract) {
               this.setState({
                 text: article.extract,
-                image: article.thumbnail.source
+                image: article.thumbnail.source,
               });
             }
           } else {
@@ -271,7 +271,7 @@ class BildHintergrund extends React.Component<
       counter = 30 * (1000 / 25);
 
       loading = true;
-      this.maxZoomService.getMaxZoomAtLatLng(center, response => {
+      this.maxZoomService.getMaxZoomAtLatLng(center, (response: any) => {
         if (!loading) return;
         else loading = false;
 
@@ -294,7 +294,7 @@ class BildHintergrund extends React.Component<
     this.marker.setMap(null);
     this.marker = new this.google.maps.Marker({
       position: this.mapSmall.getCenter(),
-      map: this.mapSmall
+      map: this.mapSmall,
     });
     const infoInterval = setInterval(() => {
       this.mapSmall.setCenter(this.map.getCenter());
@@ -302,7 +302,7 @@ class BildHintergrund extends React.Component<
       this.marker.setMap(null);
       this.marker = new this.google.maps.Marker({
         position: this.mapSmall.getCenter(),
-        map: this.mapSmall
+        map: this.mapSmall,
       });
 
       this.showInfo();
@@ -317,7 +317,7 @@ class BildHintergrund extends React.Component<
     );
 
     loading = true;
-    this.maxZoomService.getMaxZoomAtLatLng(center, response => {
+    this.maxZoomService.getMaxZoomAtLatLng(center, (response: any) => {
       if (!loading) return;
       else loading = false;
 
