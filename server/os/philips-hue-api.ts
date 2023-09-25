@@ -304,7 +304,7 @@ class Hue {
     const result = await this.queryScenes();
     const scenes = toArray<{ [index: string]: Scene }, Scene>(result);
     const scene = scenes.filter(g => g.name === name && g.group === groupId)[0];
-    return { ...(await this.getScenes(scene.id)), id: scene.id };
+    return { ...(await this.getScenes(scene.id!)), id: scene.id };
   }
 
   public async queryScenes() {
@@ -369,7 +369,7 @@ class Hue {
     for (const light of toArray<{ [name: string]: LightPartial }, LightPartial>(
       scene.lights
     )) {
-      await this.setLightState((await this.getLightByName(light.id)).id, {
+      await this.setLightState((await this.getLightByName(light.id!)).id!, {
         ...light,
         transitiontime: transitiontime
       });
@@ -396,7 +396,7 @@ class Hue {
   ) {
     let promise: Promise<void> | undefined;
     for (const s of await this.getGroupsByName(roomNames)) {
-      promise = this.updateGroups(s.id, attributes);
+      promise = this.updateGroups(s.id!, attributes);
     }
     if (promise) await promise;
     await delay((attributes.transitiontime || 4) * 100);
@@ -404,7 +404,7 @@ class Hue {
 
   public async updateGroupByName(roomName: string, attributes: GroupPartial) {
     const group = await this.getGroupByName(roomName);
-    await this.updateGroups(group.id, attributes);
+    await this.updateGroups(group.id!, attributes);
 
     await delay((attributes.transitiontime || 4) * 100);
   }
