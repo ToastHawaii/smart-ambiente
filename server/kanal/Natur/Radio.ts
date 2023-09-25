@@ -76,7 +76,7 @@ export async function playSound(scene: string) {
         pan: "none",
         crossfade: "0",
         random: "0",
-      });
+      } as any);
     }
 
     topic("POST " + channelApiUrls[i], chunk);

@@ -330,8 +330,8 @@ async function playSender(name: string) {
 }
 
 async function controlLicht(mode?: string) {
-  const roomsOn = [];
-  const roomsOff = [];
+  const roomsOn: string[] = [];
+  const roomsOff: string[] = [];
 
   if (data.sinn["licht"].helligkeit === "aus") {
     roomsOff.push("Boden");
@@ -481,14 +481,14 @@ app.get("/api/config/:name/", async function (req, res) {
 });
 
 app.get("/api/hue/scenes/export", async (_req, res) => {
-  const scenes = [];
+  const scenes :{ group: string; name: string; lights: any; }[]= [];
 
   for (const s of toArray<{ [id: string]: Scene }, Scene>(
     await hue.queryScenes()
   )) {
     if (s.type !== "GroupScene") continue;
 
-    const scene = await hue.getScenes(s.id);
+    const scene = await hue.getScenes(s.id!);
 
     const lightsStates = toArray<{ [id: string]: LightPartial }, LightPartial>(
       scene.lightstates
@@ -497,7 +497,7 @@ app.get("/api/hue/scenes/export", async (_req, res) => {
     const lights: any = {};
 
     for (const l of lightsStates) {
-      const name = (await hue.getLights(l.id)).name;
+      const name = (await hue.getLights(l.id!)).name;
       delete l.id;
 
       lights[name] = l;
@@ -521,10 +521,10 @@ app.post("/api/hue/scenes/install", async (_req, res) => {
     for (const light of toArray<{ [name: string]: LightPartial }, LightPartial>(
       scene.lights
     )) {
-      const l = await hue.getLightByName(light.id);
+      const l = await hue.getLightByName(light.id!);
       if (!l) continue;
 
-      const id = l.id;
+      const id = l.id!;
       delete light.id;
       lightsStates[id] = light;
     }
@@ -532,7 +532,7 @@ app.post("/api/hue/scenes/install", async (_req, res) => {
     await hue.createScenes(
       (
         await hue.getGroupByName(scene.group)
-      ).id,
+      ).id!,
       scene.name,
       lightsStates
     );

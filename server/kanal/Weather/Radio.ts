@@ -96,7 +96,7 @@ export async function playSound(weather: Forecast) {
         pan: "none",
         crossfade: "0",
         random: "0",
-      });
+      } as any);
     }
 
     topic("POST " + channelApiUrls[i], chunk);
