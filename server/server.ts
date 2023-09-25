@@ -104,7 +104,7 @@ const data: {
       emotion: "groll",
     },
     alarm: {
-      zeit: "06:56",
+      zeit: "06:04",
       tage: "1-5",
     },
   },

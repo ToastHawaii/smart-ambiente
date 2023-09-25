@@ -27,7 +27,7 @@ const hue = Hue.createHueService(
   scenes
 );
 
-const interval = 6; // min
+const interval = 4; // min
 const transition = interval * 60 * 10;
 
 (async function () {
@@ -84,7 +84,7 @@ const transition = interval * 60 * 10;
         setSinn("ton", { lautstaerke: "2", kanal: "wetter" }, "alarm");
 
       if (lichtActiv) {
-        setSinn("licht", { helligkeit: "überall", kanal: "szene" }, "alarm");
+        setSinn("licht", { helligkeit: "viel", kanal: "szene" }, "alarm");
 
         if ((getKanal("wetter") as WeatherForecast.Forecast).wolken > 0.2) {
           hue.recallScene("Schlafzimmer", "Sonnenaufgang (1)", 1);
@@ -179,7 +179,7 @@ const transition = interval * 60 * 10;
 
       if (tonActiv) {
         setKanal("wetter", { ...getKanal("wetter"), radio: 0.6 }, "alarm");
-        setSinn("ton", { lautstaerke: "8", kanal: "wetter" }, "alarm");
+        setSinn("ton", { lautstaerke: "7", kanal: "wetter" }, "alarm");
       }
 
       if (lichtActiv) {
@@ -195,7 +195,7 @@ const transition = interval * 60 * 10;
 
       if (tonActiv) {
         setKanal("wetter", { ...getKanal("wetter"), radio: 1 }, "alarm");
-        setSinn("ton", { lautstaerke: "10", kanal: "wetter" }, "alarm");
+        setSinn("ton", { lautstaerke: "8", kanal: "wetter" }, "alarm");
       }
 
       if (lichtActiv) {
@@ -206,7 +206,7 @@ const transition = interval * 60 * 10;
       check();
 
       if (tonActiv) {
-        setSinn("ton", { lautstaerke: "12", kanal: "nachrichten" }, "alarm");
+        setSinn("ton", { lautstaerke: "9", kanal: "nachrichten" }, "alarm");
         setSinn("bild", { bildschirm: "ein", kanal: "ansehen" }, "alarm");
       }
     },
