@@ -2,26 +2,27 @@ const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
+  parallelism: 1,
   entry: "./client/scripts/index.tsx",
   output: {
     filename: "client.js",
-    path: __dirname + "/../out/wwwroot"
+    path: __dirname + "/../out/wwwroot",
   },
   plugins: [
     new HtmlWebpackPlugin({
       // Load a custom template
-      template: "client/index.html"
+      template: "client/index.html",
     }),
     new webpack.NamedModulesPlugin(),
     new webpack.DefinePlugin({
-      "process.env.NODE_ENV": JSON.stringify("production")
-    })
+      "process.env.NODE_ENV": JSON.stringify("production"),
+    }),
   ],
   mode: "production",
 
   resolve: {
     // Add '.ts' and '.tsx' as resolvable extensions.
-    extensions: [".ts", ".tsx", ".js", ".json"]
+    extensions: [".ts", ".tsx", ".js", ".json"],
   },
 
   module: {
@@ -34,16 +35,16 @@ module.exports = {
           {
             loader: "babel-loader",
             options: {
-              babelrc: true
-            }
+              babelrc: true,
+            },
           },
           {
             loader: "awesome-typescript-loader",
             options: {
-              configFileName: "client/scripts/tsconfig.json"
-            }
-          }
-        ]
+              configFileName: "client/scripts/tsconfig.json",
+            },
+          },
+        ],
       },
 
       // Load CSS files, embed small PNG/JPG/GIF/SVG images as well as fonts as Data URLs and copy larger files to the output directory
@@ -52,9 +53,9 @@ module.exports = {
         test: /\.(png|jpg|gif|svg|eot|ttf|woff|woff2)$/,
         loader: "url-loader",
         options: {
-          limit: 10000
-        }
-      }
-    ]
-  }
+          limit: 10000,
+        },
+      },
+    ],
+  },
 };
