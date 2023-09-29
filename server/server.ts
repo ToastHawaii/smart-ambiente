@@ -349,9 +349,9 @@ async function controlLicht(mode?: string) {
 
   if (data.sinn["licht"].kanal !== "tageslicht") {
     if (data.sinn["licht"].helligkeit !== "aus" || mode === "alarm")
-      await hue.updateAllHueLabToggleByName(/Auto\. Dimmen/g, 0);
+      await hue.updateAllHueLabToggleByName(/^(?!Bad).*Auto\. Dimmen/g, 0);
     // Default: Tageslicht
-    else await hue.updateAllHueLabToggleByName(/Auto\. Dimmen/g, 1);
+    else await hue.updateAllHueLabToggleByName(/^(?!Bad).*Auto\. Dimmen/g, 1);
   }
 
   if (
@@ -382,12 +382,12 @@ async function controlLicht(mode?: string) {
     await hue.recallScenes(roomsOn, "Aktivieren");
   } else if (data.sinn["licht"].kanal === "tageslicht") {
     if (mode === "alarm") {
-      await hue.updateAllHueLabToggleByName(/Auto\. Dimmen/g, 1);
+      await hue.updateAllHueLabToggleByName(/^(?!Bad).*Auto\. Dimmen/g, 1);
       return;
     }
 
     await hue.updateGroupsByName(roomsOn, { on: false });
-    await hue.updateAllHueLabToggleByName(/Auto\. Dimmen/g, 1);
+    await hue.updateAllHueLabToggleByName(/^(?!Bad).*Auto\. Dimmen/g, 1);
     await hue.updateGroupsByName(roomsOff, { on: false });
     await hue.updateGroupsByName(roomsOn, { on: true });
   } else if (data.sinn["licht"].kanal === "szene") {
