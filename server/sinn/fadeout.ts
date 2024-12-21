@@ -21,7 +21,7 @@ import { setSinn } from "../server";
 const interval = 1; // min
 
 (async function () {
-  sequenz("11:35", "0-6", interval, [
+  sequenz("22:25", "0-6", interval, [
     async () => {
       setSinn("ton", { lautstaerke: "8" }, "alarm");
     },
