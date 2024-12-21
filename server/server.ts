@@ -26,6 +26,7 @@ import * as WeatherForecast from "./kanal/Weather/Forecast";
 import * as WeatherRadio from "./kanal/Weather/Radio";
 import * as NaturRadio from "./kanal/Natur/Radio";
 import "./sinn/alarm";
+import "./sinn/fadeout";
 import { chooseGoodMatch } from "./kanal/Weather/Image";
 import debug from "./utils/debug";
 import { saveConfig, loadConfig } from "./utils/config";
@@ -104,7 +105,7 @@ const data: {
       emotion: "groll",
     },
     alarm: {
-      zeit: "06:04",
+      zeit: "06:09",
       tage: "1-5",
     },
   },

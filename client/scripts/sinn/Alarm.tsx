@@ -1,17 +1,17 @@
 // Copyright (C) 2020 Markus Peloso
-// 
+//
 // This file is part of smart-ambiente.
-// 
+//
 // smart-ambiente is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// 
+//
 // smart-ambiente is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU Affero General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU Affero General Public License
 // along with smart-ambiente.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -24,7 +24,8 @@ import {
   WeatherSunny,
   KeyboardOutline,
   GamepadVariant,
-  Beach
+  Beach,
+  HeartOutline,
 } from "mdi-material-ui";
 import ButtonGroup from "../os/ButtonGroup";
 import { Component } from "../os/Component";
@@ -33,14 +34,14 @@ import MenuButton from "../os/MenuButton";
 export interface Props {}
 
 export interface State {
-  zeit?: "05:34" | "06:04" | "07:04" | "08:04";
-  tage?: "1-5" | "0-6";
+  zeit?: "05:43" | "06:09" | "07:09" | "08:09";
+  tage?: "1-5" | "4-5" | "0-6";
 }
 
 type ComponentClassNames = "root";
 
 const style: StyleRulesCallback<Theme, any, ComponentClassNames> = () => ({
-  root: {}
+  root: {},
 });
 
 class Alarm extends Component<Props & WithStyles<ComponentClassNames>, State> {
@@ -74,30 +75,30 @@ class Alarm extends Component<Props & WithStyles<ComponentClassNames>, State> {
           <MenuButton
             icon={<WeatherNight />}
             title="06:10"
-            selected={zeit === "05:34"}
+            selected={zeit === "05:43"}
             backgroundGradient="Blue, MidnightBlue"
             value="05:43"
           />
           <MenuButton
             icon={<ThemeLightDark />}
-            title="06:40"
-            selected={zeit === "06:04"}
+            title="06:45"
+            selected={zeit === "06:09"}
             backgroundGradient="Orange, Red"
-            value="06:04"
+            value="06:09"
           />
           <MenuButton
             icon={<WeatherSunny />}
-            title="07:40"
-            selected={zeit === "07:04"}
+            title="07:45"
+            selected={zeit === "07:09"}
             backgroundGradient="Yellow, Orange"
-            value="07:04"
+            value="07:09"
           />
           <MenuButton
             icon={<Beach />}
-            title="08:40"
-            selected={zeit === "08:04"}
+            title="08:45"
+            selected={zeit === "08:09"}
             backgroundGradient="LightBlue, Gold"
-            value="08:04"
+            value="08:09"
           />
         </ButtonGroup>
         <ButtonGroup
@@ -105,7 +106,7 @@ class Alarm extends Component<Props & WithStyles<ComponentClassNames>, State> {
           onChange={this.handleTageChange}
           selection="exclusive"
           style={{
-            marginTop: "1%"
+            marginTop: "1%",
           }}
         >
           <MenuButton
@@ -114,6 +115,13 @@ class Alarm extends Component<Props & WithStyles<ComponentClassNames>, State> {
             selected={tage === "1-5"}
             backgroundGradient="LightBlue, DarkBlue"
             value="1-5"
+          />
+          <MenuButton
+            icon={<HeartOutline />}
+            title="Do & Fr"
+            selected={tage === "4-5"}
+            backgroundGradient="lightseagreen, darkseagreen"
+            value="4-5"
           />
           <MenuButton
             icon={<GamepadVariant />}
